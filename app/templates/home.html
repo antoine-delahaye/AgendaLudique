@@ -4,9 +4,13 @@
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
              src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
         <h2 class="text-center mb-3">Bienvenue sur votre agenda ludique !</h2>
-        <form class="form" method="post">
-            <button type="submit" class="btn text-white text-uppercase mr-2">Connexion</button>
-            <button type="submit" class="btn text-white text-uppercase ml-2">Inscription</button>
+        <form class="form" action="{{ url_for("auth") }}" method="POST">
+            <button class="btn text-white text-uppercase mr-2" name="auth-button" value="sign-in" type="submit">
+                Connexion
+            </button>
+            <button class="btn text-white text-uppercase ml-2" name="auth-button" value="sign-up" type="submit">
+                Inscription
+            </button>
         </form>
     </main>
 {% endblock %}
