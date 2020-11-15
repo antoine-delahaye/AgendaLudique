@@ -1,0 +1,12 @@
+main {
+    min-height: 48rem;
+}
+
+main img {
+    max-width: 10rem !important;
+}
+
+.btn {
+    width: 13rem;
+    height: 3rem;
+}

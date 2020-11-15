@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+{% block main %}
+    <main class="container-fluid mb-5 d-flex flex-column justify-content-center align-items-center">
+        <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
+             src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
+        <h2 class="text-center mb-3">Bienvenue sur votre agenda ludique !</h2>
+        <form class="form" method="post">
+            <button type="submit" class="btn text-white text-uppercase mr-2">Connexion</button>
+            <button type="submit" class="btn text-white text-uppercase ml-2">Inscription</button>
+        </form>
+    </main>
+{% endblock %}

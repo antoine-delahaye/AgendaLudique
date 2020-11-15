@@ -1,16 +1,16 @@
 {% extends "index.html" %}
 {% block main %}
-    <main class="container-fluid col-9 mb-4">
+    <main class="container-fluid col-9 mb-5">
         <h2 class="text-center mb-5">Vos jeux</h2>
         <div class="row">
             {% for item in data %}
-                <div class="col-lg-3">
+                <div class="col-xl-3 col-lg-4 col-md-6">
                     <div class="card mb-4 shadow-sm">
                         <img class="card-img mx-auto"
                              src="{{ url_for("static", filename="images/"+item["img"]+".webp") }}"
                              alt="Illustration">
                         <div class="card-body">
-                            <p>{{ item["title"] }}</p>
+                            <p class="text-truncate font-weight-bold">{{ item["title"] }}</p>
                             <p class="mb-0">De {{ item["min_players"] }} à {{ item["max_players"] }} joueurs</p>
                         </div>
                     </div>
