@@ -1,66 +1,12 @@
-# Question sur le sujet
-
-- Comment considère-t-on qu'un joueur connais les regles
-
-
 # Agenda Ludique
 
-1) Segment de clientelle:
-Association de jeu de société
+## Présentation du site
 
-2) Principaux problemes a ressoudre:
-- Quel jeux apporter ?
-- Quels sont les jeux déjà disponibles à l'association ?
-- Qui souhaiterait jouer à quoi ?
-- Qui connaît les règles ?
-
-3) Proposition de valeur unique:
-
-
-4) Solution:
-
-
-5) Canaux:
-
-
-6) Argent:
-
-
-7) Couts:
-
-
-8) Indicateurs de performances:
-
-
-9) Avanatage competitif:
-
-# BDD
-
- |---------------------| |---------------------| |-------------|
- | JEU                 | | Theme               | | Genre       |
- |---------------------| |---------------------| |-------------|
- | Nom (pk)            | | Nom (pk) (fk JEU)   | | Nom         |
- | Description         | | Nom (pk) (fk Genre) | | Description |
- | Note                | |---------------------| |-------------|
- |---------------------|
-
-
- |--------------------------------|
- | Possede                        |
- |--------------------------------|
- | Nom        (pk) (fk Jeu)       |
- | Possesseur (pk) (fk Membre.id) |
- | Date achat                     |
- | Prix vente                     |
- | Etat                           |
- |--------------------------------|
-
-
- |----------------| |----------------------------|
- | Membre         | | Aime                       |
- |----------------| |----------------------------|
- | Id (pk)        | | Membre (pk) (fk Membre.Id) |
- | Nom            | | Genre  (pk) (fk Genre.Nom) |
- | Prenom         | |----------------------------|
- | Age            |
- |----------------|
+Le site dispose d'une page d'accueil permettant de s'inscrire ou de se connecter. 
+Les utilisateurs qui se connecte à leur agenda ludique accède directement à leur
+bibliothèque de jeux. À partir de là, il est possible de naviguer sur tout le
+site. Par exemple, l'utilisateur peut accéder à différentes rubrique. Une de ces
+rubrique, *communautés*, permet de voir ses groupes ou alors, les gérer, on 
+entend par là, en ajouter ou en créer. L'autre rubrique importante, *Compte*, qui 
+permet gérer son compte, afin d'y modifier ses informations ou même de supprimer 
+son compte ainsi que d'ajouter des jeux.

@@ -1,10 +1,10 @@
 {% extends "index.html" %}
 {% block main %}
-    <main class="container-fluid mb-5 d-flex flex-column justify-content-center align-items-center">
+    <main class="container-fluid d-flex flex-column justify-content-center align-items-center mt-auto mb-auto">
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
              src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
         <h2 class="text-center mb-3">Bienvenue sur votre agenda ludique !</h2>
-        <form class="form" action="{{ url_for("auth") }}" method="POST">
+        <form class="form" action="{{ url_for("auth_method") }}" method="POST">
             <button class="btn text-white text-uppercase mr-2" name="auth-button" value="sign-in" type="submit">
                 Connexion
             </button>

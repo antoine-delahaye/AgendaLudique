@@ -10,8 +10,8 @@ def home():
     return render_template('home.html', stylesheet='home')
 
 
-@app.route('/auth', methods=['GET', 'POST'])
-def auth():
+@app.route('/auth-method', methods=['GET', 'POST'])
+def auth_method():
     if request.method == 'POST':
         if request.form['auth-button'] == "sign-in":
             return redirect(url_for('sign_in'))
@@ -29,6 +29,6 @@ def sign_up():
     return render_template('sign-up.html', stylesheet='sign-up')
 
 
-@app.route('/games')
+@app.route('/library')
 def games():
-    return render_template('games.html', stylesheet='games', data=data)
+    return render_template('library.html', stylesheet='library', data=data)

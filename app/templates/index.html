@@ -14,7 +14,7 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/index.css") }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/"+stylesheet+".css") }}">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 <header class="mb-5">
     <nav class="navbar navbar-expand-lg navbar-dark col-11 mx-auto">
         <a class="navbar-brand text-white flex-row" href="{{ url_for("home") }}">
@@ -28,33 +28,27 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ml-auto">
-                {% if stylesheet=="games" %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="games.html">Jeux</a>
-                    </li>
-                {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="games.html">Jeux</a>
-                    </li>
-                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="library.html">Bibliothèque</a>
+                </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownMenuLink" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Profile
+                        Communautés
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">Éditer le profile</a>
-                        <a class="dropdown-item" href="#">Ajouter un jeu</a>
+                        <a class="dropdown-item" href="#">Voir mes groupes</a>
+                        <a class="dropdown-item" href="#">Gérer mes groupes</a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" id="navbarDropdownMenuLink" role="button"
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Groupes
+                        Compte
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                        <a class="dropdown-item" href="#">Créer un groupe</a>
-                        <a class="dropdown-item" href="#">Rejoindre un groupe</a>
+                        <a class="dropdown-item" href="#">Gérer mon compte</a>
+                        <a class="dropdown-item" href="#">Ajouter des jeux</a>
                     </div>
                 </li>
                 <li class="nav-item">
@@ -66,7 +60,7 @@
 </header>
 {% block main %}
 {% endblock %}
-<footer class="py-3 text-white">
+<footer class="py-3 text-white mt-5">
     <p class="text-center mb-0">&copy; 2020 Agenda Ludique - Université d'Orléans</p>
 </footer>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

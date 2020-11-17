@@ -1,3 +1,4 @@
 import yaml
 
-data = yaml.load(open("data.yml"), Loader=yaml.FullLoader)
+data = yaml.load(open('data.yaml'), Loader=yaml.FullLoader)
+
