@@ -60,7 +60,7 @@ def create_game_list(raw_html):
 
 
 def save_yaml(game_list_dict):
-    with open('data.yaml', 'w') as f:
+    with open('games-data.yaml', 'w') as f:
         f.write(yaml.dump(game_list_dict, sort_keys=False))
 
 

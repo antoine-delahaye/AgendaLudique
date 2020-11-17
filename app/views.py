@@ -1,6 +1,6 @@
 from flask import request, redirect, url_for, render_template
 from .app import app
-from .models import data
+from .models import games_data
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -31,4 +31,4 @@ def sign_up():
 
 @app.route('/library')
 def games():
-    return render_template('library.html', stylesheet='library', data=data)
+    return render_template('library.html', stylesheet='library', games_data=games_data)

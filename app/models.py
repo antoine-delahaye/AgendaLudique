@@ -1,4 +1,4 @@
 import yaml
 
-data = yaml.load(open('data.yaml'), Loader=yaml.FullLoader)
+games_data = yaml.load(open('games-data.yaml'), Loader=yaml.FullLoader)
 
