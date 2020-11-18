@@ -38,7 +38,7 @@ def get_game_info(url):
             json_text = json.loads(temp2)['item']  # Transform dirty string into proper JSON format
     return {
         "title": json_text["name"],
-        "years": json_text["yearpublished"],
+        "publication_year": json_text["yearpublished"],
         "min_players": json_text["minplayers"],
         "max_players": json_text["maxplayers"],
         "min_playtime": json_text["minplaytime"],

@@ -1,6 +1,7 @@
 from flask import request, redirect, url_for, render_template
+
 from .app import app
-from .models import games_data
+from .models import games_data, publication_years, players_numbers, max_playtime
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -29,6 +30,17 @@ def sign_up():
     return render_template('sign-up.html', stylesheet='sign-up')
 
 
-@app.route('/library')
-def games():
+@app.route('/library', methods=['GET', 'POST'])
+def library():
+    if request.method == 'POST':
+        return redirect(url_for('library'))
     return render_template('library.html', stylesheet='library', games_data=games_data)
+
+
+@app.route('/add-games', methods=['GET', 'POST'])
+def add_games():
+    if request.method == 'POST':
+        return redirect(url_for('add_games'))
+    return render_template('add-games.html', stylesheet='add-games', games_data=games_data,
+                           publication_years=publication_years(), players_numbers=players_numbers(),
+                           max_playtime=max_playtime())

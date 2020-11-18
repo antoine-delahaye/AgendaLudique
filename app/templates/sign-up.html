@@ -4,7 +4,7 @@
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
              src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
         <h2 class="text-center mb-3">Inscription</h2>
-        <form class="form" method="POST">
+        <form class="form" action="{{ url_for("library") }}" method="POST">
             <div class="form-group">
                 <input class="form-control" placeholder="Nom d'utilisateur" required>
             </div>
