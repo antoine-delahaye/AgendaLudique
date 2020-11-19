@@ -1,6 +1,6 @@
 from flask import request, redirect, url_for, render_template
 
-from .app import app
+from app.app import app
 from .models import games_data, publication_years, players_numbers, max_playtime
 
 
