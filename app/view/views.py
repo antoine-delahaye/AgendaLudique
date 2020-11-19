@@ -1,7 +1,7 @@
 from flask import request, redirect, url_for, render_template
 
 from app.app import app
-from .models import games_data, publication_years, players_numbers, max_playtime
+from app.model import games_data, publication_years, players_numbers, max_playtime
 
 
 @app.route('/', methods=['GET', 'POST'])
