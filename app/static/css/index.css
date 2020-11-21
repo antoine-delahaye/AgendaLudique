@@ -29,6 +29,7 @@ header .navbar-toggler {
 
 .btn {
     background-color: #0277BC;
+    color: #ffffff;
 }
 
 .form-control, .btn {

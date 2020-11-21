@@ -1,0 +1,13 @@
+main img {
+    max-width: 5rem !important;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 20rem !important;
+}
+
+label {
+    display: none;
+}

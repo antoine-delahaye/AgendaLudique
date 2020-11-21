@@ -1,6 +1,6 @@
 174430:
   title: Gloomhaven
-  years: '2017'
+  publication_year: '2017'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -16,7 +16,7 @@
     original: https://cf.geekdo-images.com/sZYp_3BTDGjh2unaZfZmuA__original/img/lDN358RgcYvQfYYN6Oy2TXpifyM=/0x0/pic2437871.jpg
 161936:
   title: 'Pandemic Legacy: Season 1'
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -32,7 +32,7 @@
     original: https://cf.geekdo-images.com/-Qer2BBPG7qGGDu6KcVDIw__original/img/P_SwsOtPLqgk2ScCgI2YrI9Rg6I=/0x0/pic2452831.png
 224517:
   title: 'Brass: Birmingham'
-  years: '2018'
+  publication_year: '2018'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -48,7 +48,7 @@
     original: https://cf.geekdo-images.com/x3zxjr-Vw5iU4yDPg70Jgw__original/img/SED341dmM5mGVVbLvwcvTjvUbIA=/0x0/pic3490053.jpg
 167791:
   title: Terraforming Mars
-  years: '2016'
+  publication_year: '2016'
   min_players: '1'
   max_players: '5'
   min_playtime: '120'
@@ -64,7 +64,7 @@
     original: https://cf.geekdo-images.com/wg9oOLcsKvDesSUdZQ4rxw__original/img/o8z_levBVArPUKI7ZrIysZEs1A0=/0x0/pic3536616.jpg
 233078:
   title: 'Twilight Imperium: Fourth Edition'
-  years: '2017'
+  publication_year: '2017'
   min_players: '3'
   max_players: '6'
   min_playtime: '240'
@@ -80,7 +80,7 @@
     original: https://cf.geekdo-images.com/_Ppn5lssO5OaildSE-FgFA__original/img/Xe0YAmobS_L0Nlo4YJgyFwOW9EM=/0x0/pic3727516.jpg
 182028:
   title: 'Through the Ages: A New Story of Civilization'
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '4'
   min_playtime: '120'
@@ -96,7 +96,7 @@
     original: https://cf.geekdo-images.com/fVwPntkJKgaEo0rIC0RwpA__original/img/1d2h-kr4r_9xsss2Br6iMvjR9q0=/0x0/pic2663291.jpg
 220308:
   title: Gaia Project
-  years: '2017'
+  publication_year: '2017'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -112,7 +112,7 @@
     original: https://cf.geekdo-images.com/hGWFm3hbMlCDsfCsauOQ4g__original/img/WY8Ce20W-Y-tYhVqSJxev74EJKI=/0x0/pic5375625.png
 187645:
   title: 'Star Wars: Rebellion'
-  years: '2016'
+  publication_year: '2016'
   min_players: '2'
   max_players: '4'
   min_playtime: '180'
@@ -128,7 +128,7 @@
     original: https://cf.geekdo-images.com/7SrPNGBKg9IIsP4UQpOi8g__original/img/unCB4uE-nBtAH9glFd3FaVxYbIo=/0x0/pic4325841.jpg
 12333:
   title: Twilight Struggle
-  years: '2005'
+  publication_year: '2005'
   min_players: '2'
   max_players: '2'
   min_playtime: '120'
@@ -144,7 +144,7 @@
     original: https://cf.geekdo-images.com/pNCiUUphnoeWOYfsWq0kng__original/img/KIuiFnGw4h__SA_hkD3Slz9tMvw=/0x0/pic3530661.jpg
 193738:
   title: Great Western Trail
-  years: '2016'
+  publication_year: '2016'
   min_players: '2'
   max_players: '4'
   min_playtime: '75'
@@ -160,7 +160,7 @@
     original: https://cf.geekdo-images.com/u1l0gH7sb_vnvDvoO_QHqA__original/img/F6LRHU_90d9ICvPLDXQ2rikYuuY=/0x0/pic4887376.jpg
 115746:
   title: 'War of the Ring: Second Edition'
-  years: '2012'
+  publication_year: '2012'
   min_players: '2'
   max_players: '4'
   min_playtime: '150'
@@ -176,7 +176,7 @@
     original: https://cf.geekdo-images.com/ImPgGag98W6gpV1KV812aA__original/img/sAJOZ0c2_gZqXjn2npRgpFvshKo=/0x0/pic1215633.jpg
 169786:
   title: Scythe
-  years: '2016'
+  publication_year: '2016'
   min_players: '1'
   max_players: '5'
   min_playtime: '90'
@@ -192,7 +192,7 @@
     original: https://cf.geekdo-images.com/7k_nOxpO9OGIjhLq2BUZdA__original/img/enxCZt0Cn78-rlvmPvGtOej1ios=/0x0/pic3163924.jpg
 162886:
   title: Spirit Island
-  years: '2017'
+  publication_year: '2017'
   min_players: '1'
   max_players: '4'
   min_playtime: '90'
@@ -208,7 +208,7 @@
     original: https://cf.geekdo-images.com/a13ieMPP2s0KEaKNYmtH5w__original/img/RmP2yBDA0LE-ZFWrEXAkgRuYjn0=/0x0/pic3615739.png
 84876:
   title: The Castles of Burgundy
-  years: '2011'
+  publication_year: '2011'
   min_players: '2'
   max_players: '4'
   min_playtime: '30'
@@ -224,7 +224,7 @@
     original: https://cf.geekdo-images.com/5CFwjd8zTcGYVUnkXh04hw__original/img/w3EsrbF6-Gvr5_qBeF7YL1Rslnk=/0x0/pic1176894.jpg
 120677:
   title: Terra Mystica
-  years: '2012'
+  publication_year: '2012'
   min_players: '2'
   max_players: '5'
   min_playtime: '60'
@@ -240,7 +240,7 @@
     original: https://cf.geekdo-images.com/bre12I1YiXkZr7elvriz4A__original/img/7C6qk-PT596IBj5FvPXxe7hT8Bg=/0x0/pic5375624.jpg
 173346:
   title: 7 Wonders Duel
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '2'
   min_playtime: '30'
@@ -256,7 +256,7 @@
     original: https://cf.geekdo-images.com/WzNs1mA_o22ZWTR8fkLP2g__original/img/M6wL1YFgW-PsdtJ328m2QiJf1K8=/0x0/pic3376065.jpg
 124361:
   title: Concordia
-  years: '2013'
+  publication_year: '2013'
   min_players: '2'
   max_players: '5'
   min_playtime: '100'
@@ -272,7 +272,7 @@
     original: https://cf.geekdo-images.com/CzwSm8i7tkLz6cBnrILZBg__original/img/abKLQBfHHaouqsLx7GGiIzqXBu8=/0x0/pic3453267.jpg
 28720:
   title: 'Brass: Lancashire'
-  years: '2007'
+  publication_year: '2007'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -288,7 +288,7 @@
     original: https://cf.geekdo-images.com/0BsjJY9MTlx9DRrlkeE69w__original/img/nIOhgzeGDH3heuZ_fGpM-JMla30=/0x0/pic5482020.jpg
 291457:
   title: 'Gloomhaven: Jaws of the Lion'
-  years: '2020'
+  publication_year: '2020'
   min_players: '1'
   max_players: '4'
   min_playtime: '30'
@@ -304,7 +304,7 @@
     original: https://cf.geekdo-images.com/_HhIdavYW-hid20Iq3hhmg__original/img/FHpPH2vPw6VAJGodpGaQYOdTGIg=/0x0/pic5055631.jpg
 205637:
   title: 'Arkham Horror: The Card Game'
-  years: '2016'
+  publication_year: '2016'
   min_players: '1'
   max_players: '2'
   min_playtime: '60'
@@ -320,7 +320,7 @@
     original: https://cf.geekdo-images.com/B5F5ulz0UivNgrI9Ky0euA__original/img/EQ0Kl-bH9RCI5aJWVLnAlAfo00E=/0x0/pic3122349.jpg
 266192:
   title: Wingspan
-  years: '2019'
+  publication_year: '2019'
   min_players: '1'
   max_players: '5'
   min_playtime: '40'
@@ -336,7 +336,7 @@
     original: https://cf.geekdo-images.com/yLZJCVLlIx4c7eJEWUNJ7w__original/img/V_R5oe5Huj5guJaBhgbQkZR1PLE=/0x0/pic4458123.jpg
 177736:
   title: A Feast for Odin
-  years: '2016'
+  publication_year: '2016'
   min_players: '1'
   max_players: '4'
   min_playtime: '30'
@@ -352,7 +352,7 @@
     original: https://cf.geekdo-images.com/s9oGMCo1fcfV4Dk3EnqLZw__original/img/h0P5NRuVBu0GuDrJo7CHAiSJo3U=/0x0/pic3146943.png
 183394:
   title: Viticulture Essential Edition
-  years: '2015'
+  publication_year: '2015'
   min_players: '1'
   max_players: '6'
   min_playtime: '45'
@@ -368,7 +368,7 @@
     original: https://cf.geekdo-images.com/2muMiNgOIYipDr5fnYJqKg__original/img/6KQbzbjV6HlxDZeqPwmrmR3gn6w=/0x0/pic2649952.jpg
 164928:
   title: "Orl\xE9ans"
-  years: '2014'
+  publication_year: '2014'
   min_players: '2'
   max_players: '4'
   min_playtime: '90'
@@ -384,7 +384,7 @@
     original: https://cf.geekdo-images.com/SvbrhIAoQZ-1MyDa_v0AqQ__original/img/RLjWKyzXimMFiQOa8uwo9ZWWOGM=/0x0/pic2578828.png
 96848:
   title: Mage Knight Board Game
-  years: '2011'
+  publication_year: '2011'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -400,7 +400,7 @@
     original: https://cf.geekdo-images.com/DUO2hz9AlLOH8p9ED-lCWg__original/img/AGyvx6NYd6Kq4HUztAObQVLEFWY=/0x0/pic1083380.jpg
 3076:
   title: Puerto Rico
-  years: '2002'
+  publication_year: '2002'
   min_players: '3'
   max_players: '5'
   min_playtime: '90'
@@ -416,7 +416,7 @@
     original: https://cf.geekdo-images.com/QFiIRd2kimaMqTyWsX0aUg__original/img/RvdWBkmDks7AN8sodR4PyVcponA=/0x0/pic158548.jpg
 167355:
   title: Nemesis
-  years: '2018'
+  publication_year: '2018'
   min_players: '1'
   max_players: '5'
   min_playtime: '90'
@@ -432,7 +432,7 @@
     original: https://cf.geekdo-images.com/tAqLpWxQ0Oo3GaPP3MER1g__original/img/fOgLH666aTUqwnhtZjSGH4-XJ8U=/0x0/pic5073276.jpg
 180263:
   title: The 7th Continent
-  years: '2017'
+  publication_year: '2017'
   min_players: '1'
   max_players: '4'
   min_playtime: '5'
@@ -448,7 +448,7 @@
     original: https://cf.geekdo-images.com/OYne8uBCHv5oEgRfpOrV0A__original/img/iQDBaRJ2LxJba_M7gPZj24eHwBc=/0x0/pic2648303.jpg
 102794:
   title: 'Caverna: The Cave Farmers'
-  years: '2013'
+  publication_year: '2013'
   min_players: '1'
   max_players: '7'
   min_playtime: '30'
@@ -464,7 +464,7 @@
     original: https://cf.geekdo-images.com/rz22tqa5PCYvK9oDjIbvxg__original/img/xLuIh5VNsD57GXfcBox_ZF1jH4o=/0x0/pic1790789.jpg
 175914:
   title: Food Chain Magnate
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '5'
   min_playtime: '120'
@@ -480,7 +480,7 @@
     original: https://cf.geekdo-images.com/Wtxml94LAXsIWQCxGPS63Q__original/img/wYRsC32bPDRShIYzWs2hUglfcTc=/0x0/pic2649434.png
 237182:
   title: Root
-  years: '2018'
+  publication_year: '2018'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -496,7 +496,7 @@
     original: https://cf.geekdo-images.com/JUAUWaVUzeBgzirhZNmHHw__original/img/dKjbqIjkFvlDt8OH01LtFqk-A8Q=/0x0/pic4254509.jpg
 31260:
   title: Agricola
-  years: '2007'
+  publication_year: '2007'
   min_players: '1'
   max_players: '5'
   min_playtime: '30'
@@ -512,7 +512,7 @@
     original: https://cf.geekdo-images.com/dDDo2Hexl80ucK1IlqTk-g__original/img/WQS7FRLHzvFQ8mjt94Au4W8CYn0=/0x0/pic831744.jpg
 205059:
   title: 'Mansions of Madness: Second Edition'
-  years: '2016'
+  publication_year: '2016'
   min_players: '1'
   max_players: '5'
   min_playtime: '120'
@@ -528,7 +528,7 @@
     original: https://cf.geekdo-images.com/LIooA9bTdjnE9qmhjL-UFw__original/img/0jncNnMHVZqa4u3oMwVm2Zn84q8=/0x0/pic3118622.jpg
 221107:
   title: 'Pandemic Legacy: Season 2'
-  years: '2017'
+  publication_year: '2017'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -544,7 +544,7 @@
     original: https://cf.geekdo-images.com/Qtkb-UTvHa0-kxt_MK1nKw__original/img/DbXh4TeZPoJ_tSlX2KRGdVcBd8s=/0x0/pic3763549.jpg
 170216:
   title: Blood Rage
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -560,7 +560,7 @@
     original: https://cf.geekdo-images.com/HkZSJfQnZ3EpS214xtuplg__original/img/p4IovYzLVXqxY40lbGUu92VxaIQ=/0x0/pic2439223.jpg
 55690:
   title: 'Kingdom Death: Monster'
-  years: '2015'
+  publication_year: '2015'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -576,7 +576,7 @@
     original: https://cf.geekdo-images.com/LenzJBOHboAGU0cUIqAZPQ__original/img/AtA42fNGhdthAAP3Y5QZiwlFcv8=/0x0/pic2931007.jpg
 199792:
   title: Everdell
-  years: '2018'
+  publication_year: '2018'
   min_players: '1'
   max_players: '4'
   min_playtime: '40'
@@ -592,7 +592,7 @@
     original: https://cf.geekdo-images.com/fjE7V5LNq31yVEW_yuqI-Q__original/img/L5e2iMnVKpXi3RO3uSwQB6iW-AQ=/0x0/pic3918905.png
 2651:
   title: Power Grid
-  years: '2004'
+  publication_year: '2004'
   min_players: '2'
   max_players: '6'
   min_playtime: '120'
@@ -608,7 +608,7 @@
     original: https://cf.geekdo-images.com/yd6LuatytHRhcFCxCf-EEg__original/img/h8UWt217vzbMWSla-r8O86a6fDc=/0x0/pic4459753.jpg
 126163:
   title: 'Tzolk''in: The Mayan Calendar'
-  years: '2012'
+  publication_year: '2012'
   min_players: '2'
   max_players: '4'
   min_playtime: '90'
@@ -624,7 +624,7 @@
     original: https://cf.geekdo-images.com/qM0qZaiTHOutr9cZZLqA1g__original/img/b_3SHZiUpcmrIT5hU8wVF0SDX8k=/0x0/pic1413480.jpg
 209010:
   title: Mechs vs. Minions
-  years: '2016'
+  publication_year: '2016'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -640,7 +640,7 @@
     original: https://cf.geekdo-images.com/n4J5LebMj0DQD016qW7ABw__original/img/WhHdMb8GiMY-RhHddEByDyPkrWo=/0x0/pic3184103.jpg
 164153:
   title: 'Star Wars: Imperial Assault'
-  years: '2014'
+  publication_year: '2014'
   min_players: '1'
   max_players: '5'
   min_playtime: '60'
@@ -656,7 +656,7 @@
     original: https://cf.geekdo-images.com/pIQ_MXvaoARRp1loCHJuHg__original/img/wWTlEaPbVoUybefxFpFVTv1OU74=/0x0/pic2247647.jpg
 216132:
   title: Clans of Caledonia
-  years: '2017'
+  publication_year: '2017'
   min_players: '1'
   max_players: '4'
   min_playtime: '30'
@@ -672,7 +672,7 @@
     original: https://cf.geekdo-images.com/SPuwc6RJ6y4PnTH36Pegsg__original/img/wMBrwd-ZnHVV_XvVT3Tc6LtD0Ng=/0x0/pic3511783.png
 25613:
   title: 'Through the Ages: A Story of Civilization'
-  years: '2006'
+  publication_year: '2006'
   min_players: '2'
   max_players: '4'
   min_playtime: '120'
@@ -688,7 +688,7 @@
     original: https://cf.geekdo-images.com/3piN3YX4WmBRuIvbEG2Ygg__original/img/xeBBIO9BN7HGMxQdTw5zk5Hxou8=/0x0/pic236169.jpg
 35677:
   title: Le Havre
-  years: '2008'
+  publication_year: '2008'
   min_players: '1'
   max_players: '5'
   min_playtime: '30'
@@ -704,7 +704,7 @@
     original: https://cf.geekdo-images.com/mU-YdL_-3Fm4RvNv-y5WJg__original/img/Fs2MqRUBPQzORmEZbiVqSnBvHDg=/0x0/pic3330230.jpg
 72125:
   title: Eclipse
-  years: '2011'
+  publication_year: '2011'
   min_players: '2'
   max_players: '6'
   min_playtime: '60'
@@ -720,7 +720,7 @@
     original: https://cf.geekdo-images.com/cnFppsVNOSTJ-W3APQFuTg__original/img/583Qqo-5M56np8LqnFKcCuUfn7A=/0x0/pic1974056.jpg
 230802:
   title: Azul
-  years: '2017'
+  publication_year: '2017'
   min_players: '2'
   max_players: '4'
   min_playtime: '30'
@@ -736,7 +736,7 @@
     original: https://cf.geekdo-images.com/tz19PfklMdAdjxV9WArraA__original/img/9-SR48jyfxs4At6255sjHoly2sw=/0x0/pic3718275.jpg
 276025:
   title: Maracaibo
-  years: '2019'
+  publication_year: '2019'
   min_players: '1'
   max_players: '4'
   min_playtime: '30'
@@ -752,7 +752,7 @@
     original: https://cf.geekdo-images.com/rMNa0k05zMdKgSEp26Q3Tw__original/img/qP99uYh6kOi_erZTgkYDe_AVSsw=/0x0/pic4917407.jpg
 185343:
   title: Anachrony
-  years: '2017'
+  publication_year: '2017'
   min_players: '1'
   max_players: '4'
   min_playtime: '30'
@@ -768,7 +768,7 @@
     original: https://cf.geekdo-images.com/31quLNzteInnevVRAABoow__original/img/HwoXcAIvX44tc_CDgcQ6I0Rztg8=/0x0/pic3499707.jpg
 247763:
   title: Underwater Cities
-  years: '2018'
+  publication_year: '2018'
   min_players: '1'
   max_players: '4'
   min_playtime: '80'
@@ -784,7 +784,7 @@
     original: https://cf.geekdo-images.com/PwOwTVHovJAUQgghnGqCOg__original/img/LCsuq0PJ4JEVyrV5YSaLqaIkGv0=/0x0/pic4837710.png
 171623:
   title: The Voyages of Marco Polo
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '4'
   min_playtime: '40'
@@ -800,7 +800,7 @@
     original: https://cf.geekdo-images.com/n1G7_aWToLAAB7Mqt8iwyA__original/img/ewdBaa31ROM_gOmpYwp4xszuAHk=/0x0/pic2461346.png
 121921:
   title: 'Robinson Crusoe: Adventures on the Cursed Island'
-  years: '2012'
+  publication_year: '2012'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -816,7 +816,7 @@
     original: https://cf.geekdo-images.com/FbFnaTx3aT5dM18K_bR_Pg__original/img/i1d3Zbbw5iYJ5_Bd0unqwgM8CI0=/0x0/pic3165731.jpg
 124742:
   title: 'Android: Netrunner'
-  years: '2012'
+  publication_year: '2012'
   min_players: '2'
   max_players: '2'
   min_playtime: '45'
@@ -832,7 +832,7 @@
     original: https://cf.geekdo-images.com/2ewHIIG_TRq8bYlqk0jIMw__original/img/Wbp__Fl6QDKqzealhK2SDpoEk_g=/0x0/pic3738560.jpg
 192135:
   title: Too Many Bones
-  years: '2017'
+  publication_year: '2017'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -848,7 +848,7 @@
     original: https://cf.geekdo-images.com/-EB8c-OIEZfHi1p-8qwiUw__original/img/wXeYGdruHxDtrasRWys1PTHnqGc=/0x0/pic3684814.jpg
 284083:
   title: 'The Crew: The Quest for Planet Nine'
-  years: '2019'
+  publication_year: '2019'
   min_players: '2'
   max_players: '5'
   min_playtime: '20'
@@ -864,7 +864,7 @@
     original: https://cf.geekdo-images.com/98LnQShydr11OBKS46xY-Q__original/img/MBkKUxzroaYdicND7cOxRSujcwg=/0x0/pic5687013.jpg
 285774:
   title: 'Marvel Champions: The Card Game'
-  years: '2019'
+  publication_year: '2019'
   min_players: '1'
   max_players: '4'
   min_playtime: '45'
@@ -880,7 +880,7 @@
     original: https://cf.geekdo-images.com/kRvUgYiaOq07kC67ZK5UoQ__original/img/hD6zhNhGT89NMLCGa2xwoSaitEw=/0x0/pic4900321.jpg
 125153:
   title: The Gallerist
-  years: '2015'
+  publication_year: '2015'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -896,7 +896,7 @@
     original: https://cf.geekdo-images.com/ie1GSt1XV04sXQXt-3O1UQ__original/img/Ye9XSo3Ozz93R3ofXYHWfC_pMFg=/0x0/pic2503200.png
 28143:
   title: Race for the Galaxy
-  years: '2007'
+  publication_year: '2007'
   min_players: '2'
   max_players: '4'
   min_playtime: '30'
@@ -912,7 +912,7 @@
     original: https://cf.geekdo-images.com/-DOqixs8uwKUvvWPKI4f9w__original/img/EMaVVpr662kgp_T8uf4UkFvIkqE=/0x0/pic5261714.jpg
 68448:
   title: 7 Wonders
-  years: '2010'
+  publication_year: '2010'
   min_players: '2'
   max_players: '7'
   min_playtime: '30'
@@ -928,7 +928,7 @@
     original: https://cf.geekdo-images.com/RvFVTEpnbb4NM7k0IF8V7A__original/img/3DP_RW5lTX0WrV67s8qi8CsiXoQ=/0x0/pic860217.jpg
 159675:
   title: Fields of Arle
-  years: '2014'
+  publication_year: '2014'
   min_players: '1'
   max_players: '2'
   min_playtime: '60'
@@ -944,7 +944,7 @@
     original: https://cf.geekdo-images.com/0w8go6cfvlpgJKydHUkDtA__original/img/xlgiqGRKx6LZuhjh5iR-dtbMrJQ=/0x0/pic2225968.png
 62219:
   title: Dominant Species
-  years: '2010'
+  publication_year: '2010'
   min_players: '2'
   max_players: '6'
   min_playtime: '120'
@@ -960,7 +960,7 @@
     original: https://cf.geekdo-images.com/oeygRZntjNUJWvc8SxDfww__original/img/dpHznpiPiv8biNvE_P9RCkXaOx4=/0x0/pic784193.jpg
 229853:
   title: 'Teotihuacan: City of Gods'
-  years: '2018'
+  publication_year: '2018'
   min_players: '1'
   max_players: '4'
   min_playtime: '90'
@@ -976,7 +976,7 @@
     original: https://cf.geekdo-images.com/wW5xjgBJcFyLaEWZwrYuKA__original/img/gzpgd8o15PVOgMhmcd57QijX57Q=/0x0/pic4583626.jpg
 157354:
   title: Five Tribes
-  years: '2014'
+  publication_year: '2014'
   min_players: '2'
   max_players: '4'
   min_playtime: '40'
@@ -992,7 +992,7 @@
     original: https://cf.geekdo-images.com/dmo-WD6HZHVUPrbVHunaTw__original/img/ysxyEQPPbio1xvtx56l_8P8BkYs=/0x0/pic2055255.jpg
 201808:
   title: 'Clank!: A Deck-Building Adventure'
-  years: '2016'
+  publication_year: '2016'
   min_players: '2'
   max_players: '4'
   min_playtime: '30'
@@ -1008,7 +1008,7 @@
     original: https://cf.geekdo-images.com/DPjV1iI0ygo5Bl3XLNRiIg__original/img/wKVNKaIsMedZeZj2579L01EDBTc=/0x0/pic4449526.jpg
 122515:
   title: Keyflower
-  years: '2012'
+  publication_year: '2012'
   min_players: '2'
   max_players: '6'
   min_playtime: '90'
@@ -1024,7 +1024,7 @@
     original: https://cf.geekdo-images.com/HbfgxDJZQnNEZQKvpmJxQg__original/img/t6AnEi2l5tiHgWRjglwSfRsYy6E=/0x0/pic2278942.jpg
 110327:
   title: Lords of Waterdeep
-  years: '2012'
+  publication_year: '2012'
   min_players: '2'
   max_players: '5'
   min_playtime: '60'
@@ -1040,7 +1040,7 @@
     original: https://cf.geekdo-images.com/-hk8f8iGk_DyWyMrfiPBkg__original/img/PTVnjG9ersdKq6feZTpq5SkiPPw=/0x0/pic1116080.jpg
 18602:
   title: Caylus
-  years: '2005'
+  publication_year: '2005'
   min_players: '2'
   max_players: '5'
   min_playtime: '60'
@@ -1056,7 +1056,7 @@
     original: https://cf.geekdo-images.com/yC7nOSc1x5PT-oNnh6TEcQ__original/img/90BzC8_Dgc9uDswnZsu7Qa3oHvI=/0x0/pic1638795.jpg
 161533:
   title: Lisboa
-  years: '2017'
+  publication_year: '2017'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -1072,7 +1072,7 @@
     original: https://cf.geekdo-images.com/OrHS8_a1CqSGiXeTfCk0Wg__original/img/k4JCDnjnu5YRn5QA8njFeRMbulk=/0x0/pic3209553.jpg
 521:
   title: Crokinole
-  years: '1876'
+  publication_year: '1876'
   min_players: '2'
   max_players: '4'
   min_playtime: '30'
@@ -1088,7 +1088,7 @@
     original: https://cf.geekdo-images.com/7ejbxsn-UtLl3ehamuAEdw__original/img/1x-Pt8mWg9fBlo5oB1aBxll6-3k=/0x0/pic79413.jpg
 200680:
   title: Agricola (Revised Edition)
-  years: '2016'
+  publication_year: '2016'
   min_players: '1'
   max_players: '4'
   min_playtime: '30'
@@ -1104,7 +1104,7 @@
     original: https://cf.geekdo-images.com/Vf_0TrTfz9yll7rVBvYGsg__original/img/oQorPaOofq9lmHTOgjNpi8kDWAQ=/0x0/pic3029377.jpg
 191189:
   title: Aeon's End
-  years: '2016'
+  publication_year: '2016'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -1120,7 +1120,7 @@
     original: https://cf.geekdo-images.com/d50LceHj6LIafa4S_qIsCg__original/img/FMyNWbquUF9zkxFGrZK2qQk94os=/0x0/pic3189350.jpg
 93:
   title: El Grande
-  years: '1995'
+  publication_year: '1995'
   min_players: '2'
   max_players: '5'
   min_playtime: '60'
@@ -1136,7 +1136,7 @@
     original: https://cf.geekdo-images.com/GO282hlXR3RiknU5W4GZjg__original/img/EsR_uFXj4lhQCZgbmHfNx97liPA=/0x0/pic5373572.png
 244521:
   title: The Quacks of Quedlinburg
-  years: '2018'
+  publication_year: '2018'
   min_players: '2'
   max_players: '4'
   min_playtime: '45'
@@ -1152,7 +1152,7 @@
     original: https://cf.geekdo-images.com/tdnjJI31M1S12L36kw8Yyg__original/img/FaL4MRJ_XR25rRbSbRLFxDyRm4M=/0x0/pic4474567.jpg
 12493:
   title: 'Twilight Imperium: Third Edition'
-  years: '2005'
+  publication_year: '2005'
   min_players: '3'
   max_players: '6'
   min_playtime: '180'
@@ -1168,7 +1168,7 @@
     original: https://cf.geekdo-images.com/MHeQQrbauUVsvh2QF6PMog__original/img/60YjBskGAQNmZP7sedVoXneBjZg=/0x0/pic4128153.jpg
 184267:
   title: On Mars
-  years: '2020'
+  publication_year: '2020'
   min_players: '1'
   max_players: '4'
   min_playtime: '90'
@@ -1184,7 +1184,7 @@
     original: https://cf.geekdo-images.com/Nm0Iw8NoiM9V8IsifimGBw__original/img/-e7OTZrhA-7uo66Vg-sStliiU3Q=/0x0/pic4357658.jpg
 146021:
   title: Eldritch Horror
-  years: '2013'
+  publication_year: '2013'
   min_players: '1'
   max_players: '8'
   min_playtime: '120'
@@ -1198,25 +1198,9 @@
     crop_100: https://cf.geekdo-images.com/oxdsZKIX5_3ovDo38EIaeg__crop100/img/JASW98PBwvHM9b2vU2-guzKbTOc=/100x100/filters:strip_icc()/pic1872452.jpg
     square_200: https://cf.geekdo-images.com/oxdsZKIX5_3ovDo38EIaeg__square200/img/iwRREgnk8a_xxtFLrvEbTNgy_0k=/200x200/filters:strip_icc()/pic1872452.jpg
     original: https://cf.geekdo-images.com/oxdsZKIX5_3ovDo38EIaeg__original/img/i0zxc-H4TlTFB-yE1v4gcLy3XfY=/0x0/pic1872452.jpg
-205896:
-  title: Rising Sun
-  years: '2018'
-  min_players: '3'
-  max_players: '5'
-  min_playtime: '90'
-  images:
-    micro: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__micro/img/CGB3Ihk0wWICh8wG6_Wp2pbGoCk=/fit-in/64x64/filters:strip_icc()/pic3880340.jpg
-    small: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__small/img/UNKv6MWzJUAwhhP7-ng6HoinRa8=/fit-in/200x150/filters:strip_icc()/pic3880340.jpg
-    medium: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__medium/img/xb62YBTnJQULSiNiZMjx-CM0XO4=/fit-in/500x500/filters:no_upscale():strip_icc()/pic3880340.jpg
-    large: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__large/img/6mqvMfWk_saYzdY3Q4uM5mmvHVU=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic3880340.jpg
-    square: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__square/img/w35vSfXrs2ktgSxvXO-g_rlGhMY=/75x75/filters:strip_icc()/pic3880340.jpg
-    expanded: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__expanded/img/0qp6AzgkNB0-uuekdg8RDJL9v1s=/fit-in/2400x1800/filters:no_upscale():strip_icc()/pic3880340.jpg
-    crop_100: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__crop100/img/j3teFdKGgh0yeGmqsv3tjm01cRk=/100x100/filters:strip_icc()/pic3880340.jpg
-    square_200: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__square200/img/KSRc-J7PWueUassdUdv9acIq6tk=/200x200/filters:strip_icc()/pic3880340.jpg
-    original: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__original/img/B_QnVCi18kIQBPNajLjJkpXpW2s=/0x0/pic3880340.jpg
 236457:
   title: Architects of the West Kingdom
-  years: '2018'
+  publication_year: '2018'
   min_players: '1'
   max_players: '5'
   min_playtime: '60'
@@ -1230,9 +1214,25 @@
     crop_100: https://cf.geekdo-images.com/OAX7HfOz-9N60StgADzd0g__crop100/img/dYtgFgV3x82ZLXJ3-r_A0QGN-tU=/100x100/filters:strip_icc()/pic3781944.png
     square_200: https://cf.geekdo-images.com/OAX7HfOz-9N60StgADzd0g__square200/img/aUIBuDSi7VxXmmcvAbJO9iAxGMs=/200x200/filters:strip_icc()/pic3781944.png
     original: https://cf.geekdo-images.com/OAX7HfOz-9N60StgADzd0g__original/img/RKXgBZpXQXy0FjUdtW1OotAow8U=/0x0/pic3781944.png
+205896:
+  title: Rising Sun
+  publication_year: '2018'
+  min_players: '3'
+  max_players: '5'
+  min_playtime: '90'
+  images:
+    micro: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__micro/img/CGB3Ihk0wWICh8wG6_Wp2pbGoCk=/fit-in/64x64/filters:strip_icc()/pic3880340.jpg
+    small: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__small/img/UNKv6MWzJUAwhhP7-ng6HoinRa8=/fit-in/200x150/filters:strip_icc()/pic3880340.jpg
+    medium: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__medium/img/xb62YBTnJQULSiNiZMjx-CM0XO4=/fit-in/500x500/filters:no_upscale():strip_icc()/pic3880340.jpg
+    large: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__large/img/6mqvMfWk_saYzdY3Q4uM5mmvHVU=/fit-in/1024x1024/filters:no_upscale():strip_icc()/pic3880340.jpg
+    square: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__square/img/w35vSfXrs2ktgSxvXO-g_rlGhMY=/75x75/filters:strip_icc()/pic3880340.jpg
+    expanded: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__expanded/img/0qp6AzgkNB0-uuekdg8RDJL9v1s=/fit-in/2400x1800/filters:no_upscale():strip_icc()/pic3880340.jpg
+    crop_100: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__crop100/img/j3teFdKGgh0yeGmqsv3tjm01cRk=/100x100/filters:strip_icc()/pic3880340.jpg
+    square_200: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__square200/img/KSRc-J7PWueUassdUdv9acIq6tk=/200x200/filters:strip_icc()/pic3880340.jpg
+    original: https://cf.geekdo-images.com/iwevA6XmiNLHn1QnGUucqw__original/img/B_QnVCi18kIQBPNajLjJkpXpW2s=/0x0/pic3880340.jpg
 37111:
   title: 'Battlestar Galactica: The Board Game'
-  years: '2008'
+  publication_year: '2008'
   min_players: '3'
   max_players: '6'
   min_playtime: '120'
@@ -1248,7 +1248,7 @@
     original: https://cf.geekdo-images.com/5Q2w2rFJiFI_uV89KP6ECg__original/img/-hZFpTm-evjyuLD_bj-y845-4f8=/0x0/pic354500.jpg
 40834:
   title: 'Dominion: Intrigue'
-  years: '2009'
+  publication_year: '2009'
   min_players: '2'
   max_players: '4'
   min_playtime: '30'
@@ -1264,7 +1264,7 @@
     original: https://cf.geekdo-images.com/OGOmpi0GgwOwH2y28QgkuA__original/img/r0aALn-3X6WgRcnDqVxbxGSG0tw=/0x0/pic460011.jpg
 73439:
   title: Troyes
-  years: '2010'
+  publication_year: '2010'
   min_players: '2'
   max_players: '4'
   min_playtime: '90'
@@ -1280,7 +1280,7 @@
     original: https://cf.geekdo-images.com/fBIe-aEPtJKC-ceNlspK6A__original/img/jgHgQKbmvFx2xDL1MdtYB2-jRek=/0x0/pic750583.jpg
 172386:
   title: Mombasa
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '4'
   min_playtime: '75'
@@ -1296,7 +1296,7 @@
     original: https://cf.geekdo-images.com/VceWk5QVkgIp6rWDl5qHKQ__original/img/7JDxzN4LbAeslZGBU1G7Ccqutx0=/0x0/pic2611318.jpg
 251247:
   title: Barrage
-  years: '2019'
+  publication_year: '2019'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -1312,7 +1312,7 @@
     original: https://cf.geekdo-images.com/jEPmWvvYpqkWrKOzqIHFsg__original/img/2B-1xoI7rLxznea34Hf518fQHTE=/0x0/pic4336469.png
 266810:
   title: Paladins of the West Kingdom
-  years: '2019'
+  publication_year: '2019'
   min_players: '1'
   max_players: '4'
   min_playtime: '90'
@@ -1328,7 +1328,7 @@
     original: https://cf.geekdo-images.com/4nhokcLdYoo6ulbZ1rmGgA__original/img/QVyrITtrPaKYREpPgW1Y6aegSTY=/0x0/pic4462987.png
 266507:
   title: 'Clank! Legacy: Acquisitions Incorporated'
-  years: '2019'
+  publication_year: '2019'
   min_players: '2'
   max_players: '4'
   min_playtime: '90'
@@ -1344,7 +1344,7 @@
     original: https://cf.geekdo-images.com/hc2NDafu5c24iLJh_IZmyg__original/img/vvjVjPkRGGb909GC6Ny3iziMSTo=/0x0/pic4885780.png
 163412:
   title: Patchwork
-  years: '2014'
+  publication_year: '2014'
   min_players: '2'
   max_players: '2'
   min_playtime: '15'
@@ -1360,7 +1360,7 @@
     original: https://cf.geekdo-images.com/wLW7pFn0--20lEizEz5p3A__original/img/Z8MYZktgvGTtIikMv9HSpD_ERAI=/0x0/pic2270442.jpg
 144733:
   title: Russian Railroads
-  years: '2013'
+  publication_year: '2013'
   min_players: '2'
   max_players: '4'
   min_playtime: '90'
@@ -1376,7 +1376,7 @@
     original: https://cf.geekdo-images.com/B0oEVgeqs4_rT8oyb1_Juw__original/img/QgRFOE3J6RK3ZfJk2qa3Xbgl0GY=/0x0/pic1772936.jpg
 178900:
   title: Codenames
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '8'
   min_playtime: '15'
@@ -1392,7 +1392,7 @@
     original: https://cf.geekdo-images.com/F_KDEu0GjdClml8N7c8Imw__original/img/MJ6MNz8-_rb1C2VUTnYBTYOiiy0=/0x0/pic2582929.jpg
 264220:
   title: 'Tainted Grail: The Fall of Avalon'
-  years: '2019'
+  publication_year: '2019'
   min_players: '1'
   max_players: '4'
   min_playtime: '60'
@@ -1408,7 +1408,7 @@
     original: https://cf.geekdo-images.com/aAwBzPzta4joKfFZt05hCw__original/img/pcds4KfHd_rUfOXPNZuhZEKGHFM=/0x0/pic4385726.jpg
 170042:
   title: Raiders of the North Sea
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -1424,7 +1424,7 @@
     original: https://cf.geekdo-images.com/hXdfAhgZ8OeyWLunt36wlw__original/img/a0YP4eI1oi6LqEQU1jsEphVmo8I=/0x0/pic3578101.jpg
 42:
   title: Tigris & Euphrates
-  years: '1997'
+  publication_year: '1997'
   min_players: '2'
   max_players: '4'
   min_playtime: '90'
@@ -1440,7 +1440,7 @@
     original: https://cf.geekdo-images.com/soAzNVWglCdVBacNjoCTJw__original/img/vd6LHDJ-u-TkAAWafD2yG9-U974=/0x0/pic2338267.jpg
 132531:
   title: Roll for the Galaxy
-  years: '2014'
+  publication_year: '2014'
   min_players: '2'
   max_players: '5'
   min_playtime: '45'
@@ -1456,7 +1456,7 @@
     original: https://cf.geekdo-images.com/nhoyoLpYPC2b3UiJ5kJ0yg__original/img/SBmipyinTpLle9HmAfE0jJWKj3I=/0x0/pic1473629.jpg
 2511:
   title: 'Sherlock Holmes Consulting Detective: The Thames Murders & Other Cases'
-  years: '1982'
+  publication_year: '1982'
   min_players: '1'
   max_players: '8'
   min_playtime: '60'
@@ -1472,7 +1472,7 @@
     original: https://cf.geekdo-images.com/ptDZ2tJ6dSNiONAx3HH8Tw__original/img/e0abWKqZdzwxb0Keyxjf-Y5sZsw=/0x0/pic3514298.jpg
 102680:
   title: Trajan
-  years: '2011'
+  publication_year: '2011'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -1488,7 +1488,7 @@
     original: https://cf.geekdo-images.com/djdeCr__iNV5rMnGnxNiaQ__original/img/vIIoEst4xg9L1kr2TajY_6s-5Jo=/0x0/pic4336095.png
 182874:
   title: Grand Austria Hotel
-  years: '2015'
+  publication_year: '2015'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -1504,7 +1504,7 @@
     original: https://cf.geekdo-images.com/d4It-gdWY4GZVYSjbq20gQ__original/img/4d_XZzAStbyODa6p8xhLyOpIMh8=/0x0/pic2728138.jpg
 269385:
   title: 'The Lord of the Rings: Journeys in Middle-earth'
-  years: '2019'
+  publication_year: '2019'
   min_players: '1'
   max_players: '5'
   min_playtime: '60'
@@ -1520,7 +1520,7 @@
     original: https://cf.geekdo-images.com/1XA2-niwTBa0HEB7hOz3Dw__original/img/BZY3K1ufN6BioQG4RPPOAXhU9iM=/0x0/pic4530974.jpg
 36218:
   title: Dominion
-  years: '2008'
+  publication_year: '2008'
   min_players: '2'
   max_players: '4'
   min_playtime: '30'
@@ -1536,7 +1536,7 @@
     original: https://cf.geekdo-images.com/j6iQpZ4XkemZP07HNCODBA__original/img/oN8CHUZ8CF6P1dFnhMCJXvE8SOk=/0x0/pic394356.jpg
 30549:
   title: Pandemic
-  years: '2008'
+  publication_year: '2008'
   min_players: '2'
   max_players: '4'
   min_playtime: '45'
@@ -1552,7 +1552,7 @@
     original: https://cf.geekdo-images.com/S3ybV1LAp-8SnHIXLLjVqA__original/img/j-pfXZ_0GmOowohzD_T6NDAWGSA=/0x0/pic1534148.jpg
 198928:
   title: 'Pandemic: Iberia'
-  years: '2016'
+  publication_year: '2016'
   min_players: '2'
   max_players: '5'
   min_playtime: '45'
@@ -1568,7 +1568,7 @@
     original: https://cf.geekdo-images.com/752GFSJLkyDZikThRM6gqQ__original/img/65W6mKBX34X2pLswgsfKPCfAcdw=/0x0/pic3000850.png
 203993:
   title: Lorenzo il Magnifico
-  years: '2016'
+  publication_year: '2016'
   min_players: '2'
   max_players: '4'
   min_playtime: '60'
@@ -1584,7 +1584,7 @@
     original: https://cf.geekdo-images.com/8G6GkImjt0F_L5aYb8fmtQ__original/img/yoCGxA_YHrJnlBGRdpOjLFxcnsQ=/0x0/pic3175535.jpg
 127023:
   title: Kemet
-  years: '2012'
+  publication_year: '2012'
   min_players: '2'
   max_players: '5'
   min_playtime: '90'

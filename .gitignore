@@ -1,5 +1,7 @@
 .coverage
-.idea/
 venv/
 .gitignore~
+.idea/
 app/__pycache__/
+__pycache__/
+migrations/
