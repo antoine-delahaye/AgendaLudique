@@ -4,11 +4,12 @@
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
              src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
         <h2 class="text-center mb-3">Bienvenue sur votre agenda ludique !</h2>
-        <form class="form d-flex flex-row flex-wrap justify-content-center align-items-center" action="{{ url_for("auth_method") }}" method="POST">
-            <button class="btn text-white text-uppercase m-2" name="auth-button" value="sign-in" type="submit">
+        <form class="form d-flex flex-row flex-wrap justify-content-center align-items-center"
+              action="{{ url_for("auth.log_method") }}" method="POST">
+            <button class="btn text-white text-uppercase m-2" name="auth-button" value="login" type="submit">
                 Connexion
             </button>
-            <button class="btn text-white text-uppercase m-2" name="auth-button" value="sign-up" type="submit">
+            <button class="btn text-white text-uppercase m-2" name="auth-button" value="register" type="submit">
                 Inscription
             </button>
         </form>

@@ -1,10 +1,12 @@
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
 {% extends "index.html" %}
 {% block main %}
     <main class="container-fluid d-flex flex-column justify-content-center align-items-center mt-auto mb-auto">
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
              src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
         <h2 class="text-center mb-3">Inscription</h2>
-        <form class="form" action="{{ url_for("library") }}" method="POST">
+        {#<form class="form">
             <div class="form-group">
                 <input class="form-control" placeholder="Nom d'utilisateur" required>
             </div>
@@ -17,8 +19,9 @@
             <div class="form-group">
                 <input class="form-control" placeholder="Confirmer le mot de passe" required>
             </div>
-            <button class="btn btn-block text-white text-uppercase mb-3" type="submit">Inscription</button>
-            <p class="text-center">Vous avez déjà un compte ? <a href="{{ url_for("sign_in") }}">Se connecter</a></p>
-        </form>
+            <button class="btn btn-block text-uppercase mb-3" type="submit">Inscription</button>
+            <p class="text-center">Vous avez déjà un compte ? <a>Se connecter</a></p>
+        </form>#}
+        {{ wtf.quick_form(form) }}
     </main>
 {% endblock %}
