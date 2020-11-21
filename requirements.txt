@@ -1,0 +1,4 @@
+Flask>=0.8
+flask_bootstrap>=3.3.7
+pyyaml>=5.3
+Jinja2>=2.10.1
