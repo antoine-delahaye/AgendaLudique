@@ -36,7 +36,7 @@ def login():
             login_user(user)
 
             # redirect to the dashboard page after login
-            return redirect(url_for('site.library'))
+            return redirect(url_for('site.catalog'))
 
         # when login details are incorrect
         else:

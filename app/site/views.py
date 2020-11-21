@@ -14,10 +14,10 @@ def home():
     return render_template('home.html', stylesheet='home')
 
 
-@site.route('/library')
+@site.route('/catalog')
 @login_required
-def library():
+def catalog():
     """
     Render the library template on the /library route
     """
-    return render_template('library.html', stylesheet='library')
+    return render_template('catalog.html', stylesheet='catalog')

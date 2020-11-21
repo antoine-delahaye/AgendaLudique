@@ -15,10 +15,10 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(60), index=True, unique=True)
-    username = db.Column(db.String(60), index=True, unique=True)
-    first_name = db.Column(db.String(60), index=True)
-    last_name = db.Column(db.String(60), index=True)
+    email = db.Column(db.String(64), index=True, unique=True)
+    username = db.Column(db.String(32), index=True, unique=True)
+    first_name = db.Column(db.String(32), index=True)
+    last_name = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
 
     @property
@@ -49,3 +49,23 @@ class User(UserMixin, db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+class Game(UserMixin, db.Model):
+    """
+    Create an Game table
+    """
+
+    # as is the name of the model
+    __tablename__ = 'games'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(64))
+    publication_year = db.Column(db.Integer)
+    min_players = db.Column(db.Integer)
+    max_players = db.Column(db.Integer)
+    min_playtime = db.Column(db.Integer)
+    image = db.Column(db.String(256))
+
+    def __repr__(self):
+        return '<Game: {}>'.format(self.title)
