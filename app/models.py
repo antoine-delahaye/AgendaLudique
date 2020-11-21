@@ -42,7 +42,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return '<Employee: {}>'.format(self.username)
+        return f'<Employee: {self.username}>'
 
 
 # Set up user_loader
@@ -68,4 +68,4 @@ class Game(UserMixin, db.Model):
     image = db.Column(db.String(256))
 
     def __repr__(self):
-        return '<Game: {}>'.format(self.title)
+        return f'<Game: {self.title}>'
