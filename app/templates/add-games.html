@@ -1,0 +1,81 @@
+{% extends "index.html" %}
+{% block main %}
+    <main class="container-fluid d-flex flex-column justify-content-center align-items-center mb-auto">
+        <h2 class="text-center mb-5">Ajouter vos jeux</h2>
+        <section class="container-lg text-left mb-5">
+            <h3 class="mb-3">Depuis ceux présents sur le site</h3>
+            <form class="form">
+                <div class="form-row mb-3">
+                    <div class="form-group col-lg-9">
+                        <label for="search-by-name">Nom du jeu</label>
+                        <select class="form-control" id="search-by-name">
+                            {% for item in games_data %}
+                                <option>{{ item['title'] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label for="search-by-years">Années de sortie</label>
+                        <select class="form-control select2" id="search-by-years">
+                            <option>Toutes</option>
+                            {% for year in publication_years %}
+                                <option>{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row mb-3">
+                    <div class="form-group col-lg-3">
+                        <label for="search-by-min-players">Nombre minimum de joueurs</label>
+                        <select class="form-control" id="search-by-min-players">
+                            <option>Pas de minimum</option>
+                            {% for number in players_numbers %}
+                                <option>{{ number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label for="search-by-max-players">Nombre maximum de joueurs</label>
+                        <select class="form-control" id="search-by-max-players">
+                            <option>Pas de maximum</option>
+                            {% for number in players_numbers|reverse %}
+                                <option>{{ number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label for="search-by-min-duration">Durée minimale</label>
+                        <select class="form-control" id="search-by-min-duration">
+                            <option>Pas de minimum</option>
+                            {% for playtime in range(20, max_playtime, 20) %}
+                                <option>{{ playtime }} minutes</option>
+                            {% endfor %}
+                            <option>{{ max_playtime }} minutes</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-lg-3">
+                        <label for="search-by-max-duration">Durée maximale</label>
+                        <select class="form-control" id="search-by-max-duration">
+                            <option>Pas de maximum</option>
+                            <option>{{ max_playtime }} minutes</option>
+                            {% for playtime in range(max_playtime, 20, -20) %}
+                                <option>{{ playtime }} minutes</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button class="btn text-white text-uppercase" name="search-button" value="search" type="submit">
+                        Rechercher
+                    </button>
+                </div>
+            </form>
+        </section>
+        <section class="container-lg text-left">
+            <h3 class="mb-3">Manuellement</h3>
+            <form>
+
+            </form>
+        </section>
+    </main>
+{% endblock %}
