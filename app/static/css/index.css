@@ -35,3 +35,7 @@ header .navbar-toggler {
 .form-control, .btn {
     height: 3rem;
 }
+
+label {
+    display: none;
+}

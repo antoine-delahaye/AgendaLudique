@@ -20,6 +20,8 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(32), index=True)
     last_name = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
+    profil_picture = db.Column(db.String(512),
+                               default='https://i.pinimg.com/originals/7d/b8/fe/7db8fe54d55fb987b2e73cbceaf22072.jpg')
 
     @property
     def password(self):

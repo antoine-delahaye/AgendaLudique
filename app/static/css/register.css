@@ -3,11 +3,5 @@ main img {
 }
 
 form {
-    display: flex;
-    flex-direction: column;
-    width: 20rem !important;
-}
-
-label {
-    display: none;
+    width: 30rem !important;
 }

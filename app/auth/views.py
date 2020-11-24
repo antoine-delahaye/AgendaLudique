@@ -26,7 +26,6 @@ def login():
     """
     form = LoginForm()
     if form.validate_on_submit():
-
         # check whether employee exists in the database and whether
         # the password entered matches the password in the database
         user = User.query.filter_by(email=form.email.data).first()
@@ -34,14 +33,11 @@ def login():
                 form.password.data):
             # log employee in
             login_user(user)
-
             # redirect to the dashboard page after login
             return redirect(url_for('site.catalog'))
-
         # when login details are incorrect
         else:
             flash('Invalid email or password.')
-
     # load login template
     return render_template('login.html', form=form, stylesheet='login')
 
@@ -59,15 +55,12 @@ def register():
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,
                     password=form.password.data)
-
         # add employee to the database
         db.session.add(user)
         db.session.commit()
         flash('Votre inscription est finalisé, vous pouvez maintenant vous connecter')
-
         # redirect to the login page
         return redirect(url_for('auth.login'))
-
     # load registration template
     return render_template('register.html', form=form, stylesheet='register')
 

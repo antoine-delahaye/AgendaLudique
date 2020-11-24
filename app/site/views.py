@@ -63,4 +63,9 @@ def add_games():
         players.add(int(data.max_players))
         playtime.add(int(data.min_playtime))
     return render_template('add-games.html', stylesheet='add-games', games_data=games_data, publication_years=years,
-                           players_numbers=players, max_playtime=max(playtime))
+                           players_numbers=players, max_playtime=max(playtime), data=False)
+
+
+# @site.route('/add-games', methods=['GET', 'POST'])
+# @login_required
+# def games_search():
