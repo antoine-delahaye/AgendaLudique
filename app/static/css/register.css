@@ -5,3 +5,7 @@ main img {
 form {
     width: 30rem !important;
 }
+
+label {
+    display: none;
+}

@@ -1,11 +1,12 @@
 # app/site/views.py
 
-from flask import render_template
+from flask import render_template, redirect, url_for
 from flask_login import login_required
 
 from . import site
+from .forms import UpdateProfilForm, GamesSearchForm
 from .. import db
-from ..models import Game
+from ..models import User, Game
 
 
 @site.route('/')
@@ -44,28 +45,58 @@ def library():
     return render_template('library.html', stylesheet='library', games_data=games_data)
 
 
-@site.route('/add-games')
+@site.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    """
+    Render the homepage template on the / route
+    """
+    form = UpdateProfilForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        print(user.email)
+        if user is not None:
+            user.email = form.email.data
+            user.username = form.username.data
+            user.first_name = form.first_name.data
+            user.last_name = form.last_name.data
+            user.password = form.password.data
+            db.session.commit()
+        return redirect(url_for('site.profile'))
+    return render_template('profile.html', stylesheet='profile', form=form)
+
+
+@site.route('/add-games', methods=['GET', 'POST'])
 @login_required
 def add_games():
     """
     Render the add-games template on the /add-games route
     """
-    games_data = []
-    years = set()
-    players = set()
-    playtime = set()
+    form = GamesSearchForm()
     for data in db.session.query(Game).all():
-        games_data.append(
-            {'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
-             'max_players': int(data.max_players), 'image': data.image})
-        years.add(int(data.publication_year))
-        players.add(int(data.min_players))
-        players.add(int(data.max_players))
-        playtime.add(int(data.min_playtime))
-    return render_template('add-games.html', stylesheet='add-games', games_data=games_data, publication_years=years,
-                           players_numbers=players, max_playtime=max(playtime), data=False)
-
-
-# @site.route('/add-games', methods=['GET', 'POST'])
-# @login_required
-# def games_search():
+        form.title.choices.append(data.title)
+        if data.publication_year not in form.years.choices:
+            form.years.choices.append(data.publication_year)
+        if data.min_players not in form.min_players.choices:
+            form.min_players.choices.append(data.min_players)
+        if data.max_players not in form.max_players.choices:
+            form.max_players.choices.append(data.max_players)
+        if data.min_playtime not in form.min_playtime.choices and data.min_playtime not in form.max_playtime.choices:
+            form.min_playtime.choices.append(data.min_playtime)
+            form.max_playtime.choices.append(data.min_playtime)
+    form.years.choices.sort()
+    form.min_players.choices.sort()
+    form.max_players.choices.sort()
+    form.min_playtime.choices.sort()
+    form.max_playtime.choices.sort()
+    form.title.choices.insert(0, 'Aucun')
+    form.years.choices.insert(0, 'Aucune')
+    form.min_players.choices.insert(0, 'Aucun')
+    form.max_players.choices.insert(0, 'Aucun')
+    form.min_playtime.choices.insert(0, 'Aucune')
+    form.max_playtime.choices.insert(0, 'Aucune')
+    if form.validate_on_submit():
+        researched_game = Game.query.filter_by(title=form.title.data).first()
+        print(researched_game)
+        return render_template('add-games.html', form=form, stylesheet='add-games', researched_game=researched_game)
+    return render_template('add-games.html', form=form, stylesheet='add-games')
