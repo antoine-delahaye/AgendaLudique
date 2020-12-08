@@ -30,7 +30,7 @@ class RegistrationForm(FlaskForm):
                              render_kw={'placeholder': 'Mot de passe'})
     confirm_password = PasswordField('Confirmer le mot de passe',
                                      render_kw={'placeholder': 'Confirmer le mot de passe'})
-    profil_picture = StringField('Photo de profile', render_kw={'placeholder': 'URL de la photo de profile'})
+    profile_picture = StringField('Photo de profile', render_kw={'placeholder': 'URL de la photo de profile'})
     submit = SubmitField('Inscription')
 
     def validate_email(self, field):

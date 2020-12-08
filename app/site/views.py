@@ -1,10 +1,10 @@
 # app/site/views.py
-
+import flask_login
 from flask import render_template, redirect, url_for
 from flask_login import login_required
 
 from . import site
-from .forms import UpdateProfilForm, GamesSearchForm
+from .forms import UpdateInformationForm, GamesSearchForm
 from .. import db
 from ..models import User, Game
 
@@ -45,25 +45,24 @@ def library():
     return render_template('library.html', stylesheet='library', games_data=games_data)
 
 
-@site.route('/profile', methods=['GET', 'POST'])
+@site.route('/account', methods=['GET', 'POST'])
 @login_required
-def profile():
+def account():
     """
     Render the homepage template on the / route
     """
-    form = UpdateProfilForm()
+    form = UpdateInformationForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        print(user.email)
+        user = User.query.filter_by(email=flask_login.current_user.email).first()
         if user is not None:
-            user.email = form.email.data
             user.username = form.username.data
             user.first_name = form.first_name.data
             user.last_name = form.last_name.data
             user.password = form.password.data
+            user.profile_picture = form.profile_picture.data
             db.session.commit()
-        return redirect(url_for('site.profile'))
-    return render_template('profile.html', stylesheet='profile', form=form)
+        return redirect(url_for('site.account'))
+    return render_template('account.html', stylesheet='account', form=form)
 
 
 @site.route('/add-games', methods=['GET', 'POST'])

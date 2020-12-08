@@ -1,6 +1,6 @@
 # app/auth/views.py
 
-from flask import flash, redirect, render_template, url_for, request
+from flask import redirect, render_template, url_for
 from flask_login import login_required, login_user, logout_user
 
 from . import auth
@@ -37,7 +37,8 @@ def register():
                     username=form.username.data,
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    profile_picture=form.profile_picture)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('auth.login'))
