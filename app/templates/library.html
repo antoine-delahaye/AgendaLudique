@@ -2,6 +2,13 @@
 {% block main %}
     <main class="container-fluid col-9 mb-5">
         <h2 class="text-center mb-5">Bibliothèque</h2>
+        <form class="my-5 mx-auto">
+            <div class="form-group">
+                <label class="d-none" for="search-input">Rechercher un jeu grâce à son nom</label>
+                <input class="form-control" id="search-input" type="text"
+                       placeholder="Rechercher un jeu grâce à son nom">
+            </div>
+        </form>
         <div class="row">
             {% for item in games_data %}
                 <div class="col-xl-3 col-lg-4 col-md-6">
@@ -10,8 +17,24 @@
                              src="{{ item["image"] }}"
                              alt="Illustration">
                         <div class="card-body">
-                            <p class="text-truncate font-weight-bold">{{ item["title"] }} ({{ item["publication_year"] }})</p>
-                            <p class="mb-0">De {{ item["min_players"] }} à {{ item["max_players"] }} joueurs</p>
+                            <p class="text-truncate font-weight-bold">{{ item["title"] }}
+                                ({{ item["publication_year"] }})</p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="mb-0">De {{ item["min_players"] }} à {{ item["max_players"] }} joueurs</p>
+                                <a class="ml-auto" href="#">
+                                    <svg class="bi bi-plus-square mb-1"
+                                         xmlns="http://www.w3.org/2000/svg"
+                                         fill="black"
+                                         viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                              d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z">
+                                        </path>
+                                        <path fill-rule="evenodd"
+                                              d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z">
+                                        </path>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

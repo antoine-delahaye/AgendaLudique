@@ -1,3 +1,11 @@
-main img {
+main form {
+   width: 45rem;
+}
+
+.card img {
     height: 15rem !important;
+}
+
+.card svg:hover {
+    fill: #0277BC;
 }

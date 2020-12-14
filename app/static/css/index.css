@@ -35,3 +35,8 @@ header .navbar-toggler {
 .form-control, .btn {
     height: 3rem;
 }
+
+svg {
+    width: 1rem;
+    height: 1rem;
+}
