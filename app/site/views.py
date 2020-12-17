@@ -26,7 +26,7 @@ def catalog():
     games_data = []
     for data in db.session.query(Game).all():
         games_data.append(
-            {'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
+            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
              'max_players': int(data.max_players), 'image': data.image})
     return render_template('catalog.html', stylesheet='catalog', games_data=games_data)
 
@@ -40,7 +40,7 @@ def library():
     games_data = []
     for data in db.session.query(Game).all():
         games_data.append(
-            {'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
+            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
              'max_players': int(data.max_players), 'image': data.image})
     return render_template('library.html', stylesheet='library', games_data=games_data)
 

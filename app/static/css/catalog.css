@@ -6,6 +6,10 @@ main form {
     height: 15rem !important;
 }
 
-.card svg:hover {
-    fill: #0277BC;
+.card i {
+   color: #000000;
+}
+
+.card i:hover {
+   color: #0277BC;
 }
