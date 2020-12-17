@@ -1,0 +1,32 @@
+{% extends "index.html" %}
+{% block main %}
+    <main class="container-fluid col-9 mb-5">
+        <h2 class="text-center mb-5">Catalogue</h2>
+        <form class="my-5 mx-auto">
+            <div class="form-group">
+                <label class="d-none" for="search-input">Rechercher un jeu grâce à son nom</label>
+                <input class="form-control" id="search-input" type="text"
+                       placeholder="Rechercher un jeu grâce à son nom">
+            </div>
+        </form>
+        <div class="row">
+            {% for item in games_data %}
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card mb-4 shadow-sm">
+                        <img class="card-img mx-auto"
+                             src="{{ item["image"] }}"
+                             alt="Illustration">
+                        <div class="card-body">
+                            <p class="text-truncate font-weight-bold">{{ item["title"] }}
+                                ({{ item["publication_year"] }})</p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="mb-0">De {{ item["min_players"] }} à {{ item["max_players"] }} joueurs</p>
+                                <i class="ml-auto far fa-plus-square" id="{{ item["id"] }}" onclick="game(this)"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}

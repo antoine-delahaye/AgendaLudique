@@ -1,0 +1,15 @@
+main form {
+   width: 45rem;
+}
+
+.card img {
+    height: 15rem !important;
+}
+
+.card i {
+   color: #000000;
+}
+
+.card i:hover {
+   color: #0277BC;
+}

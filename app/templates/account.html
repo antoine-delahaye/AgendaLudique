@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+{% block main %}
+    <main class="container-fluid d-flex flex-column justify-content-center align-items-center mt-auto mb-auto">
+        <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
+             src="{{ current_user.profile_picture }}" alt="Image de profile">
+        <h2 class="text-center mb-3">Éditer les informations</h2>
+        <form class="form" action="" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-row">
+                <div class="form-group col-lg-6">
+                    {{ form.first_name.label }}
+                    {{ form.first_name(class="form-control", value=current_user.first_name) }}
+                </div>
+                <div class="form-group col-lg-6">
+                    {{ form.last_name.label }}
+                    {{ form.last_name(class="form-control", value=current_user.last_name) }}
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form.username.label }}
+                {{ form.username(class="form-control", value=current_user.username) }}
+            </div>
+            <div class="form-group">
+                {{ form.profile_picture.label }}
+                {{ form.profile_picture(class="form-control", value=current_user.profile_picture) }}
+            </div>
+            <div class="form-group">
+                <label for="email">Adresse électronique</label>
+                <input class="form-control disabled" id="email" value="{{ current_user.email }}"
+                       placeholder="Adresse électronique" disabled>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-lg-6">
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control", value=current_user.password) }}
+                </div>
+                <div class="form-group col-lg-6">
+                    {{ form.confirm_password.label }}
+                    {{ form.confirm_password(class="form-control", value=current_user.password) }}
+                </div>
+            </div>
+            {{ form.submit(class="btn btn-block text-uppercase mb-3") }}
+        </form>
+    </main>
+{% endblock %}

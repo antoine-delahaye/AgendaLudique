@@ -1,0 +1,11 @@
+main img {
+    max-width: 5rem !important;
+}
+
+form {
+    width: 30rem !important;
+}
+
+label {
+    display: none;
+}
