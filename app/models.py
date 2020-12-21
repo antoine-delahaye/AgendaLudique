@@ -11,7 +11,6 @@ class User(UserMixin, db.Model):
     Create an User table
     """
 
-    # as is the name of the model
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -58,7 +57,6 @@ class Game(UserMixin, db.Model):
     Create an Game table
     """
 
-    # as is the name of the model
     __tablename__ = 'games'
 
     id = db.Column(db.Integer, primary_key=True)

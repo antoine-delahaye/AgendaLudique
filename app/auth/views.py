@@ -3,10 +3,10 @@
 from flask import redirect, render_template, url_for
 from flask_login import login_required, login_user, logout_user
 
-from . import auth
-from .forms import LoginForm, RegistrationForm
-from .. import db
-from ..models import User
+from app.auth import auth
+from app.auth.forms import LoginForm, RegistrationForm
+from app import db
+from app.models import User
 
 
 @auth.route('/login', methods=['GET', 'POST'])
