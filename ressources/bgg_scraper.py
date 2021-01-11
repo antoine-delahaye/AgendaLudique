@@ -9,6 +9,25 @@ main_url = "https://boardgamegeek.com/browse/boardgame/page/"
 cover_url = "https://api.geekdo.com/api/images/"
 i = 1
 
+# yaml Structure
+#     140620: <-- int (id)
+#       title: str
+#       publication_year: int
+#       min_players: int
+#       max_players: int
+#       min_playtime: int
+#       images:
+#         micro: str (url)
+#         small: str (url)
+#         medium: str (url)
+#         large: str (url)
+#         square: str (url)
+#         expanded: str (url)
+#         crop_100: str (url)
+#         square_200: str (url)
+#         original: str (url)
+#       rank: id
+
 
 def get_cover(image_id):
     json_file = requests.get(cover_url + str(image_id)).json()['images']
