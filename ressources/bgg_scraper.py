@@ -1,11 +1,13 @@
-import requests
-from bs4 import BeautifulSoup
 import json
+
+import requests
 import yaml
+from bs4 import BeautifulSoup
 
 domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
 cover_url = "https://api.geekdo.com/api/images/"
+i = 1
 
 
 def get_cover(image_id):
@@ -48,12 +50,15 @@ def get_game_info(url):
 
 def create_game_list(raw_html):
     game_list_dict = {}
+    global i
     for game in map(str, raw_html.find_all("a", {"class": "primary"})):
         game = BeautifulSoup(game, "html.parser")  # Convert str into bs4 object
         href = game.find('a')['href']  # extract href content
         id_game = int(href.split('/')[2])  # extract id from href content
         game_list_dict[id_game] = get_game_info(href)  # store infos as values and id as key
-        print(f"Jeu : {game_list_dict[id_game]['title']}")
+        game_list_dict[id_game]["rank"] = i  # Add rank to save order
+        print(f"Jeu n⁰{i}: {game_list_dict[id_game]['title']}")  # Just to inform where the program is
+        i += 1
     return game_list_dict
 
 
@@ -64,11 +69,13 @@ def save_yaml(game_list_dict):
 
 def main():
     nb_pages = input("Combien de pages à scraper ?")
-    main_html = BeautifulSoup(
-        requests.get(main_url).text,
-        "html.parser"
-    )
-    game_list_dict = create_game_list(main_html)
+    game_list_dict = {}
+    for j in range(1, int(nb_pages) + 1):
+        main_html = BeautifulSoup(
+            requests.get(main_url + str(j)).text,
+            "html.parser"
+        )
+        game_list_dict = {**game_list_dict, **create_game_list(main_html)}
     save_yaml(game_list_dict)
 
 
