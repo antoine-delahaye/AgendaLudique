@@ -3,10 +3,10 @@ import flask_login
 from flask import render_template, redirect, url_for
 from flask_login import login_required
 
-from . import site
-from .forms import UpdateInformationForm, GamesSearchForm
-from .. import db
-from ..models import User, Game
+from app.site import site
+from app.site.forms import UpdateInformationForm, GamesSearchForm
+from app import db
+from app.models import User, Game
 
 
 @site.route('/')

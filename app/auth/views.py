@@ -3,10 +3,10 @@
 from flask import redirect, render_template, url_for
 from flask_login import login_required, login_user, logout_user
 
-from . import auth
-from .forms import LoginForm, RegistrationForm
-from .. import db
-from ..models import User
+from app.auth import auth
+from app.auth.forms import LoginForm, RegistrationForm
+from app import db
+from app.models import User
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -37,8 +37,7 @@ def register():
                     username=form.username.data,
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,
-                    password=form.password.data,
-                    profile_picture=form.profile_picture)
+                    password=form.password.data)
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('auth.login'))
