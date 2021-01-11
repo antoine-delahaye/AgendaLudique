@@ -11,7 +11,6 @@ class User(UserMixin, db.Model):
     Create an User table
     """
 
-    # as is the name of the model
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -21,7 +20,8 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512),
-                                default='https://i.pinimg.com/originals/7d/b8/fe/7db8fe54d55fb987b2e73cbceaf22072.jpg')
+                                default='https://acsmmontreal.qc.ca/wp-content/uploads/2020/09/blank-profile-picture'
+                                        '-973460_1280-7.png')
 
     @property
     def password(self):
@@ -58,7 +58,6 @@ class Game(UserMixin, db.Model):
     Create an Game table
     """
 
-    # as is the name of the model
     __tablename__ = 'games'
 
     id = db.Column(db.Integer, primary_key=True)

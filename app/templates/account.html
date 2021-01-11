@@ -2,7 +2,7 @@
 {% block main %}
     <main class="container-fluid d-flex flex-column justify-content-center align-items-center mt-auto mb-auto">
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
-             src="{{ current_user.profile_picture }}" alt="Image de profile">
+             src="{{ current_user.profile_picture }}" alt="Image de profil">
         <h2 class="text-center mb-3">Éditer les informations</h2>
         <form class="form" action="" method="POST">
             {{ form.hidden_tag() }}
