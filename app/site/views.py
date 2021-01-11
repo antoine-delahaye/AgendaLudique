@@ -16,21 +16,6 @@ def home():
     """
     return render_template('home.html', stylesheet='home')
 
-
-@site.route('/catalog')
-@login_required
-def catalog():
-    """
-    Render the catalog template on the /catalog route
-    """
-    games_data = []
-    for data in db.session.query(Game).all():
-        games_data.append(
-            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
-             'max_players': int(data.max_players), 'image': data.image})
-    return render_template('catalog.html', stylesheet='catalog', games_data=games_data)
-
-
 @site.route('/library')
 @login_required
 def library():
@@ -44,12 +29,30 @@ def library():
              'max_players': int(data.max_players), 'image': data.image})
     return render_template('library.html', stylesheet='library', games_data=games_data)
 
+# Account/Profil related #########################################################
+@site.route('/users', methods=['GET', 'POST'])
+@login_required
+def users():
+    """
+    Render the user template on the /user route
+    """
+    return render_template('users.html', stylesheet='users')
+
+@site.route('/user')
+@site.route('/user/<int:id>', methods=['GET', 'POST'])
+@login_required
+def user(id = None):
+    """
+    Render the user template on the /user route
+    """
+    user=User.query.get_or_404(id)
+    return render_template('user.html', stylesheet='user', user=user)
 
 @site.route('/account', methods=['GET', 'POST'])
 @login_required
 def account():
     """
-    Render the homepage template on the / route
+    Render the account template on the /account route
     """
     form = UpdateInformationForm()
     if form.validate_on_submit():
@@ -64,6 +67,77 @@ def account():
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)
 
+@site.route('/parameters', methods=['GET', 'POST'])
+@login_required
+def parameters():
+    """
+    Render the parameters template on the /parameters route
+    """
+    return render_template('parameters.html', stylesheet='parameters')
+
+# Group related ##################################################################
+@site.route('/groups')
+@login_required
+def groups():
+    """
+    Render the groups template on the /groups route
+    """
+    return render_template('groups.html', stylesheet='groups')
+
+@site.route('/group', methods=['GET', 'POST'])
+@login_required
+def group():
+    """
+    Render the group template on the /group route
+    """
+    return render_template('group.html', stylesheet='group')
+
+# Session related ################################################################
+@site.route('/sessions', methods=['GET', 'POST'])
+@login_required
+def sessions():
+    """
+    Render the sessions template on the /sessions route
+    """
+    return render_template('sessions.html', stylesheet='sessions')
+
+@site.route('/session', methods=['GET', 'POST'])
+@login_required
+def session():
+    """
+    Render the session template on the /session route
+    """
+    return render_template('session.html', stylesheet='session')
+
+@site.route('/organize_session', methods=['GET', 'POST'])
+@login_required
+def organize_session():
+    """
+    Render the organize_session template on the /organize_session route
+    """
+    return render_template('organize_session.html', stylesheet='organize_session')
+
+# Games adding/editing related ###################################################
+@site.route('/catalog')
+@login_required
+def catalog():
+    """
+    Render the catalog template on the /catalog route
+    """
+    games_data = []
+    for data in db.session.query(Game).all():
+        games_data.append(
+            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
+             'max_players': int(data.max_players), 'image': data.image})
+    return render_template('catalog.html', stylesheet='catalog', games_data=games_data)
+
+@site.route('/game', methods=['GET', 'POST'])
+@login_required
+def game():
+    """
+    Render the game template on the /game route
+    """
+    return render_template('game.html', stylesheet='game')
 
 @site.route('/add-games', methods=['GET', 'POST'])
 @login_required
@@ -98,4 +172,15 @@ def add_games():
         researched_game = Game.query.filter_by(title=form.title.data).first()
         print(researched_game)
         return render_template('add-games.html', form=form, stylesheet='add-games', researched_game=researched_game)
-    return render_template('add-games.html', form=form, stylesheet='add-games')
+    return render_template('add-games.html', stylesheet='add-games', form=form)
+
+@site.route('/edit-games', methods=['GET', 'POST'])
+@login_required
+def edit_games():
+    """
+    Render the edit-games template on the /edit-games route
+    """
+    form = UpdateInformationForm()
+    if form.validate_on_submit():
+        return redirect(url_for('site.edit-games'))
+    return render_template('edit-games.html', stylesheet='edit-games', form=form)
