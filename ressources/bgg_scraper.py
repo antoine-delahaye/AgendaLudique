@@ -1,7 +1,10 @@
+import sys
+import mariadb
 import requests
-from bs4 import BeautifulSoup
 import json
 import yaml
+
+from bs4 import BeautifulSoup
 
 domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame"
@@ -64,13 +67,47 @@ def save_yaml(game_list_dict):
         f.write(yaml.dump(game_list_dict, sort_keys=False))
 
 
+def save_db(game_list_dict):
+    try:
+        conn = mariadb.connect(
+            user='al_admin',
+            password='al_admin',
+            host='agenda-ludique.ddns.net',
+            port=3306,
+            database='agendaludique'
+
+        )
+    except mariadb.Error as e:
+        print(f'Error connecting to MariaDB Platform: {e}')
+        sys.exit(1)
+    cur = conn.cursor()
+    game_id = 0
+    cur.execute("SELECT * FROM games")
+    for max_game_id in cur:
+        if max_game_id[0] is not None:
+            game_id = int(max_game_id)
+    for data in game_list_dict.values():
+        try:
+            cur.execute("INSERT INTO games VALUES (?, ?, ?, ?, ?, ?, ?)", (game_id,
+                                                                           data['title'],
+                                                                           int(data['publication_year']),
+                                                                           int(data['min_players']),
+                                                                           int(data['max_players']),
+                                                                           int(data['min_playtime']),
+                                                                           data['images']['original']))
+        except mariadb.Error as e:
+            print(f'Error: {e}')
+        conn.commit()
+        game_id = game_id + 1
+
+
 def main():
     main_html = BeautifulSoup(
         requests.get(main_url).text,
         "html.parser"
     )
-    game_list_dict = create_game_list(main_html)
-    save_yaml(game_list_dict)
+    # save_yaml(create_game_list(main_html))
+    save_db(create_game_list(main_html))
 
 
 if __name__ == '__main__':
