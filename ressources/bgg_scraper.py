@@ -36,7 +36,7 @@ def get_game_info(url):
         if 'GEEK.geekitemPreload' in elem:  # if we got the infos
             temp = elem.split('GEEK.geekitemPreload = ')[1]  # Get rid of previous code
             temp2 = temp.split('};', 1)[0]  # Get rid of useless code after the JSON file
-            temp2 = temp2 + '}'  # Restore the '}' we remove before
+            temp2 = temp2 + '}'  # Restore the '}' we removed the line before
             json_text = json.loads(temp2)['item']  # Transform dirty string into proper JSON format
     return {
         "title": json_text["name"],
@@ -51,7 +51,7 @@ def get_game_info(url):
 def create_game_list(raw_html):
     game_list_dict = {}
     global i
-    for game in map(str, raw_html.find_all("a", {"class": "primary"})):
+    for game in map(str, raw_html.find_all("a", {"class": "primary"})):  # This way we can iterate and parse html
         game = BeautifulSoup(game, "html.parser")  # Convert str into bs4 object
         href = game.find('a')['href']  # extract href content
         id_game = int(href.split('/')[2])  # extract id from href content
@@ -64,19 +64,20 @@ def create_game_list(raw_html):
 
 def save_yaml(game_list_dict):
     with open('games-data.yaml', 'w') as f:
-        f.write(yaml.dump(game_list_dict, sort_keys=False))
+        f.write(yaml.dump(game_list_dict, sort_keys=False))  # write game_list_dict to the file and disable auto sort
 
 
 def main():
-    nb_pages = input("Combien de pages à scraper ?")
-    game_list_dict = {}
-    for j in range(1, int(nb_pages) + 1):
-        main_html = BeautifulSoup(
+    from_page = input("Scrap de la page : ")    # Get first page to scrape
+    to_page = input("Jusqu'à la page : ")  # Get last page to scrape
+    game_list_dict = {}  # Dict of all games (this is what's going into the yaml)
+    for j in range(int(from_page), int(to_page) + 1):   # to_page + 1 bc its [from_page ; to_page[
+        main_html = BeautifulSoup(  # Request raw page and make a bs4 object
             requests.get(main_url + str(j)).text,
             "html.parser"
         )
-        game_list_dict = {**game_list_dict, **create_game_list(main_html)}
-    save_yaml(game_list_dict)
+        game_list_dict = {**game_list_dict, **create_game_list(main_html)}  # Merge dict
+    save_yaml(game_list_dict)   # Save yaml to ressources/games-data.yaml
 
 
 if __name__ == '__main__':
