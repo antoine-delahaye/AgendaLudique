@@ -23,6 +23,11 @@ class User(UserMixin, db.Model):
                                 default='https://acsmmontreal.qc.ca/wp-content/uploads/2020/09/blank-profile-picture'
                                         '-973460_1280-7.png')
 
+    statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
+    statistics = db.relationship(
+        "Statistic",
+        back_populates="user")
+
     @property
     def password(self):
         """
@@ -53,9 +58,160 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+class BookmarkUser(db.Model):
+    """
+    Create a relationship between an User and itself
+    """
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user2_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+
+    user = db.relationship(
+        "User",
+        backref=db.backref("bookmarked_users", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    user2 = db.relationship(
+        "User",
+        backref=db.backref("bookmarked_by_users", lazy="dynamic"),
+        foreign_keys=[user2_id])
+
+
+class HideUser(db.Model):
+    """
+    Create a relationship between an User and itself
+    """
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user2_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+
+    user = db.relationship(
+        "User",
+        backref=db.backref("hiden_users", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    user2 = db.relationship(
+        "User",
+        backref=db.backref("hiden_by_users", lazy="dynamic"),
+        foreign_keys=[user2_id])
+
+
+class Statistic(db.Model):
+    """
+    Create a Statistic table
+    """
+
+    __tablename__ = 'statistics'
+
+    id = db.Column(db.Integer, primary_key=True)
+    avg_complexity = db.Column(db.Integer)
+    avg_playtime = db.Column(db.Integer)
+    avg_nb_players = db.Column(db.Integer)
+    frequency = db.Column(db.Integer)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship(
+        "User",
+        back_populates="statistics")
+
+
+class Wich(db.Model):
+    """
+    Create a relationship between an User and a Game
+    """
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("wishes", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), primary_key=True)
+    game = db.relationship(
+        "Game",
+        backref=db.backref("wished_by_users", lazy="dynamic"),
+        foreign_keys=[game_id])
+
+
+class Prefer(db.Model):
+    """
+    Create a relationship between an User and a Game
+    """
+
+    frequency = db.Column(db.Integer)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("preferences", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), primary_key=True)
+    game = db.relationship(
+        "Game",
+        backref=db.backref("prefered_by_users", lazy="dynamic"),
+        foreign_keys=[game_id])
+
+
+class KnowRules(db.Model):
+    """
+    Create a relationship between an User and a Game
+    """
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("known", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), primary_key=True)
+    game = db.relationship(
+        "Game",
+        backref=db.backref("known_by_users", lazy="dynamic"),
+        foreign_keys=[game_id])
+
+
+class Collect(db.Model):
+    """
+    Create a relationship between an User and a Game
+    """
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("collection", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), primary_key=True)
+    game = db.relationship(
+        "Game",
+        backref=db.backref("owners", lazy="dynamic"),
+        foreign_keys=[game_id])
+
+
+class Note(db.Model):
+    """
+    Create a relationship between an User and a Game
+    """
+
+    note = db.Column(db.Integer)
+    message = db.Column(db.Text)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("notes", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), primary_key=True)
+    game = db.relationship(
+        "Game",
+        backref=db.backref("notes", lazy="dynamic"),
+        foreign_keys=[game_id])
+
 class Game(UserMixin, db.Model):
     """
-    Create an Game table
+    Create a Game table
     """
 
     __tablename__ = 'games'
@@ -70,3 +226,196 @@ class Game(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<Game: {self.title}>'
+
+
+class Group(db.Model):
+    """
+    Create a Group table
+    """
+
+    __tablename__ = 'groups'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32))
+    is_private = db.Column(db.Boolean)
+    password = db.Column(db.String(10))
+
+    manager_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    manager = db.relationship(
+        "User",
+        backref=db.backref("managed_groups", lazy="dynamic"),
+        foreign_keys=[manager_id])
+
+
+class Participate(db.Model):
+    """
+    Create a relationship between a Group and an User
+    """
+
+    member_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    group_id = db.Column(db.Integer, db.ForeignKey("groups.id"), primary_key=True)
+
+    member = db.relationship(
+        "User",
+        backref=db.backref("participations", lazy="dynamic"),
+        foreign_keys=[member_id])
+
+    group = db.relationship(
+        "Group",
+        backref=db.backref("participations", lazy="dynamic"),
+        foreign_keys=[group_id])
+
+
+class TimeSlot(db.Model):
+    """
+    Create a TimeSlot table
+    """
+
+    __tablename__ = 'timeslots'
+
+    id = db.Column(db.Integer, primary_key=True)
+    beginning = db.Column(db.Time)
+    end = db.Column(db.Time)
+    day = db.Column(db.String) # db.Column(db.Date) ?
+
+
+class Available(db.Model):
+    """
+    Create a relationship between a TimeSlot and a User
+    """
+
+    periodicity = db.Column(db.Integer) # db.Column(db.String) ?
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("availabilities", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    timeslot_id = db.Column(db.Integer, db.ForeignKey("timeslots.id"), primary_key=True)
+    timeslot = db.relationship(
+        "TimeSlot",
+        backref=db.backref("availabilities", lasy="dynamic"),
+        foreign_keys=[timeslot_id])
+
+
+class Vote(db.Model):
+    """
+    Create a Vote table
+    """
+
+    __tablename__ = 'votes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nb_participants_required = db.Column(db.Integer)
+    timeout = db.Column(db.DateTime)
+
+
+class HideGame(db.Model):
+    """
+    Create a realtionship between a Game, a User and a Vote
+    """
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("hidden_games", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), primary_key=True)
+    game = db.relationship(
+        "Game",
+        backref=db.backref("hidden_games", lazy="dynamic"),
+        foreign_keys=[game_id])
+
+    vote_id = db.Column(db.Integer, db.ForeignKey("votes.id"), primary_key=True)
+    vote = db.relationship(
+        "Vote",
+        backref=db.backref("hidden_games", lazy="dynamic"),
+        foreign_keys=[vote_id])
+
+
+class Revolution(db.Model):
+    """
+    Create a relationship between a Group, a User and a Vote
+    """
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("revolutions", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    group_id = db.Column(db.Integer, db.ForeignKey("groups.id"), primary_key=True)
+    group = db.relationship(
+        "Group",
+        backref=db.backref("revolutions", lazy="dynamic"),
+        foreign_keys=[group_id])
+
+    vote_id = db.Column(db.Integer, db.ForeignKey("votes.id"), primary_key=True)
+    vote = db.relationship(
+        "Vote",
+        backref=db.backref("revolutions", lazy="dynamic"),
+        foreign_keys=[vote_id])
+
+
+class Session(db.Model):
+    """
+    Create a Session table
+    """
+
+    __tablename__ = 'sessions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nb_players_required = db.Column(db.Integer)
+    notifactions_sent = db.Column(db.Boolean)
+    confirmed = db.Column(db.Boolean)
+    timeout = db.Column(db.DateTime)
+    archived = db.Column(db.Boolean)
+
+    timeslot_id = db.Column(db.Integer, db.ForeignKey("timeslots.id"))
+    timeslot = db.relationship(
+        "TimeSlot",
+        backref=db.backref("sessions", lazy="dynamic"),
+        foreign_keys=[timeslot_id])
+
+
+class Play(db.Model):
+    """
+    Create a relationship between a Session and an User
+    """
+
+    confirmed = db.Column(db.Boolean)
+    won = db.Column(db.Boolean)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("played_sessions", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"), primary_key=True)
+    session = db.relationship(
+        "Session",
+        backref=db.backref("players", lazy="dynamic"),
+        foreign_keys=[session_id])
+
+
+class Comment(db.Model):
+    """
+    Create a relationship between a Session and an User
+    """
+
+    message = db.Column(db.Text)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    user = db.relationship(
+        "User",
+        backref=db.backref("commented_sessions", lazy="dynamic"),
+        foreign_keys=[user_id])
+
+    session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"), primary_key=True)
+    session = db.relationship(
+        "Session",
+        backref=db.backref("commented_by_users", lazy="dynamic"),
+        foreign_keys=[session_id])
