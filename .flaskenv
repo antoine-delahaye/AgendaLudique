@@ -1,4 +1,4 @@
-FLASK_APP=run_app
+FLASK_APP=run_app.py
 FLASK_ENV=development
 ACCESS_KEY=?
 ACCESS_SECRET=?
