@@ -18,5 +18,7 @@ def send_mail(email):
    envoie un mail de test à l'adresse mentionnée
     """
     from . import mail
-    mail.send_mail("Testing mail sending", email, 'mails/testing.html', url="google.com")
-    print("mail successfully sent to " + email)
+    from flask import current_app
+    with current_app.test_request_context("localhost.com"):
+        mail.send_mail("Testing mail sending", email, 'mails/testing.html', url="google.com")
+        print("mail successfully sent to " + email)

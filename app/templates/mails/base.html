@@ -146,6 +146,53 @@
 </head>
 <body class="body"
       style="padding:0 !important; margin:0 !important; display:block !important; min-width:100% !important; width:100% !important; background:#001736; -webkit-text-size-adjust:none;">
+{% block header %}
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#001736">
+    <tr>
+    <td align="center" valign="top">
+    <table width="650" border="0" cellspacing="0" cellpadding="0" class="mobile-shell">
+    <tr>
+    <td class="td container"
+        style="width:650px; min-width:650px; font-size:0pt; line-height:0pt; margin:0; font-weight:normal; padding:55px 0px;">
+    <!-- Header -->
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td class="p30-15" style="padding: 0px 30px 30px 30px;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <th class="column-top" width="145"
+                            style="font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal; vertical-align:top;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="img m-center" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                        <img src="cid:favico"
+                                             width="60"
+                                             height="60" border="0" alt="logo du site Agenda Ludique"/></td>
+                                </tr>
+                            </table>
+                        </th>
+                        <th class="column-empty" width="1"
+                            style="font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal; vertical-align:top;"></th>
+                        <th class="column"
+                            style="font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="text-header"
+                                        style="color:#475c77; font-family:'Muli', Arial,sans-serif; font-size:12px; line-height:16px; text-align:right;">
+                                        <a href="#" target="_blank" class="link2"
+                                           style="color:#475c77; text-decoration:none;"><span class="link2"
+                                                                                              style="color:#475c77; text-decoration:none;">Ouvrir dans votre navigateur</span></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <!-- END Header -->
+{% endblock header %}
 {% block main %}
 {% endblock main %}
 {% block footer %}
