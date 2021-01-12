@@ -1,5 +1,5 @@
 import json
-
+import os
 import requests
 import yaml
 from bs4 import BeautifulSoup
@@ -96,13 +96,20 @@ def create_game_list(raw_html):
 
 
 def save_yaml(game_list_dict):
-    with open('games-data.yaml', 'w') as f:
+    with open('games-data.yaml', 'a') as f:
         f.write(yaml.dump(game_list_dict, sort_keys=False))  # write game_list_dict to the file and disable auto sort
 
 
 def main():
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
+
+    try:
+        os.remove("games-data.yaml")
+        print("Ancien game-data.yaml supprimé")
+    except FileNotFoundError:
+        print("Création de game-data.yaml")
+
     game_list_dict = {}  # Dict of all games (this is what's going into the yaml)
     for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
         main_html = BeautifulSoup(  # Request raw page and make a bs4 object
