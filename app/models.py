@@ -23,10 +23,11 @@ class User(UserMixin, db.Model):
                                 default='https://acsmmontreal.qc.ca/wp-content/uploads/2020/09/blank-profile-picture'
                                         '-973460_1280-7.png')
 
-    statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
-    statistics = db.relationship(
-        "Statistic",
-        back_populates="user")
+    # statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
+    # statistics = db.relationship(
+    #     "Statistic",
+    #     back_populates="user",
+    #     foreign_keys=[statistics_id])
 
     @property
     def password(self):
@@ -96,23 +97,24 @@ class HideUser(db.Model):
         foreign_keys=[user2_id])
 
 
-class Statistic(db.Model):
-    """
-    Create a Statistic table
-    """
-
-    __tablename__ = 'statistics'
-
-    id = db.Column(db.Integer, primary_key=True)
-    avg_complexity = db.Column(db.Integer)
-    avg_playtime = db.Column(db.Integer)
-    avg_nb_players = db.Column(db.Integer)
-    frequency = db.Column(db.Integer)
-
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    user = db.relationship(
-        "User",
-        back_populates="statistics")
+# class Statistic(db.Model):
+#     """
+#     Create a Statistic table
+#     """
+#
+#     __tablename__ = 'statistics'
+#
+#     id = db.Column(db.Integer, primary_key=True)
+#     avg_complexity = db.Column(db.Integer, default=0)
+#     avg_playtime = db.Column(db.Integer, default=0)
+#     avg_nb_players = db.Column(db.Integer, default=0)
+#     frequency = db.Column(db.Integer, default=0)
+#
+#     # user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+#     user = db.relationship(
+#         "User",
+#         back_populates="statistics",
+#         uselist=False)
 
 
 class Wich(db.Model):
@@ -276,7 +278,7 @@ class TimeSlot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     beginning = db.Column(db.Time)
     end = db.Column(db.Time)
-    day = db.Column(db.String) # db.Column(db.Date) ?
+    day = db.Column(db.Integer) # db.Column(db.Date) ?
 
 
 class Available(db.Model):
@@ -295,7 +297,7 @@ class Available(db.Model):
     timeslot_id = db.Column(db.Integer, db.ForeignKey("timeslots.id"), primary_key=True)
     timeslot = db.relationship(
         "TimeSlot",
-        backref=db.backref("availabilities", lasy="dynamic"),
+        backref=db.backref("availabilities", lazy="dynamic"),
         foreign_keys=[timeslot_id])
 
 

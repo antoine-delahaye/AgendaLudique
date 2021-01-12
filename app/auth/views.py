@@ -6,7 +6,7 @@ from flask_login import login_required, login_user, logout_user
 from app.auth import auth
 from app.auth.forms import LoginForm, RegistrationForm
 from app import db
-from app.models import User
+from app.models import User#, Statistic
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -33,11 +33,14 @@ def register():
     """
     form = RegistrationForm()
     if form.validate_on_submit():
+        # stats = Statistic()
         user = User(email=form.email.data,
                     username=form.username.data,
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,
-                    password=form.password.data)
+                    password=form.password.data,
+                    #statistics_id=stats.id,
+                    )
         db.session.add(user)
         db.session.commit()
         return redirect(url_for('auth.login'))
