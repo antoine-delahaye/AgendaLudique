@@ -88,12 +88,12 @@ class HideUser(db.Model):
 
     user = db.relationship(
         "User",
-        backref=db.backref("hiden_users", lazy="dynamic"),
+        backref=db.backref("hidden_users", lazy="dynamic"),
         foreign_keys=[user_id])
 
     user2 = db.relationship(
         "User",
-        backref=db.backref("hiden_by_users", lazy="dynamic"),
+        backref=db.backref("hidden_by_users", lazy="dynamic"),
         foreign_keys=[user2_id])
 
 
@@ -278,7 +278,7 @@ class TimeSlot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     beginning = db.Column(db.Time)
     end = db.Column(db.Time)
-    day = db.Column(db.Integer) # db.Column(db.Date) ?
+    day = db.Column(db.Date) # db.Column(db.Date) ?
 
 
 class Available(db.Model):
@@ -421,3 +421,23 @@ class Comment(db.Model):
         "Session",
         backref=db.backref("commented_by_users", lazy="dynamic"),
         foreign_keys=[session_id])
+
+class Use(db.Model):
+    """
+    Create a relationship between a Session and a Game
+    """
+
+    expected_time = db.Column(db.Time)
+    real_time = db.Column(db.Time, default=None)
+
+    session_id = db.Column(db.Integer, db.ForeignKey("sessions.id"), primary_key=True)
+    session = db.relationship(
+        "Session",
+        backref=db.backref("sessions", lazy="dynamic"),
+        foreign_keys=[session_id])
+
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), primary_key=True)
+    game = db.relationship(
+        "Game",
+        backref=db.backref("games", lazy="dynamic"),
+        foreign_keys=[game_id])
