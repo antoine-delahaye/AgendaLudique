@@ -34,9 +34,13 @@ def library():
 @login_required
 def users():
     """
-    Render the user template on the /user route
+    Render the users template on the /users route
     """
-    return render_template('users.html', stylesheet='users')
+    users_data = []
+    for data in db.session.query(User).all():
+        users_data.append(
+            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name, 'profile_picture': data.profile_picture})
+    return render_template('users.html', stylesheet='users', users_data=users_data)
 
 @site.route('/user')
 @site.route('/user/<int:id>', methods=['GET', 'POST'])
