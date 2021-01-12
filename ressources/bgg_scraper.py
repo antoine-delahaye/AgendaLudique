@@ -85,7 +85,7 @@ def create_game_list(raw_html):
         href = game.find('a')['href']  # extract href content
         id_game = int(href.split('/')[2])  # extract id from href content
         game_info = get_game_info(href)  # Get game info into dict
-        if game_info is not None:   # Check if we have game info, if not skip this game
+        if game_info is not None:  # Check if we have game info, if not skip this game
             game_list_dict[id_game] = game_info  # Transfer game info into the big ass dict
             game_list_dict[id_game]["rank"] = i  # Add rank to save order
             print(f"Jeu n⁰{i}: {game_list_dict[id_game]['title']}")  # Just to inform where the program is
@@ -116,8 +116,10 @@ def main():
             requests.get(main_url + str(j)).text,
             "html.parser"
         )
-        game_list_dict = {**game_list_dict, **create_game_list(main_html)}  # Merge dict
-    save_yaml(game_list_dict)  # Save yaml into games-data.yaml
+        game_list_dict = create_game_list(main_html)
+        print("Sauvegarde dans le fichier yaml en cours...")
+        save_yaml(game_list_dict)  # Save yaml into games-data.yaml
+        print("Fini !")
 
 
 if __name__ == '__main__':
