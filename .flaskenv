@@ -1,0 +1,6 @@
+FLASK_APP=run_app.py
+FLASK_ENV=development
+ACCESS_KEY=?
+ACCESS_SECRET=?
+SEC_USERNAME=aFaire
+SEC_PASSWORD=aFaire
