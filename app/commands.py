@@ -22,3 +22,35 @@ def send_mail(email):
     with current_app.test_request_context("localhost.com"):
         mail.send_mail("Testing mail sending", email, 'mails/testing.html', url="google.com")
         print("mail successfully sent to " + email)
+
+
+from app import db
+
+
+@admin_blueprint.cli.command('syncdb')
+def syncdb():
+    """ Creates all missing tables """
+    db.create_all()
+
+
+import yaml
+from app.models import User
+
+
+@admin_blueprint.cli.command('loaddb_users')
+@click.argument('filename')
+def loaddb_users(filename):
+    """ Populates the database with users and user-related relationships """
+    users = yaml.safe_load(open(filename))
+
+    # premier tour de boucle, creation des users
+    for u in users:
+        o = User(
+            email=u["email"],
+            username=u["username"],
+            first_name=u["first_name"],
+            last_name=u["last_name"],
+            password=u["password"],
+            profile_picture=u["profile_picture"])
+        db.session.add(o)
+    db.session.commit()
