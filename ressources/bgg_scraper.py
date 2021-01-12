@@ -72,6 +72,7 @@ def get_game_info(url):
         "min_players": int(json_text["minplayers"]),
         "max_players": int(json_text["maxplayers"]),
         "min_playtime": int(json_text["minplaytime"]),
+        "average_rating": float(json_text["stats"]["average"]),
         "images": covers
     }
 
