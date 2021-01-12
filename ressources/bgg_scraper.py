@@ -9,6 +9,7 @@ main_url = "https://boardgamegeek.com/browse/boardgame/page/"
 cover_url = "https://api.geekdo.com/api/images/"
 i = 1
 
+
 # yaml Structure
 #     140620: <-- int (id)
 #       title: str
@@ -30,7 +31,10 @@ i = 1
 
 
 def get_cover(image_id):
-    json_file = requests.get(cover_url + str(image_id)).json()['images']
+    try:
+        json_file = requests.get(cover_url + str(image_id)).json()['images']
+    except TypeError:  # If we can get the webpage we got a None type and so raise a TypeError exception
+        return None
     return {
         "micro": json_file["micro"]["url"],
         "small": json_file["small"]["url"],
@@ -57,13 +61,16 @@ def get_game_info(url):
             temp2 = temp.split('};', 1)[0]  # Get rid of useless code after the JSON file
             temp2 = temp2 + '}'  # Restore the '}' we removed the line before
             json_text = json.loads(temp2)['item']  # Transform dirty string into proper JSON format
+    covers = get_cover(json_text["imageid"])
+    if covers is None:
+        return None
     return {
         "title": json_text["name"],
         "publication_year": int(json_text["yearpublished"]),
         "min_players": int(json_text["minplayers"]),
         "max_players": int(json_text["maxplayers"]),
         "min_playtime": int(json_text["minplaytime"]),
-        "images": get_cover(json_text["imageid"])
+        "images": covers
     }
 
 
@@ -74,10 +81,14 @@ def create_game_list(raw_html):
         game = BeautifulSoup(game, "html.parser")  # Convert str into bs4 object
         href = game.find('a')['href']  # extract href content
         id_game = int(href.split('/')[2])  # extract id from href content
-        game_list_dict[id_game] = get_game_info(href)  # store infos as values and id as key
-        game_list_dict[id_game]["rank"] = i  # Add rank to save order
-        print(f"Jeu n⁰{i}: {game_list_dict[id_game]['title']}")  # Just to inform where the program is
-        i += 1
+        game_info = get_game_info(href)  # Get game info into dict
+        if game_info is not None:   # Check if we have game info, if not skip this game
+            game_list_dict[id_game] = game_info  # Transfer game info into the big ass dict
+            game_list_dict[id_game]["rank"] = i  # Add rank to save order
+            print(f"Jeu n⁰{i}: {game_list_dict[id_game]['title']}")  # Just to inform where the program is
+            i += 1
+        else:
+            print("Informations manquantes pour ce jeu, skipping...")
     return game_list_dict
 
 
@@ -87,16 +98,16 @@ def save_yaml(game_list_dict):
 
 
 def main():
-    from_page = input("Scrap de la page : ")    # Get first page to scrape
+    from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
     game_list_dict = {}  # Dict of all games (this is what's going into the yaml)
-    for j in range(int(from_page), int(to_page) + 1):   # to_page + 1 bc its [from_page ; to_page[
+    for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
         main_html = BeautifulSoup(  # Request raw page and make a bs4 object
             requests.get(main_url + str(j)).text,
             "html.parser"
         )
         game_list_dict = {**game_list_dict, **create_game_list(main_html)}  # Merge dict
-    save_yaml(game_list_dict)   # Save yaml to ressources/games-data.yaml
+    save_yaml(game_list_dict)  # Save yaml into games-data.yaml
 
 
 if __name__ == '__main__':
