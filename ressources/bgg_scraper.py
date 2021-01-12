@@ -1,5 +1,7 @@
 import json
 import os
+from concurrent.futures.thread import ThreadPoolExecutor
+
 import requests
 import yaml
 from bs4 import BeautifulSoup
@@ -100,6 +102,17 @@ def save_yaml(game_list_dict):
         f.write(yaml.dump(game_list_dict, sort_keys=False))  # write game_list_dict to the file and disable auto sort
 
 
+def sub_main(j):
+    main_html = BeautifulSoup(  # Request raw page and make a bs4 object
+        requests.get(main_url + str(j)).text,
+        "html.parser"
+    )
+    game_list_dict = create_game_list(main_html)
+    print("Sauvegarde dans le fichier yaml en cours...")
+    save_yaml(game_list_dict)  # Save yaml into games-data.yaml
+    print("Fini !")
+
+
 def main():
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
@@ -110,16 +123,9 @@ def main():
     except FileNotFoundError:
         print("Création de game-data.yaml")
 
-    game_list_dict = {}  # Dict of all games (this is what's going into the yaml)
-    for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
-        main_html = BeautifulSoup(  # Request raw page and make a bs4 object
-            requests.get(main_url + str(j)).text,
-            "html.parser"
-        )
-        game_list_dict = create_game_list(main_html)
-        print("Sauvegarde dans le fichier yaml en cours...")
-        save_yaml(game_list_dict)  # Save yaml into games-data.yaml
-        print("Fini !")
+    with ThreadPoolExecutor(max_workers=int(to_page)) as executor:  # Overkill but it's faster :)
+        for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
+            executor.submit(sub_main, j)
 
 
 if __name__ == '__main__':
