@@ -35,6 +35,8 @@ def get_cover(image_id):
         json_file = requests.get(cover_url + str(image_id)).json()['images']
     except TypeError:  # If we can get the webpage we got a None type and so raise a TypeError exception
         return None
+    if "pic1657689" in json_file["original"]["url"]:
+        return None
     return {
         "micro": json_file["micro"]["url"],
         "small": json_file["small"]["url"],
