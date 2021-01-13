@@ -24,7 +24,7 @@ def library():
     Render the library template on the /library route
     """
     page = request.args.get('page', 1, type=int)
-    games = Game.query.paginate(page=page, per_page=12)
+    games = Game.query.paginate(page=page, per_page=20)
     return render_template('library.html', stylesheet='library', games=games)
 
 
@@ -138,7 +138,7 @@ def catalog():
     Render the catalog template on the /catalog route
     """
     page = request.args.get('page', 1, type=int)
-    games = Game.query.paginate(page=page, per_page=12)
+    games = Game.query.paginate(page=page, per_page=20)
     return render_template('catalog.html', stylesheet='catalog', games=games)
 
 
