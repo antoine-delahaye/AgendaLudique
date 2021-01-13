@@ -1,11 +1,11 @@
 #!/bin/sh
 
-UPSTREAM=${1:-'@{u}'}
-LOCAL=$(git rev-parse @)
-REMOTE=$(git rev-parse "$UPSTREAM")
-
-
 while true; do 
+
+    UPSTREAM=${1:-'@{u}'}
+    LOCAL=$(git rev-parse @)
+    REMOTE=$(git rev-parse "$UPSTREAM")
+
     if [ ! $LOCAL = $REMOTE ]; then # Si il y a un nouveau commit sur l'upstream
         echo "Mise à jour du serveur web..."
         echo `date` >> log.txt
@@ -19,4 +19,5 @@ while true; do
         echo "Mise à jour terminée"
     fi
     sleep 60
+    echo "Aucune mise à jour... On retourne nehess ZZzz"
 done
