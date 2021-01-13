@@ -18,6 +18,6 @@ while true; do
         systemctl restart uwsgi.service &>/dev/null
         echo "Mise à jour terminée"
     fi
-    sleep 60
     echo "Aucune mise à jour... On retourne nehess ZZzz"
+    sleep 60
 done
