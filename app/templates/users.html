@@ -15,7 +15,7 @@
             </div>
             <div class="collapse" id="advanced-search">
                 <div class="card card-body">
-                    <h3 class="mb-6">Recherche avancée</h3>
+                    <h5 id="advanced-search-title" class="card-title">Recherche avancée</h5>
                     <p>{{ form.display_favorites_players_only }} {{ form.display_favorites_players_only.label }}</p>
                     <p>{{ form.display_masked_players }} {{ form.display_masked_players.label }}</p>
                 </div>
@@ -34,7 +34,7 @@
                                 {{ item["username"] }}</p>
                             <div class="d-flex flex-row align-items-center">
                                 <p class="mb-0">{{ item["first_name"] }} {{ item["last_name"] }}</p>
-                                <i class="ml-auto far fa-star" id="{{ item["id"] }}" onclick="game(this)"></i>
+                                <i class="ml-auto far fa-star" id="{{ item["id"] }}"></i>
                             </div>
                         </div>
                     </div>
