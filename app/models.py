@@ -55,7 +55,7 @@ class User(UserMixin, db.Model):
     @classmethod
     def from_username(cls, username):
         """
-        Get an user from its username, None if the user does not exist
+        Get an user from its username. Return None if the user does not exist.
         """
         req = User.query.filter(User.username==username).first()
         return req if req else None
@@ -235,6 +235,14 @@ class Game(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<Game: {self.title}>'
+
+    @classmethod
+    def from_title(cls, title):
+        """
+        Get a Game from its title. Return None if the game does not exist.
+        """
+        req = Game.query.filter(Game.title==title).first()
+        return req if req else None
 
 
 class Group(db.Model):
