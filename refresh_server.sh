@@ -18,5 +18,5 @@ while true; do
         systemctl restart uwsgi.service &>/dev/null
         echo "Mise à jour terminée"
     fi
-    sleep(60)
+    sleep 60
 done
