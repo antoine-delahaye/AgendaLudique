@@ -23,7 +23,7 @@ def library():
     Render the library template on the /library route
     """
     games_data = []
-    for data in db.session.query(Game).all():
+    for data in db.session.query(Game).limit(12).all():
         games_data.append(
             {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
              'max_players': int(data.max_players), 'image': data.image})
@@ -129,7 +129,7 @@ def catalog():
     Render the catalog template on the /catalog route
     """
     games_data = []
-    for data in db.session.query(Game).all():
+    for data in db.session.query(Game).limit(12).all():
         games_data.append(
             {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
              'max_players': int(data.max_players), 'image': data.image})
