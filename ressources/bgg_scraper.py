@@ -123,7 +123,7 @@ def main():
     except FileNotFoundError:
         print("Création de game-data.yaml")
 
-    with ThreadPoolExecutor(max_workers=int(to_page)) as executor:  # Overkill but it's faster :)
+    with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
             executor.submit(sub_main, j)
 
