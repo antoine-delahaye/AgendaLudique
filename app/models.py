@@ -52,6 +52,13 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f'<Employee: {self.username}>'
 
+    @classmethod
+    def from_username(cls, username):
+        """
+        Get an user from its username, None if the user does not exist
+        """
+        req = User.query.filter(User.username==username).first()
+        return req if req else None
 
 # Set up user_loader
 @login_manager.user_loader
@@ -219,7 +226,7 @@ class Game(UserMixin, db.Model):
     __tablename__ = 'games'
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(64))
+    title = db.Column(db.String(128), unique=True)
     publication_year = db.Column(db.Integer)
     min_players = db.Column(db.Integer)
     max_players = db.Column(db.Integer)
