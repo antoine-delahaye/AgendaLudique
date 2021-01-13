@@ -1,5 +1,5 @@
 main form {
-   width: 45rem;
+    width: 45rem;
 }
 
 .card img {
@@ -7,13 +7,17 @@ main form {
 }
 
 .card i {
-   color: #000000;
+    color: #000000;
 }
 
 .card i:hover {
-   color: #0277BC;
+    color: #0277BC;
 }
 
 .btn {
     width: 10rem;
+}
+
+main nav ul {
+    width: min-content;
 }

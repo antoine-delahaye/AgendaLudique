@@ -40,3 +40,8 @@ svg {
     width: 1rem;
     height: 1rem;
 }
+
+.page-item.active .page-link {
+    background-color: #0277BC;
+    border-color: #0277BC;
+}
