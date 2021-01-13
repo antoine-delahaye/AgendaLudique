@@ -84,6 +84,15 @@ class BookmarkUser(db.Model):
         backref=db.backref("bookmarked_by_users", lazy="dynamic"),
         foreign_keys=[user2_id])
 
+    @classmethod
+    def from_both_ids(cls, user_id, user2_id):
+        """
+        Get a BookmarkUser relationship from its game and user ids.
+        Return None if the relationship does not exist.
+        """
+        req = BookmarkUser.query.filter(BookmarkUser.user_id==user_id, BookmarkUser.user2_id==user2_id).first()
+        return req if req else None
+
 
 class HideUser(db.Model):
     """
@@ -102,6 +111,15 @@ class HideUser(db.Model):
         "User",
         backref=db.backref("hidden_by_users", lazy="dynamic"),
         foreign_keys=[user2_id])
+
+    @classmethod
+    def from_both_ids(cls, user_id, user2_id):
+        """
+        Get a HideUser relationship from its game and user ids.
+        Return None if the relationship does not exist.
+        """
+        req = HideUser.query.filter(HideUser.user_id==user_id, HideUser.user2_id==user2_id).first()
+        return req if req else None
 
 
 # class Statistic(db.Model):
@@ -124,7 +142,7 @@ class HideUser(db.Model):
 #         uselist=False)
 
 
-class Wich(db.Model):
+class Wish(db.Model):
     """
     Create a relationship between an User and a Game
     """
@@ -140,6 +158,14 @@ class Wich(db.Model):
         "Game",
         backref=db.backref("wished_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    @classmethod
+    def from_both_ids(cls, user_id, game_id):
+        """
+        Get a Wish from its game and user ids. Return None if the wish does not exist.
+        """
+        req = Wish.query.filter(Wish.user_id==user_id, Wish.game_id==game_id).first()
+        return req if req else None
 
 
 class Prefer(db.Model):
@@ -161,6 +187,14 @@ class Prefer(db.Model):
         backref=db.backref("prefered_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    @classmethod
+    def from_both_ids(cls, user_id, game_id):
+        """
+        Get a preference from its game and user ids. Return None if the preference does not exist.
+        """
+        req = Prefer.query.filter(Prefer.user_id==user_id, Prefer.game_id==game_id).first()
+        return req if req else None
+
 
 class KnowRules(db.Model):
     """
@@ -179,6 +213,14 @@ class KnowRules(db.Model):
         backref=db.backref("known_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    @classmethod
+    def from_both_ids(cls, user_id, game_id):
+        """
+        Get a KnowRules relationship from its game and user ids. Return None if the relationship does not exist.
+        """
+        req = KnowRules.query.filter(KnowRules.user_id==user_id, KnowRules.game_id==game_id).first()
+        return req if req else None
+
 
 class Collect(db.Model):
     """
@@ -196,6 +238,14 @@ class Collect(db.Model):
         "Game",
         backref=db.backref("owners", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    @classmethod
+    def from_both_ids(cls, user_id, game_id):
+        """
+        Get a Collect relationship from its game and user ids. Return None if the relationship does not exist.
+        """
+        req = Collect.query.filter(Collect.user_id==user_id, Collect.game_id==game_id).first()
+        return req if req else None
 
 
 class Note(db.Model):
@@ -291,6 +341,15 @@ class Participate(db.Model):
         backref=db.backref("participations", lazy="dynamic"),
         foreign_keys=[group_id])
 
+    @classmethod
+    def from_both_ids(cls, member_id, group_id):
+        """
+        Get a Participate relationship from its user and group ids.
+        Return None if the relationship does not exist.
+        """
+        req = Participate.query.filter(Participate.member_id==member_id, Participate.group_id==group_id).first()
+        return req if req else None
+
 
 class TimeSlot(db.Model):
     """
@@ -323,6 +382,15 @@ class Available(db.Model):
         "TimeSlot",
         backref=db.backref("availabilities", lazy="dynamic"),
         foreign_keys=[timeslot_id])
+
+    @classmethod
+    def from_both_ids(cls, user_id, timeslot_id):
+        """
+        Get a Available relationship from its user and timeslot ids.
+        Return None if the relationship does not exist.
+        """
+        req = Available.query.filter(Available.user_id==user_id, Available.timeslot_id==timeslot_id).first()
+        return req if req else None
 
 
 class Vote(db.Model):
@@ -426,6 +494,15 @@ class Play(db.Model):
         backref=db.backref("players", lazy="dynamic"),
         foreign_keys=[session_id])
 
+    @classmethod
+    def from_both_ids(cls, user_id, session_id):
+        """
+        Get a Play relationship from its user and session ids.
+        Return None if the relationship does not exist.
+        """
+        req = Play.query.filter(Play.user_id==user_id, Play.session_id==session_id).first()
+        return req if req else None
+
 
 class Comment(db.Model):
     """
@@ -446,6 +523,16 @@ class Comment(db.Model):
         backref=db.backref("commented_by_users", lazy="dynamic"),
         foreign_keys=[session_id])
 
+    @classmethod
+    def from_both_ids(cls, user_id, session_id):
+        """
+        Get a Comment relationship from its user and session ids.
+        Return None if the relationship does not exist.
+        """
+        req = Comment.query.filter(Comment.user_id==user_id, Comment.session_id==session_id).first()
+        return req if req else None
+
+
 class Use(db.Model):
     """
     Create a relationship between a Session and a Game
@@ -465,3 +552,12 @@ class Use(db.Model):
         "Game",
         backref=db.backref("games", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    @classmethod
+    def from_both_ids(cls, session_id, game_id):
+        """
+        Get a Use relationship from its session and game ids.
+        Return None if the relationship does not exist.
+        """
+        req = Use.query.filter(Use.session_id==user_id, Use.game_id==session_id).first()
+        return req if req else None
