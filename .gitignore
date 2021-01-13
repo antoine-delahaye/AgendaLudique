@@ -4,3 +4,5 @@ venv/
 .idea/
 app/__pycache__/
 __pycache__/
+migrations/
+ressources/games-data.yaml
