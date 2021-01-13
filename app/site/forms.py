@@ -1,7 +1,8 @@
 # app/site/forms.py
 
 from flask_wtf import FlaskForm
-from wtforms import PasswordField, StringField, SubmitField, SelectField
+from markupsafe import Markup
+from wtforms import PasswordField, StringField, SubmitField, SelectField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 
 
@@ -32,3 +33,16 @@ class GamesSearchForm(FlaskForm):
     min_playtime = SelectField('Durée minimale', choices=[])
     max_playtime = SelectField('Durée maximale', choices=[])
     submit = SubmitField('Rechercher')
+
+
+class UsersSearchForm(FlaskForm):
+    """
+    Form to search users
+    """
+    username_hint = StringField("Nom de l'utilisateur", id='search-input', render_kw={
+        'class': 'form-control',
+        'placeholder': 'Rechercher un utilisateur grâce à son nom',
+        'aria-describedby': 'search-buttons'
+    })
+    display_favorites_players_only = BooleanField('Afficher uniquement les joueurs favoris')
+    display_masked_players = BooleanField('Afficher les joueurs masqués')

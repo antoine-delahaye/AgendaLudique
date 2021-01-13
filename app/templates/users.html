@@ -2,31 +2,26 @@
 {% block main %}
     <main class="container-fluid col-9 mb-5">
         <h2 class="text-center mb-5">Joueurs</h2>
+
         <form class="my-5 mx-auto">
             <div class="input-group">
-                <label class="d-none" for="search-input">Rechercher un joueur grâce à son nom</label>
-                <input class="form-control" id="search-input" type="text" aria-describedby="search-buttons"
-                       placeholder="Rechercher un joueur grâce à son nom">
+                {{ form.username_hint }}
                 <div class="input-group-append" id="search-buttons">
-                    <a id="show-advanced-search" class="btn" data-toggle="collapse" href="#advanced-search" role="button"
-                       aria-expanded="false" aria-controls="advanced-search">
+                    <button class="btn show-advanced-search" type="button" data-toggle="collapse" data-target="#advanced-search" aria-expanded="false" aria-controls="advanced-search">
                         <i class="fa fa-sliders" aria-hidden="true"></i>
-                    </a>
-                    <a id="search" class="btn" data-toggle="collapse" href="#advanced-search" role="button"
-                       aria-expanded="false" aria-controls="advanced-search">
-                        <i class="fa fa-search" aria-hidden="true"></i>
-                    </a>
+                    </button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </div>
-                <div class="collapse" id="advanced-search">
-                    <div class="card card-body">
-                        Il y aura quelque chose ici, ça arrive vite !<br>
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam quisquam suscipit velit!
-                        Delectus deleniti doloremque eaque esse expedita id illum, molestias nostrum officiis
-                        praesentium quas, quasi qui similique. Accusantium, officia!
-                    </div>
+            </div>
+            <div class="collapse" id="advanced-search">
+                <div class="card card-body">
+                    <h3 class="mb-6">Recherche avancée</h3>
+                    <p>{{ form.display_favorites_players_only }} {{ form.display_favorites_players_only.label }}</p>
+                    <p>{{ form.display_masked_players }} {{ form.display_masked_players.label }}</p>
                 </div>
             </div>
         </form>
+
         <div class="row">
             {% for item in users_data %}
                 <div class="col-xl-3 col-lg-4 col-md-6">

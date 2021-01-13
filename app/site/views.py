@@ -4,7 +4,7 @@ from flask import render_template, redirect, url_for
 from flask_login import login_required
 
 from app.site import site
-from app.site.forms import UpdateInformationForm, GamesSearchForm
+from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 from app import db
 from app.models import User, Game
 
@@ -29,6 +29,7 @@ def library():
              'max_players': int(data.max_players), 'image': data.image})
     return render_template('library.html', stylesheet='library', games_data=games_data)
 
+
 # Account/Profil related #########################################################
 @site.route('/users', methods=['GET', 'POST'])
 @login_required
@@ -36,11 +37,14 @@ def users():
     """
     Render the users template on the /users route
     """
+    form = UsersSearchForm()
     users_data = []
     for data in db.session.query(User).all():
         users_data.append(
-            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name, 'profile_picture': data.profile_picture})
-    return render_template('users.html', stylesheet='users', users_data=users_data)
+            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name,
+             'profile_picture': data.profile_picture})
+    return render_template('users.html', stylesheet='users', form=form, users_data=users_data)
+
 
 @site.route('/user')
 @site.route('/user/<int:id>', methods=['GET', 'POST'])
