@@ -13,3 +13,7 @@ main form {
 .card i:hover {
    color: #0277BC;
 }
+
+.btn {
+    width: 10rem;
+}
