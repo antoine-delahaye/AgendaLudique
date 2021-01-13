@@ -34,7 +34,7 @@ def syncdb():
 
 
 import yaml
-from app.models import User, Game, BookmarkUser, HideUser
+from app.models import User, Game, BookmarkUser, HideUser, Note
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -43,9 +43,23 @@ def loaddb_games(filename):
     """ Populates the database with games from a yml file """
     games = yaml.safe_load(open(filename))
 
-    cpt = 0
+    # creation d'un profil BGG
+    bgg = User.from_username("BGG")
+    if bgg == None:
+        bgg = User(
+            email="mmm.dupuis45@gmail.com",
+            username="BGG",
+            first_name="Board Game",
+            last_name="Geek",
+            password="BGGdu45",
+            profile_picture="https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg")
+        db.session.add(bgg)
+        db.session.commit()
+
+    # premier tour de boucle, creation des jeux
+    nb_jeux_regetes = 0
     for game in games.values():
-        if len(game["title"]) <= 64: #
+        if len(game["title"]) <= 64 and Game.from_title(game["title"]) == None: #
             o = Game(
                 title=game["title"],
                 publication_year=game["publication_year"],
@@ -54,11 +68,28 @@ def loaddb_games(filename):
                 min_playtime=game["min_playtime"],
                 image=game["images"]["original"])
             db.session.add(o)
+            print("V", game["title"])
         else:
-            print(game["title"], " - ", len(game["title"]))
-            cpt += 1
+            print("X", game["title"])
+            nb_jeux_regetes += 1
     db.session.commit()
-    print("Nombre de jeux rejetés : ", cpt)
+
+    # deuxieme tour de boucle pour les notes de bgg
+    for game in games.values():
+        g = Game.from_title(game["title"])
+        if g != None and Note.from_both_ids(bgg.id,g.id) == None:
+            rating = Note(
+                note=round(game["average_rating"]),
+                message="Auto-generated note, the average rating of the game at boardgamegeek.com",
+                user_id=bgg.id,
+                game_id=g.id)
+            db.session.add(rating)
+            print("V Note pour : ", game["title"])
+        else:
+            print("X Note pour :", game["title"])
+    db.session.commit()
+
+    print("Nombre de jeux rejetés : ", nb_jeux_regetes)
 
 
 @admin_blueprint.cli.command('loaddb_users')
@@ -67,9 +98,8 @@ def loaddb_users(filename):
     """ Populates the database with users and user-related relationships from a yml file """
     users = yaml.safe_load(open(filename))
 
-    # premier tour de boucle, creation des users
-
     dico_users = dict()
+    # premier tour de boucle, creation des users
     for u in users:
         o = User(
             email=u["email"],

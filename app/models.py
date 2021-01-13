@@ -218,6 +218,15 @@ class Note(db.Model):
         backref=db.backref("notes", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    @classmethod
+    def from_both_ids(cls, user_id, game_id):
+        """
+        Get a Note from its game and user ids. Return None if the note does not exist.
+        """
+        req = Note.query.filter(Note.user_id==user_id,Note.game_id==game_id).first()
+        return req if req else None
+
+
 class Game(UserMixin, db.Model):
     """
     Create a Game table

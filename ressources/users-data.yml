@@ -16,7 +16,7 @@
   collection: [Gloomhaven, Terraforming Mars, 7 Wonders]
   notes:
     - title: Gloomhaven
-      note: 5
+      note: 10
       message: "Meilleur jeu"
 - email: nf.stonksdeux@gmail.com
   username: nf_2
@@ -34,7 +34,7 @@
   collection: [Gaia Project]
   notes:
     - title: 'Pandemic Legacy: Season 1'
-      note: 5
+      note: 10
       message: "Jeu de l'annee !"
 - email: nf.stonkstrois@gmail.com
   username: nf_3
@@ -52,10 +52,10 @@
   collection: ['Pandemic Legacy: Season 1']
   notes:
     - title: Gloomhaven
-      note: 4
+      note: 7
       message: "Sympathique entre amis"
     - title: Twilight Struggle
-      note: 5
+      note: 10
       message: "Coup de choeur"
 - email: nf.stonksquatre@gmail.com
   username: nf_4
@@ -109,7 +109,7 @@
   collection: []
   notes:
     - title: 'Pandemic Legacy: Season 1'
-      note: 3
+      note: 6
       message: "Jeu sympathique meme si un peu long"
 - email: nf.stonkssept@gmail.com
   username: nf_7
@@ -147,5 +147,5 @@
   collection: [7 Wonders Duel]
   notes:
     - title: 7 Wonders Duel
-      note: 4
+      note: 9
       message: "Meilleur jeu qui n'ai jamais existe sur Terre. Dommage qu'il faille etre 2."
