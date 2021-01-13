@@ -34,7 +34,7 @@ def syncdb():
 
 
 import yaml
-from app.models import User, Game, BookmarkUser, HideUser, Note
+from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -98,31 +98,86 @@ def loaddb_users(filename):
     """ Populates the database with users and user-related relationships from a yml file """
     users = yaml.safe_load(open(filename))
 
-    dico_users = dict()
     # premier tour de boucle, creation des users
     for u in users:
-        o = User(
-            email=u["email"],
-            username=u["username"],
-            first_name=u["first_name"],
-            last_name=u["last_name"],
-            password=u["password"],
-            profile_picture=u["profile_picture"])
-        db.session.add(o)
-        dico_users[u["username"]] = o
+        if User.from_username(u["username"]) == None:
+            o = User(
+                email=u["email"],
+                username=u["username"],
+                first_name=u["first_name"],
+                last_name=u["last_name"],
+                password=u["password"],
+                profile_picture=u["profile_picture"])
+            db.session.add(o)
+            print("V", u["username"])
+        else:
+            print("X", u["username"])
     db.session.commit()
 
     # deuxieme tour de boucle, creation des relations UserXGame et UserXUser
     for u in users:
-        u_id = dico_users[u["username"]].id
+        u_id = User.from_username(u["username"]).id # existe forcement
         for u2 in u["bookmarked_users"]:
-            o = BookmarkUser(
-                user_id=u_id,
-                user2_id=dico_users[u2].id)
-            db.session.add(o)
+            u2_id = User.from_username(u2).id
+            if BookmarkUser.from_both_ids(u_id,u2_id) == None:
+                o = BookmarkUser(user_id=u_id, user2_id=u2_id)
+                db.session.add(o)
+                print("V BookmarkUser", u["username"], u2)
+            else:
+                print("X BookmarkUser", u["username"], u2)
         for u2 in u["hidden_users"]:
-            o = HideUser(
-                user_id=u_id,
-                user2_id=dico_users[u2].id)
-            db.session.add(o)
+            u2_id = User.from_username(u2).id
+            if HideUser.from_both_ids(u_id,u2_id) == None:
+                o = HideUser(user_id=u_id, user2_id=u2_id)
+                db.session.add(o)
+                print("V HideUser", u["username"], u2)
+            else:
+                print("X HideUser", u["username"], u2)
+        for g in u["wishes"]:
+            g_id = Game.from_title(g).id
+            if Wish.from_both_ids(u_id, g_id):
+                o = Wish(user_id=u_id, game_id=g_id)
+                db.session.add(o)
+                print("V Wish", u["username"], g)
+            else:
+                print("X Wish", u["username"], g)
+        for g in u["known"]:
+            g_id = Game.from_title(g).id
+            if KnowRules.from_both_ids(u_id, g_id) == None:
+                o = KnowRules(user_id=u_id, game_id=g_id)
+                db.session.add(o)
+                print("V KnowRules", u["username"], g)
+            else:
+                print("X KnowRules", u["username"], g)
+        for g in u["collection"]:
+            g_id = Game.from_title(g).id
+            if Collect.from_both_ids(u_id, g_id) == None:
+                o = Collect(user_id=u_id, game_id=g_id)
+                db.session.add(o)
+                print("V Collect", u["username"], g)
+            else:
+                print("X Collect", u["username"], g)
+        for pref in u["preferences"]:
+            g_id = Game.from_title(pref["title"]).id
+            if Prefer.from_both_ids(u_id, g_id) == None:
+                o = Prefer(
+                    user_id=u_id,
+                    game_id=g_id,
+                    frequency=pref["frequency"])
+                db.session.add(o)
+                print("V Prefer", u["username"], pref["title"])
+            else:
+                print("X Prefer", u["username"], pref["title"])
+        for note in u["notes"]:
+            Game.from_title(note["title"]).id
+            if Note.from_both_ids(u_id, g_id) == None:
+                o = Note(
+                    user_id=u_id,
+                    game_id=g_id,
+                    note=note["note"],
+                    message=note["message"])
+                db.session.add(o)
+                print("V Note", u["username"], note["title"])
+            else:
+                print("X Note", u["username"], note["title"])
     db.session.commit()
