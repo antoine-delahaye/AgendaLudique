@@ -3,10 +3,28 @@
     <main class="container-fluid col-9 mb-5">
         <h2 class="text-center mb-5">Joueurs</h2>
         <form class="my-5 mx-auto">
-            <div class="form-group">
+            <div class="input-group">
                 <label class="d-none" for="search-input">Rechercher un joueur grâce à son nom</label>
-                <input class="form-control" id="search-input" type="text"
-                       placeholder="Rechercher un jeu grâce à son nom">
+                <input class="form-control" id="search-input" type="text" aria-describedby="search-buttons"
+                       placeholder="Rechercher un joueur grâce à son nom">
+                <div class="input-group-append" id="search-buttons">
+                    <a id="show-advanced-search" class="btn" data-toggle="collapse" href="#advanced-search" role="button"
+                       aria-expanded="false" aria-controls="advanced-search">
+                        <i class="fa fa-sliders" aria-hidden="true"></i>
+                    </a>
+                    <a id="search" class="btn" data-toggle="collapse" href="#advanced-search" role="button"
+                       aria-expanded="false" aria-controls="advanced-search">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </a>
+                </div>
+                <div class="collapse" id="advanced-search">
+                    <div class="card card-body">
+                        Il y aura quelque chose ici, ça arrive vite !<br>
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam quisquam suscipit velit!
+                        Delectus deleniti doloremque eaque esse expedita id illum, molestias nostrum officiis
+                        praesentium quas, quasi qui similique. Accusantium, officia!
+                    </div>
+                </div>
             </div>
         </form>
         <div class="row">
@@ -21,7 +39,7 @@
                                 {{ item["username"] }}</p>
                             <div class="d-flex flex-row align-items-center">
                                 <p class="mb-0">{{ item["first_name"] }} {{ item["last_name"] }}</p>
-                                <i class="ml-auto far fa-plus-square" id="{{ item["id"] }}" onclick="game(this)"></i>
+                                <i class="ml-auto far fa-star" id="{{ item["id"] }}" onclick="game(this)"></i>
                             </div>
                         </div>
                     </div>
