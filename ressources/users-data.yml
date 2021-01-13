@@ -5,7 +5,7 @@
   password: mdp1
   profile_picture: https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Paris_Metro_1.svg/1024px-Paris_Metro_1.svg.png
   bookmarked_users: [nf_2, nf_3, nf_7]
-  hiden_users: [nf_8, nf_4, nf_5]
+  hidden_users: [nf_8, nf_4, nf_5]
   wishes: []
   preferences:
     - title: Gloomhaven
@@ -25,7 +25,7 @@
   password: mdp2
   profile_picture: https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Paris_Metro_2.svg/1024px-Paris_Metro_2.svg.png
   bookmarked_users: [nf_1, nf_3]
-  hiden_users: [nf_8]
+  hidden_users: [nf_8]
   wishes: ['Pandemic Legacy: Season 1']
   preferences:
     - title: 7 Wonders Duel
@@ -43,7 +43,7 @@
   password: mdp3
   profile_picture: https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Paris_Metro_3.svg/1024px-Paris_Metro_3.svg.png
   bookmarked_users: [nf_1, nf_2, nf_5]
-  hiden_users: [nf_7, nf_8]
+  hidden_users: [nf_7, nf_8]
   wishes: [Twilight Struggle]
   preferences:
     - title: 7 Wonders Duel
@@ -64,7 +64,7 @@
   password: mdp4
   profile_picture: https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Paris_Metro_4.svg/1024px-Paris_Metro_4.svg.png
   bookmarked_users: [nf_5, nf_6, nf_7]
-  hiden_users: [nf_8]
+  hidden_users: [nf_8]
   wishes: []
   preferences:
     - title: 7 Wonders Duel
@@ -82,7 +82,7 @@
   password: mdp5
   profile_picture: https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Paris_Metro_5.svg/1024px-Paris_Metro_5.svg.png
   bookmarked_users: [nf_3, nf_4, nf_6, nf_7]
-  hiden_users: [nf_8]
+  hidden_users: [nf_8]
   wishes: ['Pandemic Legacy: Season 1']
   preferences:
     - title: 7 Wonders Duel
@@ -100,7 +100,7 @@
   password: mdp6
   profile_picture: https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Paris_Metro_6.svg/1024px-Paris_Metro_6.svg.png
   bookmarked_users: [nf_4, nf_3]
-  hiden_users: [nf_8]
+  hidden_users: [nf_8]
   wishes: ['Pandemic Legacy: Season 1']
   preferences:
     - title: 7 Wonders Duel
@@ -118,7 +118,7 @@
   password: mdp7
   profile_picture: https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Paris_Metro_7.svg/50px-Paris_Metro_7.svg.png
   bookmarked_users: [nf_1, nf_2, nf_3, nf_4, nf_5, nf_6]
-  hiden_users: [nf_8]
+  hidden_users: [nf_8]
   wishes: [Gloomhaven]
   preferences:
     - title: Gloomhaven
@@ -138,7 +138,7 @@
   password: mdp8
   profile_picture: https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Paris_Metro_8.svg/30px-Paris_Metro_8.svg.png
   bookmarked_users: []
-  hiden_users: [nf_1, nf_2, nf_3, nf_4, nf_5, nf_6, nf_7]
+  hidden_users: [nf_1, nf_2, nf_3, nf_4, nf_5, nf_6, nf_7]
   wishes: []
   preferences:
     - title: 7 Wonders Duel

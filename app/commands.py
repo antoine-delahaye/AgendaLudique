@@ -34,7 +34,7 @@ def syncdb():
 
 
 import yaml
-from app.models import User, Game
+from app.models import User, Game, BookmarkUser, HideUser
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -68,6 +68,8 @@ def loaddb_users(filename):
     users = yaml.safe_load(open(filename))
 
     # premier tour de boucle, creation des users
+
+    dico_users = dict()
     for u in users:
         o = User(
             email=u["email"],
@@ -77,4 +79,20 @@ def loaddb_users(filename):
             password=u["password"],
             profile_picture=u["profile_picture"])
         db.session.add(o)
+        dico_users[u["username"]] = o
+    db.session.commit()
+
+    # deuxieme tour de boucle, creation des relations UserXGame et UserXUser
+    for u in users:
+        u_id = dico_users[u["username"]].id
+        for u2 in u["bookmarked_users"]:
+            o = BookmarkUser(
+                user_id=u_id,
+                user2_id=dico_users[u2].id)
+            db.session.add(o)
+        for u2 in u["hidden_users"]:
+            o = HideUser(
+                user_id=u_id,
+                user2_id=dico_users[u2].id)
+            db.session.add(o)
     db.session.commit()
