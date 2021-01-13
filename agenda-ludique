@@ -1,0 +1,30 @@
+server {
+    server_name agenda-ludique.ddns.net;
+
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/agenda-ludique.ddns.net/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/agenda-ludique.ddns.net/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location / {
+       try_files $uri @app;
+    }
+
+    location @app {
+       include uwsgi_params;
+       uwsgi_pass unix:/tmp/agendaludique.sock;
+    }
+}
+
+server {
+    server_name agenda-ludique.ddns.net;
+
+    listen 80;
+
+    if ($host = agenda-ludique.ddns.net) {
+        return 301 https://$host$request_uri;
+    }
+	
+	return 404;
+}

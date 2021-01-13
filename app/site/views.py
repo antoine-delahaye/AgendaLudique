@@ -23,7 +23,7 @@ def library():
     Render the library template on the /library route
     """
     games_data = []
-    for data in db.session.query(Game).all():
+    for data in db.session.query(Game).limit(12).all():
         games_data.append(
             {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
              'max_players': int(data.max_players), 'image': data.image})
@@ -34,9 +34,13 @@ def library():
 @login_required
 def users():
     """
-    Render the user template on the /user route
+    Render the users template on the /users route
     """
-    return render_template('users.html', stylesheet='users')
+    users_data = []
+    for data in db.session.query(User).all():
+        users_data.append(
+            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name, 'profile_picture': data.profile_picture})
+    return render_template('users.html', stylesheet='users', users_data=users_data)
 
 @site.route('/user')
 @site.route('/user/<int:id>', methods=['GET', 'POST'])
@@ -125,7 +129,7 @@ def catalog():
     Render the catalog template on the /catalog route
     """
     games_data = []
-    for data in db.session.query(Game).all():
+    for data in db.session.query(Game).limit(12).all():
         games_data.append(
             {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
              'max_players': int(data.max_players), 'image': data.image})

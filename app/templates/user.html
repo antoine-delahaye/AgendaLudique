@@ -1,27 +1,27 @@
 {% extends "index.html" %}
 {% block main %}
     <main class="container-fluid d-flex flex-column justify-content-center adivgn-items-center mt-auto mb-auto">
-        <div class="container-right">
+        <div class="container-left">
             <h2 class="text-center mb-3">Profil de {{ user.username }}</h2>
-            <div class="container-bottom">
+            <div class="container-top">
                 <img class="img-thumbnail rounded-lg shadow-lg mx-auto d-block mb-4" id="userimg"
                     src="{{ user.profile_picture }}" alt="Image de profil">
-                <div class="container">
+                <div class="container container-info">
                     <div class="row justify-content-between">
                         <div class="col">Pseudo:</div> 
-                        <div class="col">{{ user.username }}</div>
+                        <div class="col text-right">{{ user.username }}</div>
                     </div>
                     <div class="row justify-content-between">
                         <div class="col">Prénom:</div>
-                        <div class="col">{{ user.first_name }}</div>
+                        <div class="col text-right">{{ user.first_name }}</div>
                     </div>
                     <div class="row justify-content-between">
                         <div class="col">Nom:</div>
-                        <div class="col">{{ user.last_name }}</div>
+                        <div class="col text-right">{{ user.last_name }}</div>
                     </div>
                     <div class="row justify-content-between">
                         <div class="col">Addresse électronique:</div>
-                        <div class="col">{{ user.email }}</div>
+                        <div class="col text-right">{{ user.email }}</div>
                     </div>
                 </div>
             </div>
