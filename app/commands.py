@@ -34,13 +34,37 @@ def syncdb():
 
 
 import yaml
-from app.models import User
+from app.models import User, Game
+
+
+@admin_blueprint.cli.command('loaddb_games')
+@click.argument('filename')
+def loaddb_games(filename):
+    """ Populates the database with games from a yml file """
+    games = yaml.safe_load(open(filename))
+
+    cpt = 0
+    for game in games.values():
+        if len(game["title"]) <= 64: #
+            o = Game(
+                title=game["title"],
+                publication_year=game["publication_year"],
+                min_players=game["min_players"],
+                max_players=game["max_players"],
+                min_playtime=game["min_playtime"],
+                image=game["images"]["original"])
+            db.session.add(o)
+        else:
+            print(game["title"], " - ", len(game["title"]))
+            cpt += 1
+    db.session.commit()
+    print("Nombre de jeux rejetés : ", cpt)
 
 
 @admin_blueprint.cli.command('loaddb_users')
 @click.argument('filename')
 def loaddb_users(filename):
-    """ Populates the database with users and user-related relationships """
+    """ Populates the database with users and user-related relationships from a yml file """
     users = yaml.safe_load(open(filename))
 
     # premier tour de boucle, creation des users
