@@ -4,6 +4,6 @@
     border-color: #ced4da;
 }
 
-#advanced-search {
-    box-sizing: content-box;
+#advanced-search-title {
+    margin-top: 2%;
 }

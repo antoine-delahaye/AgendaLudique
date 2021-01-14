@@ -3,7 +3,8 @@
     <main class="container-fluid col-9 mb-5">
         <h2 class="text-center mb-5">Joueurs</h2>
 
-        <form class="my-5 mx-auto">
+        <form class="my-5 mx-auto" action="{{ url_for('site.users') }}" method="POST">
+            {{ form.hidden_tag() }}
             <div class="input-group">
                 {{ form.username_hint }}
                 <div class="input-group-append" id="search-buttons">
@@ -28,7 +29,7 @@
                     <div class="card mb-4 shadow-sm">
                         <img class="card-img mx-auto"
                              src="{{ item["profile_picture"] }}"
-                             alt="Illustration">
+                             alt="Image de profil de {{ item["username"] }}">
                         <div class="card-body">
                             <p class="text-truncate font-weight-bold">{{ item["title"] }}
                                 {{ item["username"] }}</p>
