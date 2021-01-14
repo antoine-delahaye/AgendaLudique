@@ -1,0 +1,5 @@
+- name: "Gloomhaven fans"
+  is_private: False
+  password: "G34BBW"
+  manager: nf_1
+  members: [nf_1, nf_2, nf_3, nf_7]

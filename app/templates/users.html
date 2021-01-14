@@ -2,26 +2,40 @@
 {% block main %}
     <main class="container-fluid col-9 mb-5">
         <h2 class="text-center mb-5">Joueurs</h2>
-        <form class="my-5 mx-auto">
-            <div class="form-group">
-                <label class="d-none" for="search-input">Rechercher un joueur grâce à son nom</label>
-                <input class="form-control" id="search-input" type="text"
-                       placeholder="Rechercher un jeu grâce à son nom">
+
+        <form class="my-5 mx-auto" action="{{ url_for('site.users') }}" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="input-group">
+                {{ form.username_hint }}
+                <div class="input-group-append" id="search-buttons">
+                    <button class="btn show-advanced-search" type="button" data-toggle="collapse" data-target="#advanced-search" aria-expanded="false" aria-controls="advanced-search">
+                        <i class="fa fa-sliders" aria-hidden="true"></i>
+                    </button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </div>
+            </div>
+            <div class="collapse" id="advanced-search">
+                <div class="card card-body">
+                    <h5 id="advanced-search-title" class="card-title">Recherche avancée</h5>
+                    <p>{{ form.display_favorites_players_only }} {{ form.display_favorites_players_only.label }}</p>
+                    <p>{{ form.display_masked_players }} {{ form.display_masked_players.label }}</p>
+                </div>
             </div>
         </form>
+
         <div class="row">
             {% for item in users_data %}
                 <div class="col-xl-3 col-lg-4 col-md-6">
                     <div class="card mb-4 shadow-sm">
                         <img class="card-img mx-auto"
                              src="{{ item["profile_picture"] }}"
-                             alt="Illustration">
+                             alt="Image de profil de {{ item["username"] }}">
                         <div class="card-body">
                             <p class="text-truncate font-weight-bold">{{ item["title"] }}
                                 {{ item["username"] }}</p>
                             <div class="d-flex flex-row align-items-center">
                                 <p class="mb-0">{{ item["first_name"] }} {{ item["last_name"] }}</p>
-                                <i class="ml-auto far fa-plus-square" id="{{ item["id"] }}" onclick="game(this)"></i>
+                                <i class="ml-auto far fa-star" id="{{ item["id"] }}"></i>
                             </div>
                         </div>
                     </div>
