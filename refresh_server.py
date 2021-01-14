@@ -2,7 +2,7 @@ import git
 import subprocess
 import time
 
-repo = git.Repo('/home/p0slx/Github/test')
+repo = git.Repo('./')
 
 while True:
     current = repo.head.commit
