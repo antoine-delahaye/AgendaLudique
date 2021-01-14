@@ -1,12 +1,12 @@
 # app/site/views.py
 import flask_login
-from flask import render_template, redirect, url_for, request
-from flask_login import login_required
+from flask import render_template, redirect, url_for, request, make_response
+from flask_login import login_required, current_user
 
 from app.site import site
-from app.site.forms import UpdateInformationForm, GamesSearchForm
+from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 from app import db
-from app.models import User, Game
+from app.models import User, Game, Group, HideUser, BookmarkUser
 
 
 @site.route('/')
@@ -35,12 +35,24 @@ def users():
     """
     Render the users template on the /users route
     """
-    users_data = []
-    for data in db.session.query(User).all():
-        users_data.append(
+    form = UsersSearchForm()
+
+    db_players = []
+    result_users_data = []
+
+    if form.validate_on_submit():
+        username_hint = form.username_hint.data
+        if username_hint is not None:
+            db_players = db.session.query(User).filter(User.username.like('%' + username_hint + '%'))
+    else:
+        db_players = db.session.query(User).limit(12).all()
+
+    for data in db_players:
+        result_users_data.append(
             {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name,
              'profile_picture': data.profile_picture})
-    return render_template('users.html', stylesheet='users', users_data=users_data)
+
+    return render_template('users.html', stylesheet='users', form=form, users_data=result_users_data)
 
 
 @site.route('/user')
@@ -52,6 +64,46 @@ def user(id=None):
     """
     user = User.query.get_or_404(id)
     return render_template('user.html', stylesheet='user', user=user)
+
+
+@site.route('/hide-user', methods=['GET'])
+@login_required
+def hide_user(user_id=None):
+    """
+    Add the declared user (property "user" in the query string) to the hidden users
+    on the /hide-user route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_hide = User.query.get(user_id)
+        if user_to_hide is not None:
+            hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
+            db.session.add(hidden_user)
+            db.session.commit()
+
+    return redirect(url_for('site.users'))
+
+
+@site.route('/bookmark-user', methods=['GET'])
+@login_required
+def bookmark_user(user_id=None):
+    """
+    Add the declared user (property "user" in the query string) to the bookmarked users
+    on the /bookmark-user route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_bookmark = User.query.get(user_id)
+        if user_to_bookmark is not None:
+            bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
+            db.session.add(bookmarked_user)
+            db.session.commit()
+
+    return redirect(url_for('site.users'))
 
 
 @site.route('/account', methods=['GET', 'POST'])
@@ -74,13 +126,21 @@ def account():
     return render_template('account.html', stylesheet='account', form=form)
 
 
-@site.route('/parameters', methods=['GET', 'POST'])
+@site.route('/parameters')
 @login_required
 def parameters():
     """
     Render the parameters template on the /parameters route
     """
-    return render_template('parameters.html', stylesheet='parameters')
+    return render_template('parameters.html', stylesheet=None)
+
+@site.route('/set_parameters', methods = ['POST'])
+@login_required
+def set_parameters():
+    color_theme = "On" if request.form.get('color-theme')!=None else "Off"
+    param = make_response(redirect(url_for('site.parameters')))
+    param.set_cookie('color-theme', color_theme)
+    return param
 
 
 # Group related ##################################################################
@@ -90,16 +150,36 @@ def groups():
     """
     Render the groups template on the /groups route
     """
-    return render_template('groups.html', stylesheet='groups')
+    groups_data = []
+    for data in db.session.query(Group).all():
+        groups_data.append(
+            {'id': int(data.id), 'name': data.name})
+    return render_template('groups.html', stylesheet='groups', groups_data = groups_data)
 
-
-@site.route('/group', methods=['GET', 'POST'])
+@site.route('/groups_private')
 @login_required
-def group():
+def groups_private():
     """
-    Render the group template on the /group route
+    Render the groups template on the /groups_private route
     """
-    return render_template('group.html', stylesheet='group')
+    groups_data = []
+    for data in db.session.query(Group).all():
+        if data.is_private==False:
+            groups_data.append(
+                {'id': int(data.id), 'name': data.name})
+    return render_template('groups_private.html', stylesheet='groups', groups_data = groups_data)
+
+
+@site.route('/group')
+@site.route('/group/<int:id>', methods=['GET', 'POST'])
+@login_required
+def group(id=None):
+    """
+    Render the groups template on the /group route
+    """
+    group = Group.query.get_or_404(id)
+    return render_template('group.html', stylesheet='group', group=group)
+
 
 
 # Session related ################################################################
