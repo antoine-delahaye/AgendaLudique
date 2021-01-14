@@ -1,9 +1,10 @@
 import json
-
+import os
+import sys
+import mariadb
 import requests
 import yaml
-from bs4 import BeautifulSoup
-
+from concurrent.futures.thread import ThreadPoolExecutor
 from bs4 import BeautifulSoup
 
 domain = "https://boardgamegeek.com"
@@ -74,6 +75,7 @@ def get_game_info(url):
         "min_players": int(json_text["minplayers"]),
         "max_players": int(json_text["maxplayers"]),
         "min_playtime": int(json_text["minplaytime"]),
+        "average_rating": float(json_text["stats"]["average"]),
         "images": covers
     }
 
@@ -86,7 +88,7 @@ def create_game_list(raw_html):
         href = game.find('a')['href']  # extract href content
         id_game = int(href.split('/')[2])  # extract id from href content
         game_info = get_game_info(href)  # Get game info into dict
-        if game_info is not None:   # Check if we have game info, if not skip this game
+        if game_info is not None:  # Check if we have game info, if not skip this game
             game_list_dict[id_game] = game_info  # Transfer game info into the big ass dict
             game_list_dict[id_game]["rank"] = i  # Add rank to save order
             print(f"Jeu n⁰{i}: {game_list_dict[id_game]['title']}")  # Just to inform where the program is
@@ -97,7 +99,7 @@ def create_game_list(raw_html):
 
 
 def save_yaml(game_list_dict):
-    with open('games-data.yaml', 'w') as f:
+    with open('games-data.yaml', 'a') as f:
         f.write(yaml.dump(game_list_dict, sort_keys=False))  # write game_list_dict to the file and disable auto sort
 
 
@@ -135,17 +137,30 @@ def save_db(game_list_dict):
         game_id = game_id + 1
 
 
+def sub_main(j):
+    main_html = BeautifulSoup(  # Request raw page and make a bs4 object
+        requests.get(main_url + str(j)).text,
+        "html.parser"
+    )
+    game_list_dict = create_game_list(main_html)
+    print("Sauvegarde dans le fichier yaml en cours...")
+    save_yaml(game_list_dict)  # Save yaml into games-data.yaml
+    print("Fini !")
+
+
 def main():
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
-    game_list_dict = {}  # Dict of all games (this is what's going into the yaml)
-    for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
-        main_html = BeautifulSoup(  # Request raw page and make a bs4 object
-            requests.get(main_url + str(j)).text,
-            "html.parser"
-        )
-        game_list_dict = {**game_list_dict, **create_game_list(main_html)}  # Merge dict
-    save_yaml(game_list_dict)  # Save yaml into games-data.yaml
+
+    try:
+        os.remove("games-data.yaml")
+        print("Ancien game-data.yaml supprimé")
+    except FileNotFoundError:
+        print("Création de game-data.yaml")
+
+    with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
+        for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
+            executor.submit(sub_main, j)
 
 
 if __name__ == '__main__':
