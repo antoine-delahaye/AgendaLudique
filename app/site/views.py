@@ -1,12 +1,12 @@
 # app/site/views.py
 import flask_login
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required
 
 from app.site import site
 from app.site.forms import UpdateInformationForm, GamesSearchForm
 from app import db
-from app.models import User, Game
+from app.models import User, Game, Group
 
 
 @site.route('/')
@@ -74,14 +74,21 @@ def account():
     return render_template('account.html', stylesheet='account', form=form)
 
 
-@site.route('/parameters', methods=['GET', 'POST'])
+@site.route('/parameters')
 @login_required
 def parameters():
     """
     Render the parameters template on the /parameters route
     """
-    return render_template('parameters.html', stylesheet='parameters')
+    return render_template('parameters.html', stylesheet=None)
 
+@site.route('/set_parameters', methods = ['POST'])
+@login_required
+def set_parameters():
+    color_theme = "On" if request.form.get('color-theme')!=None else "Off"
+    param = make_response(redirect(url_for('site.parameters')))
+    param.set_cookie('color-theme', color_theme)
+    return param
 
 # Group related ##################################################################
 @site.route('/groups')
@@ -90,16 +97,34 @@ def groups():
     """
     Render the groups template on the /groups route
     """
-    return render_template('groups.html', stylesheet='groups')
+    groups_data = []
+    for data in db.session.query(Group).all():
+        groups_data.append(
+            {'id': int(data.id), 'name': data.name})
+    return render_template('groups.html', stylesheet='groups', groups_data = groups_data)
 
-
-@site.route('/group', methods=['GET', 'POST'])
+@site.route('/groups_private')
 @login_required
-def group():
+def groups_private():
     """
-    Render the group template on the /group route
+    Render the groups template on the /groups_private route
     """
-    return render_template('group.html', stylesheet='group')
+    groups_data = []
+    for data in db.session.query(Group).all():
+        if data.is_private==False:
+            groups_data.append(
+                {'id': int(data.id), 'name': data.name})
+    return render_template('groups_private.html', stylesheet='groups', groups_data = groups_data)
+
+@site.route('/group')
+@site.route('/group/<int:id>', methods=['GET', 'POST'])
+@login_required
+def group(id=None):
+    """
+    Render the groups template on the /group route
+    """
+    group = Group.query.get_or_404(id)
+    return render_template('group.html', stylesheet='group', group=group)
 
 
 # Session related ################################################################
