@@ -1,12 +1,12 @@
 # app/site/views.py
 import flask_login
-from flask import render_template, redirect, url_for
-from flask_login import login_required
+from flask import render_template, redirect, url_for, request
+from flask_login import login_required, current_user
 
 from app.site import site
 from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 from app import db
-from app.models import User, Game
+from app.models import User, Game, HideUser
 
 
 @site.route('/')
@@ -15,6 +15,7 @@ def home():
     Render the homepage template on the / route
     """
     return render_template('home.html', stylesheet='home')
+
 
 @site.route('/library')
 @login_required
@@ -25,7 +26,8 @@ def library():
     games_data = []
     for data in db.session.query(Game).limit(12).all():
         games_data.append(
-            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
+            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year),
+             'min_players': int(data.min_players),
              'max_players': int(data.max_players), 'image': data.image})
     return render_template('library.html', stylesheet='library', games_data=games_data)
 
@@ -38,23 +40,57 @@ def users():
     Render the users template on the /users route
     """
     form = UsersSearchForm()
-    users_data = []
-    for data in db.session.query(User).all():
-        users_data.append(
+
+    db_players = []
+    result_users_data = []
+
+    if form.validate_on_submit():
+        username_hint = form.username_hint.data
+        if username_hint is not None:
+            db_players = db.session.query(User).filter(User.username.like('%' + username_hint + '%'))
+    else:
+        db_players = db.session.query(User).limit(12).all()
+
+    for data in db_players:
+        result_users_data.append(
             {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name,
              'profile_picture': data.profile_picture})
-    return render_template('users.html', stylesheet='users', form=form, users_data=users_data)
+
+    return render_template('users.html', stylesheet='users', form=form, users_data=result_users_data)
 
 
 @site.route('/user')
 @site.route('/user/<int:id>', methods=['GET', 'POST'])
 @login_required
-def user(id = None):
+def user(id=None):
     """
     Render the user template on the /user route
     """
-    user=User.query.get_or_404(id)
+    user = User.query.get_or_404(id)
     return render_template('user.html', stylesheet='user', user=user)
+
+
+@site.route('/hide-user', methods=['GET'])
+@login_required
+def hide_user(user_id=None):
+    """
+    Add the declared user (property "user" in the query string) to the hidden users
+    on the /hide-user route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_hide = User.query.get(user_id)
+        if user_to_hide is not None:
+            hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
+            print("Je suis " + str(connected_user.id))
+            print(hidden_user)
+            db.session.add(hidden_user)
+            db.session.commit()
+
+    return redirect(url_for('site.users'))
+
 
 @site.route('/account', methods=['GET', 'POST'])
 @login_required
@@ -75,6 +111,7 @@ def account():
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)
 
+
 @site.route('/parameters', methods=['GET', 'POST'])
 @login_required
 def parameters():
@@ -82,6 +119,7 @@ def parameters():
     Render the parameters template on the /parameters route
     """
     return render_template('parameters.html', stylesheet='parameters')
+
 
 # Group related ##################################################################
 @site.route('/groups')
@@ -92,6 +130,7 @@ def groups():
     """
     return render_template('groups.html', stylesheet='groups')
 
+
 @site.route('/group', methods=['GET', 'POST'])
 @login_required
 def group():
@@ -99,6 +138,7 @@ def group():
     Render the group template on the /group route
     """
     return render_template('group.html', stylesheet='group')
+
 
 # Session related ################################################################
 @site.route('/sessions', methods=['GET', 'POST'])
@@ -109,6 +149,7 @@ def sessions():
     """
     return render_template('sessions.html', stylesheet='sessions')
 
+
 @site.route('/session', methods=['GET', 'POST'])
 @login_required
 def session():
@@ -117,6 +158,7 @@ def session():
     """
     return render_template('session.html', stylesheet='session')
 
+
 @site.route('/organize_session', methods=['GET', 'POST'])
 @login_required
 def organize_session():
@@ -124,6 +166,7 @@ def organize_session():
     Render the organize_session template on the /organize_session route
     """
     return render_template('organize_session.html', stylesheet='organize_session')
+
 
 # Games adding/editing related ###################################################
 @site.route('/catalog')
@@ -135,9 +178,11 @@ def catalog():
     games_data = []
     for data in db.session.query(Game).limit(12).all():
         games_data.append(
-            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
+            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year),
+             'min_players': int(data.min_players),
              'max_players': int(data.max_players), 'image': data.image})
     return render_template('catalog.html', stylesheet='catalog', games_data=games_data)
+
 
 @site.route('/game', methods=['GET', 'POST'])
 @login_required
@@ -146,6 +191,7 @@ def game():
     Render the game template on the /game route
     """
     return render_template('game.html', stylesheet='game')
+
 
 @site.route('/add-games', methods=['GET', 'POST'])
 @login_required
@@ -181,6 +227,7 @@ def add_games():
         print(researched_game)
         return render_template('add-games.html', form=form, stylesheet='add-games', researched_game=researched_game)
     return render_template('add-games.html', stylesheet='add-games', form=form)
+
 
 @site.route('/edit-games', methods=['GET', 'POST'])
 @login_required
