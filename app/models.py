@@ -19,9 +19,7 @@ class User(UserMixin, db.Model):
     first_name = db.Column(db.String(32), index=True)
     last_name = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
-    profile_picture = db.Column(db.String(512),
-                                default='https://acsmmontreal.qc.ca/wp-content/uploads/2020/09/blank-profile-picture'
-                                        '-973460_1280-7.png')
+    profile_picture = db.Column(db.String(512))
 
     # statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
     # statistics = db.relationship(
@@ -57,8 +55,9 @@ class User(UserMixin, db.Model):
         """
         Get an user from its username. Return None if the user does not exist.
         """
-        req = User.query.filter(User.username==username).first()
+        req = User.query.filter(User.username == username).first()
         return req if req else None
+
 
 # Set up user_loader
 @login_manager.user_loader
@@ -90,7 +89,7 @@ class BookmarkUser(db.Model):
         Get a BookmarkUser relationship from its game and user ids.
         Return None if the relationship does not exist.
         """
-        req = BookmarkUser.query.filter(BookmarkUser.user_id==user_id, BookmarkUser.user2_id==user2_id).first()
+        req = BookmarkUser.query.filter(BookmarkUser.user_id == user_id, BookmarkUser.user2_id == user2_id).first()
         return req if req else None
 
 
@@ -118,7 +117,7 @@ class HideUser(db.Model):
         Get a HideUser relationship from its game and user ids.
         Return None if the relationship does not exist.
         """
-        req = HideUser.query.filter(HideUser.user_id==user_id, HideUser.user2_id==user2_id).first()
+        req = HideUser.query.filter(HideUser.user_id == user_id, HideUser.user2_id == user2_id).first()
         return req if req else None
 
 
@@ -164,7 +163,7 @@ class Wish(db.Model):
         """
         Get a Wish from its game and user ids. Return None if the wish does not exist.
         """
-        req = Wish.query.filter(Wish.user_id==user_id, Wish.game_id==game_id).first()
+        req = Wish.query.filter(Wish.user_id == user_id, Wish.game_id == game_id).first()
         return req if req else None
 
 
@@ -192,7 +191,7 @@ class Prefer(db.Model):
         """
         Get a preference from its game and user ids. Return None if the preference does not exist.
         """
-        req = Prefer.query.filter(Prefer.user_id==user_id, Prefer.game_id==game_id).first()
+        req = Prefer.query.filter(Prefer.user_id == user_id, Prefer.game_id == game_id).first()
         return req if req else None
 
 
@@ -218,7 +217,7 @@ class KnowRules(db.Model):
         """
         Get a KnowRules relationship from its game and user ids. Return None if the relationship does not exist.
         """
-        req = KnowRules.query.filter(KnowRules.user_id==user_id, KnowRules.game_id==game_id).first()
+        req = KnowRules.query.filter(KnowRules.user_id == user_id, KnowRules.game_id == game_id).first()
         return req if req else None
 
 
@@ -244,7 +243,7 @@ class Collect(db.Model):
         """
         Get a Collect relationship from its game and user ids. Return None if the relationship does not exist.
         """
-        req = Collect.query.filter(Collect.user_id==user_id, Collect.game_id==game_id).first()
+        req = Collect.query.filter(Collect.user_id == user_id, Collect.game_id == game_id).first()
         return req if req else None
 
 
@@ -273,7 +272,7 @@ class Note(db.Model):
         """
         Get a Note from its game and user ids. Return None if the note does not exist.
         """
-        req = Note.query.filter(Note.user_id==user_id,Note.game_id==game_id).first()
+        req = Note.query.filter(Note.user_id == user_id, Note.game_id == game_id).first()
         return req if req else None
 
 
@@ -300,7 +299,57 @@ class Game(UserMixin, db.Model):
         """
         Get a Game from its title. Return None if the game does not exist.
         """
-        req = Game.query.filter(Game.title==title).first()
+        req = Game.query.filter(Game.title == title).first()
+        return req if req else None
+
+
+class Genre(db.Model):
+    """
+    Create a Genre table
+    """
+
+    __tablename__ = 'genres'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32), unique=True)
+
+    def __repr__(self):
+        return f'<Genre: {self.name}>'
+
+    @classmethod
+    def from_name(cls, name):
+        """
+        Get a Genre from its name. Return None if the game does not exist.
+        """
+        req = Genre.query.filter(Genre.name == name).first()
+        return req if req else None
+
+
+class Classification(db.Model):
+    """
+    Create a relationship between a Game and a Genre
+    """
+
+    game_id = db.Column(db.Integer, db.ForeignKey("games.id"), primary_key=True)
+    game = db.relationship(
+        "Game",
+        backref=db.backref("classifications", lazy="dynamic"),
+        foreign_keys=[game_id])
+
+    genre_id = db.Column(db.Integer, db.ForeignKey("genres.id"), primary_key=True)
+    genre = db.relationship(
+        "Genre",
+        backref=db.backref("classifications", lazy="dynamic"),
+        foreign_keys=[genre_id])
+
+    @classmethod
+    def from_both_ids(cls, game_id, genre_id):
+        """
+        Get a Classification relationship from its Game and Genre ids.
+        Return None if the relationship does not exist.
+        """
+        req = Classification.query.filter(Classification.game_id == game_id,
+                                          Classification.genre_id == genre_id).first()
         return req if req else None
 
 
@@ -312,7 +361,7 @@ class Group(db.Model):
     __tablename__ = 'groups'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32))
+    name = db.Column(db.String(32), unique=True)
     is_private = db.Column(db.Boolean)
     password = db.Column(db.String(10))
 
@@ -347,7 +396,7 @@ class Participate(db.Model):
         Get a Participate relationship from its user and group ids.
         Return None if the relationship does not exist.
         """
-        req = Participate.query.filter(Participate.member_id==member_id, Participate.group_id==group_id).first()
+        req = Participate.query.filter(Participate.member_id == member_id, Participate.group_id == group_id).first()
         return req if req else None
 
 
@@ -361,7 +410,7 @@ class TimeSlot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     beginning = db.Column(db.Time)
     end = db.Column(db.Time)
-    day = db.Column(db.Date) # db.Column(db.Date) ?
+    day = db.Column(db.Date)  #  db.Column(db.Date) ?
 
 
 class Available(db.Model):
@@ -369,7 +418,7 @@ class Available(db.Model):
     Create a relationship between a TimeSlot and a User
     """
 
-    periodicity = db.Column(db.Integer) # db.Column(db.String) ?
+    periodicity = db.Column(db.Integer)  # db.Column(db.String) ?
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     user = db.relationship(
@@ -389,7 +438,7 @@ class Available(db.Model):
         Get a Available relationship from its user and timeslot ids.
         Return None if the relationship does not exist.
         """
-        req = Available.query.filter(Available.user_id==user_id, Available.timeslot_id==timeslot_id).first()
+        req = Available.query.filter(Available.user_id == user_id, Available.timeslot_id == timeslot_id).first()
         return req if req else None
 
 
@@ -500,7 +549,7 @@ class Play(db.Model):
         Get a Play relationship from its user and session ids.
         Return None if the relationship does not exist.
         """
-        req = Play.query.filter(Play.user_id==user_id, Play.session_id==session_id).first()
+        req = Play.query.filter(Play.user_id == user_id, Play.session_id == session_id).first()
         return req if req else None
 
 
@@ -529,7 +578,7 @@ class Comment(db.Model):
         Get a Comment relationship from its user and session ids.
         Return None if the relationship does not exist.
         """
-        req = Comment.query.filter(Comment.user_id==user_id, Comment.session_id==session_id).first()
+        req = Comment.query.filter(Comment.user_id == user_id, Comment.session_id == session_id).first()
         return req if req else None
 
 
@@ -556,8 +605,8 @@ class Use(db.Model):
     @classmethod
     def from_both_ids(cls, session_id, game_id):
         """
-        Get a Use relationship from its session and game ids.
+        Get a Use relationship from its session and game ids
         Return None if the relationship does not exist.
         """
-        req = Use.query.filter(Use.session_id==user_id, Use.game_id==session_id).first()
+        req = Use.query.filter(Use.session_id == session_id, Use.game_id == game_id).first()
         return req if req else None
