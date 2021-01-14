@@ -94,16 +94,23 @@
                         <a class="nav-link dropdown-toggle text-white mt-1" href="#" id="navbarDropdownMenuLink"
                            role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                           {{ current_user.username }}
-                           <img class="rounded-lg" src="{{ current_user.profile_picture }}" alt="Image de profil"
-                                width="32" height="32">
+                            {{ current_user.username }}
+                            {% if current_user.profile_picture == None %}
+                                <img class="rounded-lg ml-1" src="{{ url_for("static", filename="images/blank_pp.png") }}"
+                                     alt="Image de profil"
+                                     width="32" height="32">
+                            {% else %}
+                                <img class="rounded-lg ml-1" src="{{ current_user.profile_picture }}" alt="Image de profil"
+                                     width="32" height="32">
+                            {% endif %}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="{{ url_for('site.user') }}/{{ current_user.id }}">Mon profil</a>
+                            <a class="dropdown-item" href="{{ url_for('site.user') }}/{{ current_user.id }}">Mon
+                                profil</a>
                             <a class="dropdown-item" href="{{ url_for('site.account') }}">Gérer mon profil</a>
                             <a class="dropdown-item" href="{{ url_for('site.parameters') }}">Paramètres</a>
                             <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Se déconnecter</a>
-                        </div>                        
+                        </div>
                     </li>
                 </ul>
             </div>

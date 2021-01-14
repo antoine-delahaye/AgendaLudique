@@ -195,7 +195,6 @@ def group(id=None):
     return render_template('group.html', stylesheet='group', group=group)
 
 
-
 # Session related ################################################################
 @site.route('/sessions', methods=['GET', 'POST'])
 @login_required
