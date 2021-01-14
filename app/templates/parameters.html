@@ -1,3 +1,13 @@
 {% extends "index.html" %}
 {% block main %}
+    <main class="container-fluid d-flex flex-column justify-content-center align-items-center mt-auto mb-auto text-center">
+        <h2 class="mb-5">Mes paramètres</h2>
+        <form id="parameters" class="container mb-5" method="POST" action="/set_parameters">
+            <div>
+                <label for="color-theme">Thème sombre</label>
+                <input type="checkbox" name="color-theme" {% if request.cookies.get('color-theme')=='On' %} checked {% endif %} value="On"></input>
+            </div>
+        </form>
+        <button type="submit" form="parameters" class="btn btn-primary">Valider</button>
+    </main>
 {% endblock %}

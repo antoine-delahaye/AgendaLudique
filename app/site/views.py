@@ -1,12 +1,12 @@
 # app/site/views.py
 import flask_login
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required
 
 from app.site import site
 from app.site.forms import UpdateInformationForm, GamesSearchForm
 from app import db
-from app.models import User, Game
+from app.models import User, Game, Group
 
 
 @site.route('/')
@@ -16,18 +16,17 @@ def home():
     """
     return render_template('home.html', stylesheet='home')
 
+
 @site.route('/library')
 @login_required
 def library():
     """
     Render the library template on the /library route
     """
-    games_data = []
-    for data in db.session.query(Game).limit(12).all():
-        games_data.append(
-            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
-             'max_players': int(data.max_players), 'image': data.image})
-    return render_template('library.html', stylesheet='library', games_data=games_data)
+    page = request.args.get('page', 1, type=int)
+    games = Game.query.paginate(page=page, per_page=20)
+    return render_template('library.html', stylesheet='library', games=games)
+
 
 # Account/Profil related #########################################################
 @site.route('/users', methods=['GET', 'POST'])
@@ -39,18 +38,21 @@ def users():
     users_data = []
     for data in db.session.query(User).all():
         users_data.append(
-            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name, 'profile_picture': data.profile_picture})
+            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name,
+             'profile_picture': data.profile_picture})
     return render_template('users.html', stylesheet='users', users_data=users_data)
+
 
 @site.route('/user')
 @site.route('/user/<int:id>', methods=['GET', 'POST'])
 @login_required
-def user(id = None):
+def user(id=None):
     """
     Render the user template on the /user route
     """
-    user=User.query.get_or_404(id)
+    user = User.query.get_or_404(id)
     return render_template('user.html', stylesheet='user', user=user)
+
 
 @site.route('/account', methods=['GET', 'POST'])
 @login_required
@@ -71,13 +73,22 @@ def account():
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)
 
-@site.route('/parameters', methods=['GET', 'POST'])
+
+@site.route('/parameters')
 @login_required
 def parameters():
     """
     Render the parameters template on the /parameters route
     """
-    return render_template('parameters.html', stylesheet='parameters')
+    return render_template('parameters.html', stylesheet=None)
+
+@site.route('/set_parameters', methods = ['POST'])
+@login_required
+def set_parameters():
+    color_theme = "On" if request.form.get('color-theme')!=None else "Off"
+    param = make_response(redirect(url_for('site.parameters')))
+    param.set_cookie('color-theme', color_theme)
+    return param
 
 # Group related ##################################################################
 @site.route('/groups')
@@ -86,15 +97,35 @@ def groups():
     """
     Render the groups template on the /groups route
     """
-    return render_template('groups.html', stylesheet='groups')
+    groups_data = []
+    for data in db.session.query(Group).all():
+        groups_data.append(
+            {'id': int(data.id), 'name': data.name})
+    return render_template('groups.html', stylesheet='groups', groups_data = groups_data)
 
-@site.route('/group', methods=['GET', 'POST'])
+@site.route('/groups_private')
 @login_required
-def group():
+def groups_private():
     """
-    Render the group template on the /group route
+    Render the groups template on the /groups_private route
     """
-    return render_template('group.html', stylesheet='group')
+    groups_data = []
+    for data in db.session.query(Group).all():
+        if data.is_private==False:
+            groups_data.append(
+                {'id': int(data.id), 'name': data.name})
+    return render_template('groups_private.html', stylesheet='groups', groups_data = groups_data)
+
+@site.route('/group')
+@site.route('/group/<int:id>', methods=['GET', 'POST'])
+@login_required
+def group(id=None):
+    """
+    Render the groups template on the /group route
+    """
+    group = Group.query.get_or_404(id)
+    return render_template('group.html', stylesheet='group', group=group)
+
 
 # Session related ################################################################
 @site.route('/sessions', methods=['GET', 'POST'])
@@ -105,6 +136,7 @@ def sessions():
     """
     return render_template('sessions.html', stylesheet='sessions')
 
+
 @site.route('/session', methods=['GET', 'POST'])
 @login_required
 def session():
@@ -112,6 +144,7 @@ def session():
     Render the session template on the /session route
     """
     return render_template('session.html', stylesheet='session')
+
 
 @site.route('/organize_session', methods=['GET', 'POST'])
 @login_required
@@ -121,6 +154,7 @@ def organize_session():
     """
     return render_template('organize_session.html', stylesheet='organize_session')
 
+
 # Games adding/editing related ###################################################
 @site.route('/catalog')
 @login_required
@@ -128,12 +162,10 @@ def catalog():
     """
     Render the catalog template on the /catalog route
     """
-    games_data = []
-    for data in db.session.query(Game).limit(12).all():
-        games_data.append(
-            {'id': int(data.id), 'title': data.title, 'publication_year': int(data.publication_year), 'min_players': int(data.min_players),
-             'max_players': int(data.max_players), 'image': data.image})
-    return render_template('catalog.html', stylesheet='catalog', games_data=games_data)
+    page = request.args.get('page', 1, type=int)
+    games = Game.query.paginate(page=page, per_page=20)
+    return render_template('catalog.html', stylesheet='catalog', games=games)
+
 
 @site.route('/game', methods=['GET', 'POST'])
 @login_required
@@ -142,6 +174,7 @@ def game():
     Render the game template on the /game route
     """
     return render_template('game.html', stylesheet='game')
+
 
 @site.route('/add-games', methods=['GET', 'POST'])
 @login_required
@@ -177,6 +210,7 @@ def add_games():
         print(researched_game)
         return render_template('add-games.html', form=form, stylesheet='add-games', researched_game=researched_game)
     return render_template('add-games.html', stylesheet='add-games', form=form)
+
 
 @site.route('/edit-games', methods=['GET', 'POST'])
 @login_required
