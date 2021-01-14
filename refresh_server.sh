@@ -1,7 +1,6 @@
 #!/bin/sh
 
 while true; do 
-
     UPSTREAM=${1:-'@{u}'}
     LOCAL=$(git rev-parse @)
     REMOTE=$(git rev-parse "$UPSTREAM")
@@ -11,7 +10,7 @@ while true; do
         echo `date` >> log.txt
         echo `git log --pretty=format:'%h : %s' --graph $LOCAL $REMOTE` >> log.log
         echo "\n\n\n" >> log.txt
-        git pull &>/dev/null
+        git pull origin master &>/dev/null
         echo "Restarting nginx"
         systemctl restart nginx &>/dev/null
         echo "Restarting uwsgi"
