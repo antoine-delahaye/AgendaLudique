@@ -6,7 +6,7 @@ from flask_login import login_required, current_user
 from app.site import site
 from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 from app import db
-from app.models import User, Game, Group, HideUser, BookmarkUser
+from app.models import User, Game, Group, HideUser, BookmarkUser, Collect
 
 
 @site.route('/')
@@ -25,7 +25,19 @@ def library():
     """
     page = request.args.get('page', 1, type=int)
     games = Game.query.paginate(page=page, per_page=20)
-    return render_template('library.html', stylesheet='library', games=games)
+    user_collection = []
+    for data in Collect.query.filter_by(user_id=flask_login.current_user.id).all():
+        user_collection.append(data.game_id)
+    return render_template('library.html', stylesheet='library', games=games, user_collection=user_collection)
+
+
+@site.route('/remove', methods=['GET', 'POST'])
+@site.route('/remove/<game_id>', methods=['GET', 'POST'])
+@login_required
+def remove_game_collection(game_id):
+    db.session.delete(Collect.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
+    db.session.commit()
+    return redirect(request.referrer)
 
 
 # Account/Profil related #########################################################
@@ -134,10 +146,11 @@ def parameters():
     """
     return render_template('parameters.html', stylesheet=None)
 
-@site.route('/set_parameters', methods = ['POST'])
+
+@site.route('/set_parameters', methods=['POST'])
 @login_required
 def set_parameters():
-    color_theme = "On" if request.form.get('color-theme')!=None else "Off"
+    color_theme = "On" if request.form.get('color-theme') != None else "Off"
     param = make_response(redirect(url_for('site.parameters')))
     param.set_cookie('color-theme', color_theme)
     return param
@@ -154,7 +167,8 @@ def groups():
     for data in db.session.query(Group).all():
         groups_data.append(
             {'id': int(data.id), 'name': data.name})
-    return render_template('groups.html', stylesheet='groups', groups_data = groups_data)
+    return render_template('groups.html', stylesheet='groups', groups_data=groups_data)
+
 
 @site.route('/groups_private')
 @login_required
@@ -164,10 +178,10 @@ def groups_private():
     """
     groups_data = []
     for data in db.session.query(Group).all():
-        if data.is_private==False:
+        if data.is_private == False:
             groups_data.append(
                 {'id': int(data.id), 'name': data.name})
-    return render_template('groups_private.html', stylesheet='groups', groups_data = groups_data)
+    return render_template('groups_private.html', stylesheet='groups', groups_data=groups_data)
 
 
 @site.route('/group')
@@ -219,7 +233,19 @@ def catalog():
     """
     page = request.args.get('page', 1, type=int)
     games = Game.query.paginate(page=page, per_page=20)
-    return render_template('catalog.html', stylesheet='catalog', games=games)
+    user_collection = []
+    for data in Collect.query.filter_by(user_id=flask_login.current_user.id).all():
+        user_collection.append(data.game_id)
+    return render_template('catalog.html', stylesheet='catalog', games=games, user_collection=user_collection)
+
+
+@site.route('/add', methods=['GET', 'POST'])
+@site.route('/add/<game_id>', methods=['GET', 'POST'])
+@login_required
+def add_game_collection(game_id):
+    db.session.add(Collect(user_id=flask_login.current_user.id, game_id=game_id))
+    db.session.commit()
+    return redirect(request.referrer)
 
 
 @site.route('/game', methods=['GET', 'POST'])
