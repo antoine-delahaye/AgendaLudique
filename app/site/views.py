@@ -6,7 +6,7 @@ from flask_login import login_required, current_user
 from app.site import site
 from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 from app import db
-from app.models import User, Game, HideUser
+from app.models import User, Game, HideUser, BookmarkUser
 
 
 @site.route('/')
@@ -84,9 +84,27 @@ def hide_user(user_id=None):
         user_to_hide = User.query.get(user_id)
         if user_to_hide is not None:
             hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
-            print("Je suis " + str(connected_user.id))
-            print(hidden_user)
             db.session.add(hidden_user)
+            db.session.commit()
+
+    return redirect(url_for('site.users'))
+
+
+@site.route('/bookmark-user', methods=['GET'])
+@login_required
+def bookmark_user(user_id=None):
+    """
+    Add the declared user (property "user" in the query string) to the bookmarked users
+    on the /bookmark-user route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_bookmark = User.query.get(user_id)
+        if user_to_bookmark is not None:
+            bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
+            db.session.add(bookmarked_user)
             db.session.commit()
 
     return redirect(url_for('site.users'))
