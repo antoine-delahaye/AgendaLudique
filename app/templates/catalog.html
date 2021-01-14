@@ -11,21 +11,25 @@
         </form>
         <div class="row">
             {% for game in games.items %}
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card mb-4 shadow-sm">
-                        <img class="card-img mx-auto"
-                             src="{{ game.image }}"
-                             alt="Illustration">
-                        <div class="card-body">
-                            <p class="text-truncate font-weight-bold">{{ game.title }}
-                                ({{ game.publication_year }})</p>
-                            <div class="d-flex flex-row align-items-center">
-                                <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
-                                <i class="ml-auto far fa-plus-square" id="{{ game.id }}" onclick="game(this)"></i>
+                {% if game.id not in user_collection %}
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="card mb-4 shadow-sm">
+                            <img class="card-img mx-auto"
+                                 src="{{ game.image }}"
+                                 alt="Illustration">
+                            <div class="card-body">
+                                <p class="text-truncate font-weight-bold">{{ game.title }}
+                                    ({{ game.publication_year }})</p>
+                                <div class="d-flex flex-row align-items-center">
+                                    <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
+                                    <a class="ml-auto" href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
+                                        <i class="far fa-plus-square"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                {% endif %}
             {% endfor %}
         </div>
         <nav>

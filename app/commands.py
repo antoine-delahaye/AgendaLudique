@@ -59,7 +59,7 @@ def loaddb_games(filename):
     # premier tour de boucle, creation des jeux
     nb_jeux_regetes = 0
     for game in games.values():
-        if len(game["title"]) <= 64 and Game.from_title(game["title"]) == None: #
+        if len(game["title"]) <= 64 and Game.from_title(game["title"]) == None:  #
             o = Game(
                 title=game["title"],
                 publication_year=game["publication_year"],
@@ -77,7 +77,7 @@ def loaddb_games(filename):
     # deuxieme tour de boucle pour les notes de bgg
     for game in games.values():
         g = Game.from_title(game["title"])
-        if g != None and Note.from_both_ids(bgg.id,g.id) == None:
+        if g != None and Note.from_both_ids(bgg.id, g.id) == None:
             rating = Note(
                 note=round(game["average_rating"]),
                 message="Auto-generated note, the average rating of the game at boardgamegeek.com",
