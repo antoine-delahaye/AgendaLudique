@@ -170,7 +170,6 @@ def groups():
     return render_template('groups.html', stylesheet='groups', groups_data=groups_data)
 
 
-
 @site.route('/groups_private')
 @login_required
 def groups_private():
