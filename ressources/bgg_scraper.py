@@ -12,7 +12,20 @@ main_url = "https://boardgamegeek.com/browse/boardgame/page/"
 cover_url = "https://api.geekdo.com/api/images/"
 i = 1
 # DEBUG
-all_games_types_pls = set()
+games_type_dict = {
+    'Strategy ': "Stratégie",
+    'Abstract ': "Abstrait",
+    'War ': "Guerre",
+    'Party ': "Fête",
+    'Customizable': "Personnalisable",
+    'Amiga': "Amiga",
+    "Children's ": "Pour enfant",
+    'Atari ST': "Atari ST",
+    'Arcade': "Arcade",
+    'Commodore 64': "Commodore 64",
+    'Thematic': "Thématique",
+    'Family ': "Familial"
+}
 
 
 # yaml Structure
@@ -57,10 +70,9 @@ def get_cover(image_id):
 
 def get_type_game(json_obj):
     types = []
-    for type in json_obj["rankinfo"]:
+    for game_type in json_obj["rankinfo"]:
         if type["veryshortprettyname"] != "Overall":
             types.append(type["veryshortprettyname"])
-            all_games_types_pls.add(type["veryshortprettyname"])
     return types
 
 
