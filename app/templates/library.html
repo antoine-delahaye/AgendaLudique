@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block main %}
-    <main class="container-fluid col-9">
+    <main class="container-fluid col-9 mt-auto mb-auto">
         <h2 class="text-center mb-5">Bibliothèque</h2>
         <form class="my-5 mx-auto">
             <div class="form-group">
@@ -11,30 +11,28 @@
         </form>
         <div class="row">
             {% for game in games.items %}
-                {% if game.id in user_collection %}
-                    <div class="col-xl-3 col-lg-4 col-md-6">
-                        <div class="card mb-4 shadow-sm">
-                            <img class="card-img mx-auto"
-                                 src="{{ game.image }}"
-                                 alt="Illustration">
-                            <div class="card-body">
-                                <p class="text-truncate font-weight-bold">{{ game.title }}
-                                    ({{ game.publication_year }})</p>
-                                <div class="d-flex flex-row align-items-center">
-                                    <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
-                                    <a class="ml-auto"
-                                       href="{{ url_for("site.remove_game_collection", game_id=game.id) }}">
-                                        <i class="far fa-minus-square"></i>
-                                    </a>
-                                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card mb-4 shadow-sm">
+                        <img class="card-img mx-auto"
+                             src="{{ game[0].image }}"
+                             alt="Illustration">
+                        <div class="card-body">
+                            <p class="text-truncate font-weight-bold">{{ game[0].title }}
+                                ({{ game[0].publication_year }})</p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="mb-0">De {{ game[0].min_players }} à {{ game[0].max_players }} joueurs</p>
+                                <a class="ml-auto"
+                                   href="{{ url_for("site.remove_game_collection", game_id=game[0].id) }}">
+                                    <i class="far fa-minus-square"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
-                {% endif %}
+                </div>
             {% endfor %}
         </div>
         <nav>
-            <ul class="pagination mt-3 mb-0 mx-auto">
+            <ul class="pagination mt-4 mb-0 mx-auto">
                 {% if games.page == 1 %}
                     <li class="page-item disabled">
                         <a class="page-link" href="{{ url_for("site.library", page=games.prev_num) }}">

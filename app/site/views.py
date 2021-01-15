@@ -24,11 +24,10 @@ def library():
     Render the library template on the /library route
     """
     page = request.args.get('page', 1, type=int)
-    games = Game.query.paginate(page=page, per_page=20)
-    user_collection = []
-    for data in Collect.query.filter_by(user_id=flask_login.current_user.id).all():
-        user_collection.append(data.game_id)
-    return render_template('library.html', stylesheet='library', games=games, user_collection=user_collection)
+    games = db.session.query(Game, Collect).join(Collect).filter(Collect.user_id == flask_login.current_user.id,
+                                                                 Game.id == Collect.game_id).paginate(page=page,
+                                                                                                      per_page=20)
+    return render_template('library.html', stylesheet='library', games=games)
 
 
 @site.route('/remove', methods=['GET', 'POST'])
