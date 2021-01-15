@@ -49,14 +49,12 @@ def users():
     form = UsersSearchForm()
     page = request.args.get('page', 1, type=int)
     username_hint = request.args.get('username', '', type=str)
+    search_parameters = []
+    qs_search_parameters = request.args.get('searchParameters', None, type=str)
     search_results = None
 
     if form.validate_on_submit():
         username_hint = form.username_hint.data
-        search_parameters = []
-
-        print(form.display_masked_players.data)
-        print(form.display_favorites_players_only.data)
 
         if form.display_masked_players.data:
             search_parameters.append("HIDDEN")
@@ -64,10 +62,13 @@ def users():
         if form.display_favorites_players_only.data:
             search_parameters.append("ONLY_BOOKMARKED")
 
-        search_results = User.search(current_user, username_hint, search_parameters)
+    if qs_search_parameters:
+        # Add the search parameters contained in the query string into the search_parameters list
+        parameters_list = qs_search_parameters.split(',')
+        for parameter in parameters_list:
+            search_parameters.append(parameter)
 
-    if not search_results:
-        search_results = User.search(current_user=current_user, username_hint=username_hint)
+    search_results = User.search(current_user, username_hint, search_parameters)
 
     nb_results = len(search_results)
     nb_pages = nb_results / 20
