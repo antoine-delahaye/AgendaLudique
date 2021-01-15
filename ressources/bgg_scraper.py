@@ -124,7 +124,7 @@ def create_game_list(raw_html):
 
 def save_yaml(game_list_dict):
     with open('games-data.yaml', 'a') as f:
-        f.write(yaml.dump(game_list_dict, sort_keys=False))  # write game_list_dict to the file
+        f.write(yaml.dump(game_list_dict, sort_keys=False, allow_unicode=True))  # write game_list_dict to the file
         # and disable auto sort
 
 
