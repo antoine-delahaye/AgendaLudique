@@ -32,7 +32,11 @@
                 <div class="col-xl-3 col-lg-4 col-md-6">
                     <div class="card mb-4 shadow-sm">
                         <img class="card-img mx-auto"
-                             src="{{ item["profile_picture"] }}"
+                             {% if item["profile_picture"] %}
+                                src="{{ item["profile_picture"] }}"
+                             {% else %}
+                                src="{{ url_for("static", filename="images/blank_pp.png") }}"
+                             {% endif %}
                              alt="Image de profil de {{ item["username"] }}">
                         <div class="card-body">
                             <p class="text-truncate font-weight-bold">{{ item["title"] }}
