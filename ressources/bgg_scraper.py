@@ -11,7 +11,6 @@ domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
 cover_url = "https://api.geekdo.com/api/images/"
 i = 1
-# DEBUG
 games_type_dict = {
     'Strategy ': "Stratégie",
     'Abstract ': "Abstrait",
@@ -71,8 +70,8 @@ def get_cover(image_id):
 def get_type_game(json_obj):
     types = []
     for game_type in json_obj["rankinfo"]:
-        if type["veryshortprettyname"] != "Overall":
-            types.append(type["veryshortprettyname"])
+        if game_type["veryshortprettyname"] != "Overall":
+            types.append(games_type_dict[game_type["veryshortprettyname"]])
     return types
 
 
@@ -125,7 +124,8 @@ def create_game_list(raw_html):
 
 def save_yaml(game_list_dict):
     with open('games-data.yaml', 'a') as f:
-        f.write(yaml.dump(game_list_dict, sort_keys=False))  # write game_list_dict to the file and disable auto sort
+        f.write(yaml.dump(game_list_dict, sort_keys=False))  # write game_list_dict to the file
+        # and disable auto sort
 
 
 def save_db(game_list_dict):
@@ -186,10 +186,6 @@ def main():
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
             executor.submit(sub_main, j)
-    # for j in range(int(from_page), int(to_page) + 1):
-    #     sub_main(j)
-    with open("types.txt", "w") as f:
-        f.write(str(all_games_types_pls))
 
 
 if __name__ == '__main__':
