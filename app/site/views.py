@@ -77,10 +77,10 @@ def users():
 
     nb_results = len(search_results)
     nb_pages = nb_results / 20
-    elements = search_results[(page-1)*20:page*20]  # the users that will be displayed on the page
+    elements = search_results[(page - 1) * 20:page * 20]  # the users that will be displayed on the page
 
     return render_template('users.html', stylesheet='users', form=form, users_data=elements,
-                               nb_results=nb_results, nb_pages=nb_pages)
+                           nb_results=nb_results, nb_pages=nb_pages)
 
 
 @site.route('/user')
