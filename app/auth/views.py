@@ -6,7 +6,7 @@ from flask_login import login_required, login_user, logout_user
 from app.auth import auth
 from app.auth.forms import LoginForm, RegistrationForm
 from app import db
-from app.models import User#, Statistic
+from app.models import User  # , Statistic
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -31,6 +31,8 @@ def register():
     Handle requests to the /register route
     Add an user to the database through the registration form
     """
+    from .. import mail
+    from flask import request
     form = RegistrationForm()
     if form.validate_on_submit():
         # stats = Statistic()
@@ -39,10 +41,12 @@ def register():
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,
                     password=form.password.data,
-                    #statistics_id=stats.id,
+                    # statistics_id=stats.id,
                     )
         db.session.add(user)
         db.session.commit()
+        mail.send_mail("Confirmation inscription", form.email.data, "mails/registerMail.html", user=user,
+                       url=request.base_url)
         return redirect(url_for('auth.login'))
     return render_template('register.html', form=form, stylesheet='register')
 
