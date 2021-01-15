@@ -67,6 +67,11 @@ def users():
         parameters_list = qs_search_parameters.split(',')
         for parameter in parameters_list:
             search_parameters.append(parameter)
+            # Show in the advanced search menu the enabled parameters
+            if parameter == "ONLY_BOOKMARKED":
+                form.display_favorites_players_only.data = True
+            if parameter == "HIDDEN":
+                form.display_masked_players.data = True
 
     search_results = User.search(current_user, username_hint, search_parameters)
 
