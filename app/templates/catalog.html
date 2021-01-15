@@ -33,7 +33,7 @@
             {% endfor %}
         </div>
         <nav>
-            <ul class="pagination mt-3 mb-0 mx-auto">
+            <ul class="pagination mt-4 mb-0 mx-auto">
                 {% if games.page == 1 %}
                     <li class="page-item disabled">
                         <a class="page-link" href="{{ url_for("site.catalog", page=games.prev_num) }}">
