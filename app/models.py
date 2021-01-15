@@ -2,6 +2,7 @@
 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import join
 
 from app import db, login_manager
 
@@ -57,6 +58,42 @@ class User(UserMixin, db.Model):
         """
         req = User.query.filter(User.username == username).first()
         return req if req else None
+
+    @classmethod
+    def search(cls, current_user, username_hint="", parameters=[]):
+        """
+        Search users with defined parameters
+        :param current_user The user who made the research
+        :param username_hint: A hint gave by the user to search similar usernames
+        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
+        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
+        :return: A list of users
+        """
+        users_db = set()
+        result = []
+
+        if "ONLY_BOOKMARKED" not in parameters:
+            users_db_temp = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
+            users_db = set(users_db_temp)
+        else:
+            bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
+            for bookmarked_user in bookmarked_users_db:
+                users_db.add(User.query.get(bookmarked_user.user2_id))
+
+        if "HIDDEN" not in parameters:
+            hidden_users_db = User.query.get(current_user.id).hidden_users.all()
+            hidden_users = set()
+            for hidden_user in hidden_users_db:
+                hidden_users.add(User.query.get(hidden_user.user2_id))
+            users_db -= hidden_users
+
+        for data in users_db:
+            result.append(
+                {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
+                 'last_name': data.last_name,
+                 'profile_picture': data.profile_picture})
+
+        return result
 
 
 # Set up user_loader
