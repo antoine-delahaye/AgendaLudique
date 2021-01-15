@@ -5,7 +5,6 @@ import mariadb
 import requests
 import yaml
 from bs4 import BeautifulSoup
-from difflib import SequenceMatcher
 from concurrent.futures.thread import ThreadPoolExecutor
 
 domain = "https://boardgamegeek.com"
@@ -99,6 +98,7 @@ def get_game_info(url):
 
     return {
         "title": json_text["name"],
+        "id": int(json_text["objectid"]),
         "publication_year": int(json_text["yearpublished"]),
         "min_players": int(json_text["minplayers"]),
         "max_players": int(json_text["maxplayers"]),
@@ -116,14 +116,15 @@ def create_game_list(raw_html):
     for game in map(str, raw_html.find_all("a", {"class": "primary"})):  # This way we can iterate and parse html
         game = BeautifulSoup(game, "html.parser")  # Convert str into bs4 object
         href = game.find('a')['href']  # extract href content
-        id_game = int(href.split('/')[2])  # extract id from href content
 
         game_info = get_game_info(href)  # Get game info into dict
 
         if game_info is not None:  # Check if we have game info, if not skip this game
-            game_list_dict[id_game] = game_info  # Transfer game info into the big ass dict
-            game_list_dict[id_game]["rank"] = i  # Add rank to save order
-            print(f"Jeu n⁰{i}: {game_list_dict[id_game]['title']}")  # Just to inform where the program is
+            game_title = game_info["title"]  # Assign title
+            game_info.pop("title")  # Then removes it from game_info since this is now the key
+            game_list_dict[game_title] = game_info  # Transfer game info into the big ass dict
+            game_list_dict[game_title]["rank"] = i  # Add rank to save order
+            print(f"Jeu n⁰{i}: {game_title}")  # Just to inform where the program is
             i += 1
         else:
             print("Informations manquantes pour ce jeu, skipping...")
@@ -136,7 +137,7 @@ def save_yaml(game_list_dict):
         # and disable auto sort
 
 
-def save_db(game_list_dict):
+def save_yaml_to_db(game_list_dict):
     try:
         conn = mariadb.connect(
             user='al_admin',
@@ -155,7 +156,10 @@ def save_db(game_list_dict):
     for max_game_id in cur:
         if max_game_id[0] is not None:
             game_id = int(max_game_id)
-    for data in game_list_dict.values():
+
+    # Time to load some data
+    games_from_yaml = load_yaml()
+    for data in games_from_yaml.values():
         try:
             cur.execute("INSERT INTO games VALUES (?, ?, ?, ?, ?, ?, ?)", (game_id,
                                                                            data['title'],
@@ -170,7 +174,7 @@ def save_db(game_list_dict):
         game_id = game_id + 1
 
 
-def sub_main(j):
+def scrape_thread(j):
     main_html = BeautifulSoup(  # Request raw page and make a bs4 object
         requests.get(main_url + str(j)).text,
         "html.parser"
@@ -181,19 +185,31 @@ def sub_main(j):
     print("Fini !")
 
 
-def main():
+def scraper():
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
     try:
         os.remove("games-data.yaml")
-        print("Ancien game-data.yaml supprimé")
+        print("Ancien game-data.yaml supprimé et création d'un nouveau")
     except FileNotFoundError:
         print("Création de game-data.yaml")
 
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
-            executor.submit(sub_main, j)
+            executor.submit(scrape_thread, j)
+
+
+def main():
+    usr_input = int(input("Mode : "
+                          " (1) Juste scrape des pages"
+                          " (2) Charger un yaml dans la BDD"
+                          ))
+
+    if usr_input == 1:
+        scraper()
+    elif usr_input == 2:
+        save_yaml_to_db()
 
 
 if __name__ == '__main__':
