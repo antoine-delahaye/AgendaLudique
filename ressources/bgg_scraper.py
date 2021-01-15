@@ -137,7 +137,12 @@ def save_yaml(game_list_dict):
         # and disable auto sort
 
 
-def save_yaml_to_db(game_list_dict):
+def load_yaml(path):
+    with open(path, 'r') as f:
+        return yaml.full_load(f)
+
+
+def save_yaml_to_db():
     try:
         conn = mariadb.connect(
             user='al_admin',
@@ -189,11 +194,11 @@ def scraper():
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
-    try:
-        os.remove("games-data.yaml")
-        print("Ancien game-data.yaml supprimé et création d'un nouveau")
-    except FileNotFoundError:
-        print("Création de game-data.yaml")
+    # try:
+    #     os.remove("games-data.yaml")
+    #     print("Ancien game-data.yaml supprimé et création d'un nouveau")
+    # except FileNotFoundError:
+    #     print("Création de game-data.yaml")
 
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
@@ -201,15 +206,25 @@ def scraper():
 
 
 def main():
-    usr_input = int(input("Mode : "
-                          " (1) Juste scrape des pages"
-                          " (2) Charger un yaml dans la BDD"
-                          ))
+    while True:
+        usr_input = int(input("Mode :\n"
+                              " (1) Juste scrape des pages\n"
+                              " (2) Charger un yaml dans la BDD\n"
+                              " (3) Charger un yaml en mémoire\n"
+                              " (4) Quitter\n"
+                              ))
 
-    if usr_input == 1:
-        scraper()
-    elif usr_input == 2:
-        save_yaml_to_db()
+        if usr_input == 1:
+            scraper()
+        elif usr_input == 2:
+            save_yaml_to_db()
+        elif usr_input == 3:
+            global games_type_dict
+            path = input("Chemin du yaml : ")
+            games_type_dict = load_yaml(path)
+            print("yaml chargée en mémoire !")
+        elif usr_input == 4:
+            sys.exit(0)
 
 
 if __name__ == '__main__':
