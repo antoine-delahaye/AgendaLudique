@@ -14,15 +14,15 @@
                 <div class="col-xl-3 col-lg-4 col-md-6">
                     <div class="card mb-4 shadow-sm">
                         <img class="card-img mx-auto"
-                             src="{{ game[0].image }}"
+                             src="{{ game.image }}"
                              alt="Illustration">
                         <div class="card-body">
-                            <p class="text-truncate font-weight-bold">{{ game[0].title }}
-                                ({{ game[0].publication_year }})</p>
+                            <p class="text-truncate font-weight-bold">{{ game.title }}
+                                ({{ game.publication_year }})</p>
                             <div class="d-flex flex-row align-items-center">
-                                <p class="mb-0">De {{ game[0].min_players }} à {{ game[0].max_players }} joueurs</p>
+                                <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
                                 <a class="ml-auto"
-                                   href="{{ url_for("site.remove_game_collection", game_id=game[0].id) }}">
+                                   href="{{ url_for("site.remove_game_collection", game_id=game.id) }}">
                                     <i class="far fa-minus-square"></i>
                                 </a>
                             </div>

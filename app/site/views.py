@@ -2,11 +2,12 @@
 import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required, current_user
+from sqlalchemy import text
 
-from app.site import site
-from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 from app import db
 from app.models import User, Game, Group, HideUser, BookmarkUser, Collect
+from app.site import site
+from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 
 
 @site.route('/')
@@ -24,9 +25,9 @@ def library():
     Render the library template on the /library route
     """
     page = request.args.get('page', 1, type=int)
-    games = db.session.query(Game, Collect).join(Collect).filter(Collect.user_id == flask_login.current_user.id,
-                                                                 Game.id == Collect.game_id).paginate(page=page,
-                                                                                                      per_page=20)
+    games = db.session.query(Game).join(Collect).filter(Collect.user_id == flask_login.current_user.id,
+                                                        Game.id == Collect.game_id).paginate(page=page,
+                                                                                             per_page=20)
     return render_template('library.html', stylesheet='library', games=games)
 
 
