@@ -37,22 +37,23 @@ def users():
     """
     form = UsersSearchForm()
 
-    db_players = []
-    result_users_data = []
-
     if form.validate_on_submit():
         username_hint = form.username_hint.data
-        if username_hint is not None:
-            db_players = db.session.query(User).filter(User.username.like('%' + username_hint + '%'))
-    else:
-        db_players = db.session.query(User).limit(12).all()
+        search_parameters = []
 
-    for data in db_players:
-        result_users_data.append(
-            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name,
-             'profile_picture': data.profile_picture})
+        print(form.display_masked_players.data)
+        print(form.display_favorites_players_only.data)
 
-    return render_template('users.html', stylesheet='users', form=form, users_data=result_users_data)
+        if form.display_masked_players.data:
+            search_parameters.append("HIDDEN")
+
+        if form.display_favorites_players_only.data:
+            search_parameters.append("ONLY_BOOKMARKED")
+
+        search_results = User.search(current_user, username_hint, search_parameters)
+        return render_template('users.html', stylesheet='users', form=form, users_data=search_results)
+
+    return render_template('users.html', stylesheet='users', form=form, users_data=User.search(current_user=current_user))
 
 
 @site.route('/user')
@@ -155,6 +156,7 @@ def groups():
         groups_data.append(
             {'id': int(data.id), 'name': data.name})
     return render_template('groups.html', stylesheet='groups', groups_data = groups_data)
+
 
 @site.route('/groups_private')
 @login_required
