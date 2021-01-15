@@ -69,23 +69,22 @@ class User(UserMixin, db.Model):
         and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
         :return: A list of users
         """
-        users_db = set()
+        users_db = []
         result = []
 
-        if "ONLY_BOOKMARKED" not in parameters:
-            users_db_temp = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
-            users_db = set(users_db_temp)
+        if "ONLY_BOOKMARKED" not in parameters:     # Displays only bookmarked users
+            users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
         else:
             bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
             for bookmarked_user in bookmarked_users_db:
-                users_db.add(User.query.get(bookmarked_user.user2_id))
+                users_db.append(User.query.get(bookmarked_user.user2_id))
 
-        if "HIDDEN" not in parameters:
+        if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
             hidden_users_db = User.query.get(current_user.id).hidden_users.all()
-            hidden_users = set()
             for hidden_user in hidden_users_db:
-                hidden_users.add(User.query.get(hidden_user.user2_id))
-            users_db -= hidden_users
+                user_to_be_removed = User.query.get(hidden_user.user2_id)
+                if user_to_be_removed in users_db:
+                    users_db.remove(user_to_be_removed)
 
         for data in users_db:
             result.append(
