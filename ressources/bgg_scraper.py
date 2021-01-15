@@ -11,6 +11,8 @@ domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
 cover_url = "https://api.geekdo.com/api/images/"
 i = 1
+# DEBUG
+all_games_types_pls = set()
 
 
 # yaml Structure
@@ -53,12 +55,22 @@ def get_cover(image_id):
     }
 
 
+def get_type_game(json_obj):
+    types = []
+    for type in json_obj["rankinfo"]:
+        if type["veryshortprettyname"] != "Overall":
+            types.append(type["veryshortprettyname"])
+            all_games_types_pls.add(type["veryshortprettyname"])
+    return types
+
+
 def get_game_info(url):
-    raw_html = BeautifulSoup(  # Get raw html of domain + url
+    beautiful_html = BeautifulSoup(  # Get raw html of domain + url
         requests.get(domain + url).text,
         "html.parser"
     )
-    a = map(str, raw_html.find_all('script'))  # Transform it to an Iterator[str]
+    # The JSON is embedded in script tag so we have to parse it
+    a = map(str, beautiful_html.find_all('script'))  # Transform it to an Iterator[str]
     json_text = None
     for elem in a:  # For each <script>
         if 'GEEK.geekitemPreload' in elem:  # if we got the infos
@@ -76,6 +88,7 @@ def get_game_info(url):
         "max_players": int(json_text["maxplayers"]),
         "min_playtime": int(json_text["minplaytime"]),
         "average_rating": float(json_text["stats"]["average"]),
+        "type": get_type_game(json_text),
         "images": covers
     }
 
@@ -161,6 +174,10 @@ def main():
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
             executor.submit(sub_main, j)
+    # for j in range(int(from_page), int(to_page) + 1):
+    #     sub_main(j)
+    with open("types.txt", "w") as f:
+        f.write(str(all_games_types_pls))
 
 
 if __name__ == '__main__':
