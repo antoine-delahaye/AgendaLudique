@@ -47,6 +47,9 @@ def users():
     Render the users template on the /users route
     """
     form = UsersSearchForm()
+    page = request.args.get('page', 1, type=int)
+    username_hint = request.args.get('username', '', type=str)
+    search_results = None
 
     if form.validate_on_submit():
         username_hint = form.username_hint.data
@@ -62,9 +65,16 @@ def users():
             search_parameters.append("ONLY_BOOKMARKED")
 
         search_results = User.search(current_user, username_hint, search_parameters)
-        return render_template('users.html', stylesheet='users', form=form, users_data=search_results)
 
-    return render_template('users.html', stylesheet='users', form=form, users_data=User.search(current_user=current_user))
+    if not search_results:
+        search_results = User.search(current_user=current_user, username_hint=username_hint)
+
+    nb_results = len(search_results)
+    nb_pages = nb_results / 20
+    elements = search_results[(page-1)*20:page*20]  # the users that will be displayed on the page
+
+    return render_template('users.html', stylesheet='users', form=form, users_data=elements,
+                               nb_results=nb_results, nb_pages=nb_pages)
 
 
 @site.route('/user')
