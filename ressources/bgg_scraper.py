@@ -1,11 +1,11 @@
 import json
-import os
 import sys
+from concurrent.futures.thread import ThreadPoolExecutor
+
 import mariadb
 import requests
 import yaml
 from bs4 import BeautifulSoup
-from concurrent.futures.thread import ThreadPoolExecutor
 
 domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
@@ -142,7 +142,7 @@ def load_yaml(path):
         return yaml.full_load(f)
 
 
-def save_yaml_to_db():
+def save_yaml_to_db(path):
     try:
         conn = mariadb.connect(
             user='al_admin',
@@ -155,6 +155,7 @@ def save_yaml_to_db():
     except mariadb.Error as e:
         print(f'Error connecting to MariaDB Platform: {e}')
         sys.exit(1)
+
     cur = conn.cursor()
     game_id = 0
     cur.execute("SELECT * FROM games")
@@ -162,8 +163,10 @@ def save_yaml_to_db():
         if max_game_id[0] is not None:
             game_id = int(max_game_id)
 
-    # Time to load some data
-    games_from_yaml = load_yaml()
+    # Since we have the name of the game as key, we don't have to check for duplicates because if a game have
+    # the same name, so the same key, it will not be added to the dict due to the nature of dict implementation
+    # Now... Time to load some data !
+    games_from_yaml = load_yaml(path)
     for data in games_from_yaml.values():
         try:
             cur.execute("INSERT INTO games VALUES (?, ?, ?, ?, ?, ?, ?)", (game_id,
@@ -210,20 +213,15 @@ def main():
         usr_input = int(input("Mode :\n"
                               " (1) Juste scrape des pages\n"
                               " (2) Charger un yaml dans la BDD\n"
-                              " (3) Charger un yaml en mémoire\n"
-                              " (4) Quitter\n"
+                              " (3) Quitter\n"
                               ))
 
         if usr_input == 1:
             scraper()
         elif usr_input == 2:
-            save_yaml_to_db()
+            path = input("Chemin vers le yaml : ")
+            save_yaml_to_db(path)
         elif usr_input == 3:
-            global games_type_dict
-            path = input("Chemin du yaml : ")
-            games_type_dict = load_yaml(path)
-            print("yaml chargée en mémoire !")
-        elif usr_input == 4:
             sys.exit(0)
 
 
