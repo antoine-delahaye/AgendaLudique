@@ -22,7 +22,8 @@
                                     ({{ game.publication_year }})</p>
                                 <div class="d-flex flex-row align-items-center">
                                     <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
-                                    <a class="ml-auto" href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
+                                    <a class="ml-auto"
+                                       href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
                                         <i class="far fa-plus-square"></i>
                                     </a>
                                 </div>
@@ -33,7 +34,7 @@
             {% endfor %}
         </div>
         <nav>
-            <ul class="pagination mt-3 mb-0 mx-auto">
+            <ul class="pagination mt-4 mb-0 mx-auto">
                 {% if games.page == 1 %}
                     <li class="page-item disabled">
                         <a class="page-link" href="{{ url_for("site.catalog", page=games.prev_num) }}">

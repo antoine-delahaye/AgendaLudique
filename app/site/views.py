@@ -2,11 +2,12 @@
 import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required, current_user
+from sqlalchemy import text
 
-from app.site import site
-from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 from app import db
 from app.models import User, Game, Group, HideUser, BookmarkUser, Collect
+from app.site import site
+from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 
 
 @site.route('/')
@@ -24,11 +25,10 @@ def library():
     Render the library template on the /library route
     """
     page = request.args.get('page', 1, type=int)
-    games = Game.query.paginate(page=page, per_page=20)
-    user_collection = []
-    for data in Collect.query.filter_by(user_id=flask_login.current_user.id).all():
-        user_collection.append(data.game_id)
-    return render_template('library.html', stylesheet='library', games=games, user_collection=user_collection)
+    games = db.session.query(Game).join(Collect).filter(Collect.user_id == flask_login.current_user.id,
+                                                        Game.id == Collect.game_id).paginate(page=page,
+                                                                                             per_page=20)
+    return render_template('library.html', stylesheet='library', games=games)
 
 
 @site.route('/remove', methods=['GET', 'POST'])
@@ -48,23 +48,40 @@ def users():
     Render the users template on the /users route
     """
     form = UsersSearchForm()
-
-    db_players = []
-    result_users_data = []
+    page = request.args.get('page', 1, type=int)
+    username_hint = request.args.get('username', '', type=str)
+    search_parameters = []
+    qs_search_parameters = request.args.get('searchParameters', None, type=str)
+    search_results = None
 
     if form.validate_on_submit():
         username_hint = form.username_hint.data
-        if username_hint is not None:
-            db_players = db.session.query(User).filter(User.username.like('%' + username_hint + '%'))
-    else:
-        db_players = db.session.query(User).limit(12).all()
 
-    for data in db_players:
-        result_users_data.append(
-            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name, 'last_name': data.last_name,
-             'profile_picture': data.profile_picture})
+        if form.display_masked_players.data:
+            search_parameters.append("HIDDEN")
 
-    return render_template('users.html', stylesheet='users', form=form, users_data=result_users_data)
+        if form.display_favorites_players_only.data:
+            search_parameters.append("ONLY_BOOKMARKED")
+
+    if qs_search_parameters:
+        # Add the search parameters contained in the query string into the search_parameters list
+        parameters_list = qs_search_parameters.split(',')
+        for parameter in parameters_list:
+            search_parameters.append(parameter)
+            # Show in the advanced search menu the enabled parameters
+            if parameter == "ONLY_BOOKMARKED":
+                form.display_favorites_players_only.data = True
+            if parameter == "HIDDEN":
+                form.display_masked_players.data = True
+
+    search_results = User.search(current_user, username_hint, search_parameters)
+
+    nb_results = len(search_results)
+    nb_pages = nb_results / 20
+    elements = search_results[(page - 1) * 20:page * 20]  # the users that will be displayed on the page
+
+    return render_template('users.html', stylesheet='users', form=form, users_data=elements,
+                           nb_results=nb_results, nb_pages=nb_pages)
 
 
 @site.route('/user')
