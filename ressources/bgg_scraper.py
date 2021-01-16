@@ -167,14 +167,14 @@ def save_yaml_to_db(path):
     # the same name, so the same key, it will not be added to the dict due to the nature of dict implementation
     # Now... Time to load some data !
     games_from_yaml = load_yaml(path)
-    for data in games_from_yaml.values():
+    for title, data in games_from_yaml.items():
         try:
             cur.execute("INSERT INTO games VALUES (?, ?, ?, ?, ?, ?, ?)", (game_id,
-                                                                           data['title'],
-                                                                           int(data['publication_year']),
-                                                                           int(data['min_players']),
-                                                                           int(data['max_players']),
-                                                                           int(data['min_playtime']),
+                                                                           title,
+                                                                           data['publication_year'],
+                                                                           data['min_players'],
+                                                                           data['max_players'],
+                                                                           data['min_playtime'],
                                                                            data['images']['original']))
         except mariadb.Error as e:
             print(f'Error: {e}')
