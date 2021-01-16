@@ -1,4 +1,5 @@
 import json
+import os
 import sys
 from concurrent.futures.thread import ThreadPoolExecutor
 
@@ -197,11 +198,11 @@ def scraper():
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
-    # try:
-    #     os.remove("games-data.yaml")
-    #     print("Ancien game-data.yaml supprimé et création d'un nouveau")
-    # except FileNotFoundError:
-    #     print("Création de game-data.yaml")
+    try:
+        os.remove("games-data.yaml")
+        print("Ancien game-data.yaml supprimé et création d'un nouveau")
+    except FileNotFoundError:
+        print("Création de game-data.yaml")
 
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
