@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 0c796b5a4291
+Revision ID: 2e8fc54d09c2
 Revises: 
-Create Date: 2021-01-14 14:37:57.394651
+Create Date: 2021-01-17 03:02:46.391328
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '0c796b5a4291'
+revision = '2e8fc54d09c2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -28,6 +28,12 @@ def upgrade():
     sa.Column('image', sa.String(length=256), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('title')
+    )
+    op.create_table('genres',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('name', sa.String(length=32), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
     op.create_table('timeslots',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -71,6 +77,13 @@ def upgrade():
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('user_id', 'user2_id')
     )
+    op.create_table('classification',
+    sa.Column('game_id', sa.Integer(), nullable=False),
+    sa.Column('genre_id', sa.Integer(), nullable=False),
+    sa.ForeignKeyConstraint(['game_id'], ['games.id'], ),
+    sa.ForeignKeyConstraint(['genre_id'], ['genres.id'], ),
+    sa.PrimaryKeyConstraint('game_id', 'genre_id')
+    )
     op.create_table('collect',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('game_id', sa.Integer(), nullable=False),
@@ -85,7 +98,8 @@ def upgrade():
     sa.Column('password', sa.String(length=10), nullable=True),
     sa.Column('manager_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['manager_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
     op.create_table('hide_game',
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -206,6 +220,7 @@ def downgrade():
     op.drop_table('hide_game')
     op.drop_table('groups')
     op.drop_table('collect')
+    op.drop_table('classification')
     op.drop_table('bookmark_user')
     op.drop_table('available')
     op.drop_table('votes')
@@ -215,5 +230,6 @@ def downgrade():
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
     op.drop_table('timeslots')
+    op.drop_table('genres')
     op.drop_table('games')
     # ### end Alembic commands ###

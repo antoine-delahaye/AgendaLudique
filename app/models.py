@@ -22,11 +22,11 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512))
 
-    # statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
-    # statistics = db.relationship(
-    #     "Statistic",
-    #     back_populates="user",
-    #     foreign_keys=[statistics_id])
+    statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
+    statistics = db.relationship(
+        "Statistic",
+        back_populates="user",
+        foreign_keys=[statistics_id])
 
     @property
     def password(self):
@@ -163,24 +163,24 @@ class HideUser(db.Model):
         return req if req else None
 
 
-# class Statistic(db.Model):
-#     """
-#     Create a Statistic table
-#     """
-#
-#     __tablename__ = 'statistics'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     avg_complexity = db.Column(db.Integer, default=0)
-#     avg_playtime = db.Column(db.Integer, default=0)
-#     avg_nb_players = db.Column(db.Integer, default=0)
-#     frequency = db.Column(db.Integer, default=0)
-#
-#     # user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-#     user = db.relationship(
-#         "User",
-#         back_populates="statistics",
-#         uselist=False)
+class Statistic(db.Model):
+    """
+    Create a Statistic table
+    """
+
+    __tablename__ = 'statistics'
+
+    id = db.Column(db.Integer, primary_key=True)
+    avg_complexity = db.Column(db.Integer, default=0)
+    avg_playtime = db.Column(db.Integer, default=0)
+    avg_nb_players = db.Column(db.Integer, default=0)
+    frequency = db.Column(db.Integer, default=0)
+
+    # user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship(
+        "User",
+        back_populates="statistics",
+        uselist=False)
 
 
 class Wish(db.Model):
