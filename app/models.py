@@ -119,6 +119,9 @@ class BookmarkUser(db.Model):
         backref=db.backref("bookmarked_by_users", lazy="dynamic"),
         foreign_keys=[user2_id])
 
+    def __repr__(self):
+        return f"BookmarkUser: ({self.user.username}, {self.user2.username})"
+
     @classmethod
     def from_both_ids(cls, user_id, user2_id):
         """
@@ -146,6 +149,9 @@ class HideUser(db.Model):
         "User",
         backref=db.backref("hidden_by_users", lazy="dynamic"),
         foreign_keys=[user2_id])
+
+    def __repr__(self):
+        return f"HideUser: ({self.user.username}, {self.user2.username})"
 
     @classmethod
     def from_both_ids(cls, user_id, user2_id):
@@ -194,6 +200,9 @@ class Wish(db.Model):
         backref=db.backref("wished_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    def __repr__(self):
+        return f"Wish: ({self.user.username}, {self.game.title})"
+
     @classmethod
     def from_both_ids(cls, user_id, game_id):
         """
@@ -222,6 +231,9 @@ class Prefer(db.Model):
         backref=db.backref("prefered_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    def __repr__(self):
+        return f"Prefer: ({self.user.username}, {self.game.title})"
+
     @classmethod
     def from_both_ids(cls, user_id, game_id):
         """
@@ -248,6 +260,9 @@ class KnowRules(db.Model):
         backref=db.backref("known_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    def __repr__(self):
+        return f"KnowRules: ({self.user.username}, {self.game.title})"
+
     @classmethod
     def from_both_ids(cls, user_id, game_id):
         """
@@ -273,6 +288,9 @@ class Collect(db.Model):
         "Game",
         backref=db.backref("owners", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    def __repr__(self):
+        return f"Collect: ({self.user.username}, {self.game.title})"
 
     @classmethod
     def from_both_ids(cls, user_id, game_id):
@@ -302,6 +320,9 @@ class Note(db.Model):
         "Game",
         backref=db.backref("notes", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    def __repr__(self):
+        return f"Note: ({self.user.username}, {self.game.title})"
 
     @classmethod
     def from_both_ids(cls, user_id, game_id):
@@ -378,6 +399,9 @@ class Classification(db.Model):
         backref=db.backref("classifications", lazy="dynamic"),
         foreign_keys=[genre_id])
 
+    def __repr__(self):
+        return f"Classification: ({self.game.title}, {self.genre.name})"
+
     @classmethod
     def from_both_ids(cls, game_id, genre_id):
         """
@@ -407,6 +431,8 @@ class Group(db.Model):
         backref=db.backref("managed_groups", lazy="dynamic"),
         foreign_keys=[manager_id])
 
+    def __repr__(self):
+        return f"Group: {self.name}"
 
 class Participate(db.Model):
     """
@@ -425,6 +451,9 @@ class Participate(db.Model):
         "Group",
         backref=db.backref("participations", lazy="dynamic"),
         foreign_keys=[group_id])
+
+    def __repr__(self):
+        return f"Participate: ({self.member.username}, {self.group.name})"
 
     @classmethod
     def from_both_ids(cls, member_id, group_id):
