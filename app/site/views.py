@@ -48,13 +48,14 @@ def users():
     Render the users template on the /users route
     """
     form = UsersSearchForm()
+    page = request.args.get('page', 1, type=int)
+    username_hint = request.args.get('username', '', type=str)
+    search_parameters = []
+    qs_search_parameters = request.args.get('searchParameters', None, type=str)
+    search_results = None
 
     if form.validate_on_submit():
         username_hint = form.username_hint.data
-        search_parameters = []
-
-        print(form.display_masked_players.data)
-        print(form.display_favorites_players_only.data)
 
         if form.display_masked_players.data:
             search_parameters.append("HIDDEN")
@@ -62,10 +63,25 @@ def users():
         if form.display_favorites_players_only.data:
             search_parameters.append("ONLY_BOOKMARKED")
 
-        search_results = User.search(current_user, username_hint, search_parameters)
-        return render_template('users.html', stylesheet='users', form=form, users_data=search_results)
+    if qs_search_parameters:
+        # Add the search parameters contained in the query string into the search_parameters list
+        parameters_list = qs_search_parameters.split(',')
+        for parameter in parameters_list:
+            search_parameters.append(parameter)
+            # Show in the advanced search menu the enabled parameters
+            if parameter == "ONLY_BOOKMARKED":
+                form.display_favorites_players_only.data = True
+            if parameter == "HIDDEN":
+                form.display_masked_players.data = True
 
-    return render_template('users.html', stylesheet='users', form=form, users_data=User.search(current_user=current_user))
+    search_results = User.search(current_user, username_hint, search_parameters)
+
+    nb_results = len(search_results)
+    nb_pages = nb_results / 20
+    elements = search_results[(page - 1) * 20:page * 20]  # the users that will be displayed on the page
+
+    return render_template('users.html', stylesheet='users', form=form, users_data=elements,
+                           nb_results=nb_results, nb_pages=nb_pages)
 
 
 @site.route('/user')

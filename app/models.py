@@ -22,11 +22,11 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512))
 
-    # statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
-    # statistics = db.relationship(
-    #     "Statistic",
-    #     back_populates="user",
-    #     foreign_keys=[statistics_id])
+    statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
+    statistics = db.relationship(
+        "Statistic",
+        back_populates="user",
+        foreign_keys=[statistics_id])
 
     @property
     def password(self):
@@ -69,23 +69,22 @@ class User(UserMixin, db.Model):
         and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
         :return: A list of users
         """
-        users_db = set()
+        users_db = []
         result = []
 
-        if "ONLY_BOOKMARKED" not in parameters:
-            users_db_temp = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
-            users_db = set(users_db_temp)
+        if "ONLY_BOOKMARKED" not in parameters:     # Displays only bookmarked users
+            users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
         else:
             bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
             for bookmarked_user in bookmarked_users_db:
-                users_db.add(User.query.get(bookmarked_user.user2_id))
+                users_db.append(User.query.get(bookmarked_user.user2_id))
 
-        if "HIDDEN" not in parameters:
+        if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
             hidden_users_db = User.query.get(current_user.id).hidden_users.all()
-            hidden_users = set()
             for hidden_user in hidden_users_db:
-                hidden_users.add(User.query.get(hidden_user.user2_id))
-            users_db -= hidden_users
+                user_to_be_removed = User.query.get(hidden_user.user2_id)
+                if user_to_be_removed in users_db:
+                    users_db.remove(user_to_be_removed)
 
         for data in users_db:
             result.append(
@@ -120,6 +119,9 @@ class BookmarkUser(db.Model):
         backref=db.backref("bookmarked_by_users", lazy="dynamic"),
         foreign_keys=[user2_id])
 
+    def __repr__(self):
+        return f"BookmarkUser: ({self.user.username}, {self.user2.username})"
+
     @classmethod
     def from_both_ids(cls, user_id, user2_id):
         """
@@ -148,6 +150,9 @@ class HideUser(db.Model):
         backref=db.backref("hidden_by_users", lazy="dynamic"),
         foreign_keys=[user2_id])
 
+    def __repr__(self):
+        return f"HideUser: ({self.user.username}, {self.user2.username})"
+
     @classmethod
     def from_both_ids(cls, user_id, user2_id):
         """
@@ -158,24 +163,24 @@ class HideUser(db.Model):
         return req if req else None
 
 
-# class Statistic(db.Model):
-#     """
-#     Create a Statistic table
-#     """
-#
-#     __tablename__ = 'statistics'
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     avg_complexity = db.Column(db.Integer, default=0)
-#     avg_playtime = db.Column(db.Integer, default=0)
-#     avg_nb_players = db.Column(db.Integer, default=0)
-#     frequency = db.Column(db.Integer, default=0)
-#
-#     # user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-#     user = db.relationship(
-#         "User",
-#         back_populates="statistics",
-#         uselist=False)
+class Statistic(db.Model):
+    """
+    Create a Statistic table
+    """
+
+    __tablename__ = 'statistics'
+
+    id = db.Column(db.Integer, primary_key=True)
+    avg_complexity = db.Column(db.Integer, default=0)
+    avg_playtime = db.Column(db.Integer, default=0)
+    avg_nb_players = db.Column(db.Integer, default=0)
+    frequency = db.Column(db.Integer, default=0)
+
+    # user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship(
+        "User",
+        back_populates="statistics",
+        uselist=False)
 
 
 class Wish(db.Model):
@@ -194,6 +199,9 @@ class Wish(db.Model):
         "Game",
         backref=db.backref("wished_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    def __repr__(self):
+        return f"Wish: ({self.user.username}, {self.game.title})"
 
     @classmethod
     def from_both_ids(cls, user_id, game_id):
@@ -223,6 +231,9 @@ class Prefer(db.Model):
         backref=db.backref("prefered_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    def __repr__(self):
+        return f"Prefer: ({self.user.username}, {self.game.title})"
+
     @classmethod
     def from_both_ids(cls, user_id, game_id):
         """
@@ -249,6 +260,9 @@ class KnowRules(db.Model):
         backref=db.backref("known_by_users", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    def __repr__(self):
+        return f"KnowRules: ({self.user.username}, {self.game.title})"
+
     @classmethod
     def from_both_ids(cls, user_id, game_id):
         """
@@ -274,6 +288,9 @@ class Collect(db.Model):
         "Game",
         backref=db.backref("owners", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    def __repr__(self):
+        return f"Collect: ({self.user.username}, {self.game.title})"
 
     @classmethod
     def from_both_ids(cls, user_id, game_id):
@@ -303,6 +320,9 @@ class Note(db.Model):
         "Game",
         backref=db.backref("notes", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    def __repr__(self):
+        return f"Note: ({self.user.username}, {self.game.title})"
 
     @classmethod
     def from_both_ids(cls, user_id, game_id):
@@ -379,6 +399,9 @@ class Classification(db.Model):
         backref=db.backref("classifications", lazy="dynamic"),
         foreign_keys=[genre_id])
 
+    def __repr__(self):
+        return f"Classification: ({self.game.title}, {self.genre.name})"
+
     @classmethod
     def from_both_ids(cls, game_id, genre_id):
         """
@@ -408,6 +431,8 @@ class Group(db.Model):
         backref=db.backref("managed_groups", lazy="dynamic"),
         foreign_keys=[manager_id])
 
+    def __repr__(self):
+        return f"Group: {self.name}"
 
 class Participate(db.Model):
     """
@@ -426,6 +451,9 @@ class Participate(db.Model):
         "Group",
         backref=db.backref("participations", lazy="dynamic"),
         foreign_keys=[group_id])
+
+    def __repr__(self):
+        return f"Participate: ({self.member.username}, {self.group.name})"
 
     @classmethod
     def from_both_ids(cls, member_id, group_id):

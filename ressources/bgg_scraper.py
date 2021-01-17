@@ -1,16 +1,31 @@
 import json
 import os
 import sys
+from concurrent.futures.thread import ThreadPoolExecutor
+
 import mariadb
 import requests
 import yaml
-from concurrent.futures.thread import ThreadPoolExecutor
 from bs4 import BeautifulSoup
 
 domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
 cover_url = "https://api.geekdo.com/api/images/"
 i = 1
+games_type_dict = {
+    'Strategy ': "Stratégie",
+    'Abstract ': "Abstrait",
+    'War ': "Guerre",
+    'Party ': "Fête",
+    'Customizable': "Personnalisable",
+    'Amiga': "Amiga",
+    "Children's ": "Pour enfant",
+    'Atari ST': "Atari ST",
+    'Arcade': "Arcade",
+    'Commodore 64': "Commodore 64",
+    'Thematic': "Thématique",
+    'Family ': "Familial"
+}
 
 
 # yaml Structure
@@ -38,6 +53,7 @@ def get_cover(image_id):
         json_file = requests.get(cover_url + str(image_id)).json()['images']
     except TypeError:  # If we can get the webpage we got a None type and so raise a TypeError exception
         return None
+
     if "pic1657689" in json_file["original"]["url"]:
         return None
     return {
@@ -53,29 +69,43 @@ def get_cover(image_id):
     }
 
 
+def get_type_game(json_obj):
+    types = []
+    for game_type in json_obj["rankinfo"]:
+        if game_type["veryshortprettyname"] != "Overall":
+            types.append(games_type_dict[game_type["veryshortprettyname"]])
+    return types
+
+
 def get_game_info(url):
-    raw_html = BeautifulSoup(  # Get raw html of domain + url
+    beautiful_html = BeautifulSoup(  # Get raw html of domain + url
         requests.get(domain + url).text,
         "html.parser"
     )
-    a = map(str, raw_html.find_all('script'))  # Transform it to an Iterator[str]
+    # The JSON is embedded in script tag so we have to parse it
+    a = map(str, beautiful_html.find_all('script'))  # Transform it to an Iterator[str]
     json_text = None
+
     for elem in a:  # For each <script>
         if 'GEEK.geekitemPreload' in elem:  # if we got the infos
             temp = elem.split('GEEK.geekitemPreload = ')[1]  # Get rid of previous code
             temp2 = temp.split('};', 1)[0]  # Get rid of useless code after the JSON file
             temp2 = temp2 + '}'  # Restore the '}' we removed the line before
             json_text = json.loads(temp2)['item']  # Transform dirty string into proper JSON format
+
     covers = get_cover(json_text["imageid"])
     if covers is None:
         return None
+
     return {
         "title": json_text["name"],
+        "id": int(json_text["objectid"]),
         "publication_year": int(json_text["yearpublished"]),
         "min_players": int(json_text["minplayers"]),
         "max_players": int(json_text["maxplayers"]),
         "min_playtime": int(json_text["minplaytime"]),
         "average_rating": float(json_text["stats"]["average"]),
+        "type": get_type_game(json_text),
         "images": covers
     }
 
@@ -83,15 +113,19 @@ def get_game_info(url):
 def create_game_list(raw_html):
     game_list_dict = {}
     global i
+
     for game in map(str, raw_html.find_all("a", {"class": "primary"})):  # This way we can iterate and parse html
         game = BeautifulSoup(game, "html.parser")  # Convert str into bs4 object
         href = game.find('a')['href']  # extract href content
-        id_game = int(href.split('/')[2])  # extract id from href content
+
         game_info = get_game_info(href)  # Get game info into dict
+
         if game_info is not None:  # Check if we have game info, if not skip this game
-            game_list_dict[id_game] = game_info  # Transfer game info into the big ass dict
-            game_list_dict[id_game]["rank"] = i  # Add rank to save order
-            print(f"Jeu n⁰{i}: {game_list_dict[id_game]['title']}")  # Just to inform where the program is
+            game_title = game_info["title"]  # Assign title
+            game_info.pop("title")  # Then removes it from game_info since this is now the key
+            game_list_dict[game_title] = game_info  # Transfer game info into the big ass dict
+            game_list_dict[game_title]["rank"] = i  # Add rank to save order
+            print(f"Jeu n⁰{i}: {game_title}")  # Just to inform where the program is
             i += 1
         else:
             print("Informations manquantes pour ce jeu, skipping...")
@@ -100,10 +134,16 @@ def create_game_list(raw_html):
 
 def save_yaml(game_list_dict):
     with open('games-data.yaml', 'a') as f:
-        f.write(yaml.dump(game_list_dict, sort_keys=False))  # write game_list_dict to the file and disable auto sort
+        f.write(yaml.dump(game_list_dict, sort_keys=False, allow_unicode=True))  # write game_list_dict to the file
+        # and disable auto sort
 
 
-def save_db(game_list_dict):
+def load_yaml(path):
+    with open(path, 'r') as f:
+        return yaml.full_load(f)
+
+
+def save_yaml_to_db(path):
     try:
         conn = mariadb.connect(
             user='al_admin',
@@ -116,20 +156,26 @@ def save_db(game_list_dict):
     except mariadb.Error as e:
         print(f'Error connecting to MariaDB Platform: {e}')
         sys.exit(1)
+
     cur = conn.cursor()
     game_id = 0
     cur.execute("SELECT * FROM games")
     for max_game_id in cur:
         if max_game_id[0] is not None:
             game_id = int(max_game_id)
-    for data in game_list_dict.values():
+
+    # Since we have the name of the game as key, we don't have to check for duplicates because if a game have
+    # the same name, so the same key, it will not be added to the dict due to the nature of dict implementation
+    # Now... Time to load some data !
+    games_from_yaml = load_yaml(path)
+    for title, data in games_from_yaml.items():
         try:
             cur.execute("INSERT INTO games VALUES (?, ?, ?, ?, ?, ?, ?)", (game_id,
-                                                                           data['title'],
-                                                                           int(data['publication_year']),
-                                                                           int(data['min_players']),
-                                                                           int(data['max_players']),
-                                                                           int(data['min_playtime']),
+                                                                           title,
+                                                                           data['publication_year'],
+                                                                           data['min_players'],
+                                                                           data['max_players'],
+                                                                           data['min_playtime'],
                                                                            data['images']['original']))
         except mariadb.Error as e:
             print(f'Error: {e}')
@@ -137,7 +183,7 @@ def save_db(game_list_dict):
         game_id = game_id + 1
 
 
-def sub_main(j):
+def scrape_thread(j):
     main_html = BeautifulSoup(  # Request raw page and make a bs4 object
         requests.get(main_url + str(j)).text,
         "html.parser"
@@ -148,19 +194,36 @@ def sub_main(j):
     print("Fini !")
 
 
-def main():
+def scraper():
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
     try:
         os.remove("games-data.yaml")
-        print("Ancien game-data.yaml supprimé")
+        print("Ancien game-data.yaml supprimé et création d'un nouveau")
     except FileNotFoundError:
         print("Création de game-data.yaml")
 
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
-            executor.submit(sub_main, j)
+            executor.submit(scrape_thread, j)
+
+
+def main():
+    while True:
+        usr_input = int(input("Mode :\n"
+                              " (1) Juste scrape des pages\n"
+                              " (2) Charger un yaml dans la BDD\n"
+                              " (3) Quitter\n"
+                              ))
+
+        if usr_input == 1:
+            scraper()
+        elif usr_input == 2:
+            path = input("Chemin vers le yaml : ")
+            save_yaml_to_db(path)
+        elif usr_input == 3:
+            sys.exit(0)
 
 
 if __name__ == '__main__':
