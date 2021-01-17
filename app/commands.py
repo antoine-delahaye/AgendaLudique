@@ -26,7 +26,7 @@ def send_mail(email):
 
 from app import db
 import yaml
-from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate
+from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -48,40 +48,52 @@ def loaddb_games(filename):
         db.session.add(bgg)
         db.session.commit()
 
-    # premier tour de boucle, creation des jeux
-    nb_jeux_regetes = 0
-    for game in games.values():
-        if len(game["title"]) <= 128 and Game.from_title(game["title"]) == None:  #
+    # premier tour de boucle, creation des jeux et des genres
+    nb_jeux_rejetes = 0
+    for title, game in games.items():
+        if len(title) <= 128 and Game.from_title(title) == None:
             o = Game(
-                title=game["title"],
+                title=title,
                 publication_year=game["publication_year"],
                 min_players=game["min_players"],
                 max_players=game["max_players"],
                 min_playtime=game["min_playtime"],
                 image=game["images"]["original"])
             db.session.add(o)
-            print("V", game["title"])
+            print("V", title)
         else:
-            print("X", game["title"])
-            nb_jeux_regetes += 1
+            print("X", title)
+            nb_jeux_rejetes += 1
+        for typ in game["type"]: # creation des genres
+            if Genre.from_name(typ) == None:
+                o = Genre(name=typ)
+                db.session.add(o)
     db.session.commit()
 
-    # deuxieme tour de boucle pour les notes de bgg
-    for game in games.values():
-        g = Game.from_title(game["title"])
-        if g != None and Note.from_both_ids(bgg.id, g.id) == None:
-            rating = Note(
-                note=round(game["average_rating"]),
-                message="Auto-generated note, the average rating of the game at boardgamegeek.com",
-                user_id=bgg.id,
-                game_id=g.id)
-            db.session.add(rating)
-            print("V", Note, game["title"])
-        else:
-            print("X", Note, game["title"])
+    # deuxieme tour de boucle pour les notes de bgg et les genres du jeu
+    for title, game in games.items():
+        g = Game.from_title(title)
+        if g != None:
+            if Note.from_both_ids(bgg.id, g.id) == None:
+                rating = Note(
+                    note=round(game["average_rating"]),
+                    message="Auto-generated note, the average rating of the game at boardgamegeek.com",
+                    user_id=bgg.id,
+                    game_id=g.id)
+                db.session.add(rating)
+                print("V", Note, title)
+            else:
+                print("X", Note, title)
+
+            for typ in game["type"]:
+                genre_id = Genre.from_name(typ).id
+                if Classification.from_both_ids(g.id, genre_id) == None:
+                    o = Classification(g.id, genre_id)
+                    db.session.add(o)
+
     db.session.commit()
 
-    print("Nombre de jeux rejetés : ", nb_jeux_regetes)
+    print("Nombre de jeux rejetés : ", nb_jeux_rejetes)
 
 
 def load_relationship(user, u_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
