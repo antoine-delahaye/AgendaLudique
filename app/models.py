@@ -176,7 +176,7 @@ class Statistic(db.Model):
     avg_nb_players = db.Column(db.Integer, default=0)
     frequency = db.Column(db.Integer, default=0)
 
-    # user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship(
         "User",
         back_populates="statistics",
@@ -433,6 +433,14 @@ class Group(db.Model):
 
     def __repr__(self):
         return f"Group: {self.name}"
+
+    @classmethod
+    def from_name(cls, name):
+        """
+        Get a Group from its name. Return None if the group does not exist.
+        """
+        req = Group.query.filter(Group.name == name).first()
+        return req if req else None
 
 class Participate(db.Model):
     """

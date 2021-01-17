@@ -25,16 +25,8 @@ def send_mail(email):
 
 
 from app import db
-
-
-@admin_blueprint.cli.command('syncdb')
-def syncdb():
-    """ Creates all missing tables """
-    db.create_all()
-
-
 import yaml
-from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer
+from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -112,7 +104,7 @@ def load_relationship(user, u_id, keyword_yml, rs, get_id, kw, list_kwsup=[], ge
 @admin_blueprint.cli.command('loaddb_users')
 @click.argument('filename')
 def loaddb_users(filename):
-    """ Populates the database with users and user-related relationships from a yml file """
+    """ Populates the database with users and user-related relationships from a yml file. Require loaddb_games. """
     users = yaml.safe_load(open(filename))
 
     # premier tour de boucle, creation des users
@@ -146,4 +138,38 @@ def loaddb_users(filename):
         get_id_kw = 'title'
         load_relationship(u, u_id, 'preferences', Prefer, get_id, kw, ['frequency'], get_id_kw)
         load_relationship(u, u_id, 'notes', Note, get_id, kw, ['note', 'message'], get_id_kw)
+    db.session.commit()
+
+
+@admin_blueprint.cli.command('loaddb_groups')
+@click.argument('filename')
+def loaddb_groups(filename):
+    """ Populates the database with groups and group-related relationships from a yml file. Require loaddb_users. """
+    groups = yaml.safe_load(open(filename))
+
+    # premier tour de boucle, creation des groupes
+    for g in groups:
+        if Group.from_name(g["name"]) == None:
+            o = Group(
+                name=g["name"],
+                is_private=g["is_private"],
+                password=g["password"],
+                manager_id=User.from_username(g["manager"]).id)
+            db.session.add(o)
+            print("V", g["name"])
+        else:
+            print("X", g["name"])
+    db.session.commit()
+
+    # deuxieme tour de boucle, creation des relations UserXGroup
+    for g in groups:
+        g_id = Group.from_name(g["name"]).id
+        for u in g["members"]:
+            u_id = User.from_username(u).id
+            if Participate.from_both_ids(u_id, g_id) == None:
+                o = Participate(member_id=u_id, group_id=g_id)
+                db.session.add(o)
+                print("V", Participate, g_id, u_id)
+            else:
+                print("X", Participate, g_id, u_id)
     db.session.commit()
