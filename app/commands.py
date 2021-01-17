@@ -84,12 +84,29 @@ def loaddb_games(filename):
                 user_id=bgg.id,
                 game_id=g.id)
             db.session.add(rating)
-            print("V Note pour : ", game["title"])
+            print("V", Note, game["title"])
         else:
-            print("X Note pour :", game["title"])
+            print("X", Note, game["title"])
     db.session.commit()
 
     print("Nombre de jeux rejetés : ", nb_jeux_regetes)
+
+
+def load_relationship(user, u_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
+    for elem in user[keyword_yml]:
+        if get_id_kw:
+            elem_id = get_id(elem[get_id_kw]).id
+        else:
+            elem_id = get_id(elem).id
+        if rs.from_both_ids(u_id,elem_id) == None:
+            dico_kwsup = dict()
+            for kwsup in list_kwsup:
+                dico_kwsup[kwsup] = elem[kwsup]
+            o = rs(user_id=u_id, **{kw: elem_id}, **dico_kwsup)
+            db.session.add(o)
+            print("V", rs, u_id, elem_id)
+        else:
+            print("X", rs, u_id, elem_id)
 
 
 @admin_blueprint.cli.command('loaddb_users')
@@ -117,67 +134,16 @@ def loaddb_users(filename):
     # deuxieme tour de boucle, creation des relations UserXGame et UserXUser
     for u in users:
         u_id = User.from_username(u["username"]).id # existe forcement
-        for u2 in u["bookmarked_users"]:
-            u2_id = User.from_username(u2).id
-            if BookmarkUser.from_both_ids(u_id,u2_id) == None:
-                o = BookmarkUser(user_id=u_id, user2_id=u2_id)
-                db.session.add(o)
-                print("V BookmarkUser", u["username"], u2)
-            else:
-                print("X BookmarkUser", u["username"], u2)
-        for u2 in u["hidden_users"]:
-            u2_id = User.from_username(u2).id
-            if HideUser.from_both_ids(u_id,u2_id) == None:
-                o = HideUser(user_id=u_id, user2_id=u2_id)
-                db.session.add(o)
-                print("V HideUser", u["username"], u2)
-            else:
-                print("X HideUser", u["username"], u2)
-        for g in u["wishes"]:
-            g_id = Game.from_title(g).id
-            if Wish.from_both_ids(u_id, g_id):
-                o = Wish(user_id=u_id, game_id=g_id)
-                db.session.add(o)
-                print("V Wish", u["username"], g)
-            else:
-                print("X Wish", u["username"], g)
-        for g in u["known"]:
-            g_id = Game.from_title(g).id
-            if KnowRules.from_both_ids(u_id, g_id) == None:
-                o = KnowRules(user_id=u_id, game_id=g_id)
-                db.session.add(o)
-                print("V KnowRules", u["username"], g)
-            else:
-                print("X KnowRules", u["username"], g)
-        for g in u["collection"]:
-            g_id = Game.from_title(g).id
-            if Collect.from_both_ids(u_id, g_id) == None:
-                o = Collect(user_id=u_id, game_id=g_id)
-                db.session.add(o)
-                print("V Collect", u["username"], g)
-            else:
-                print("X Collect", u["username"], g)
-        for pref in u["preferences"]:
-            g_id = Game.from_title(pref["title"]).id
-            if Prefer.from_both_ids(u_id, g_id) == None:
-                o = Prefer(
-                    user_id=u_id,
-                    game_id=g_id,
-                    frequency=pref["frequency"])
-                db.session.add(o)
-                print("V Prefer", u["username"], pref["title"])
-            else:
-                print("X Prefer", u["username"], pref["title"])
-        for note in u["notes"]:
-            Game.from_title(note["title"]).id
-            if Note.from_both_ids(u_id, g_id) == None:
-                o = Note(
-                    user_id=u_id,
-                    game_id=g_id,
-                    note=note["note"],
-                    message=note["message"])
-                db.session.add(o)
-                print("V Note", u["username"], note["title"])
-            else:
-                print("X Note", u["username"], note["title"])
+        relations_uxu = {"bookmarked_users": BookmarkUser, "hidden_users": HideUser}
+        relations_uxg = {"wishes": Wish, "known": KnowRules, "collection": Collect}
+
+        for kw_yml, rs in relations_uxu.items():
+            load_relationship(u, u_id, kw_yml, rs, User.from_username, 'user2_id')
+        get_id = Game.from_title
+        kw = 'game_id'
+        for kw_yml, rs in relations_uxg.items():
+            load_relationship(u, u_id, kw_yml, rs , get_id, kw)
+        get_id_kw = 'title'
+        load_relationship(u, u_id, 'preferences', Prefer, get_id, kw, ['frequency'], get_id_kw)
+        load_relationship(u, u_id, 'notes', Note, get_id, kw, ['note', 'message'], get_id_kw)
     db.session.commit()
