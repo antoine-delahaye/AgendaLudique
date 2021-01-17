@@ -93,9 +93,10 @@ class User(UserMixin, db.Model):
         users_db = []
         result = []
 
-        if "ONLY_BOOKMARKED" not in parameters:  # Displays only bookmarked users
+
+        if "ONLY_BOOKMARKED" not in parameters:
             users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
-        else:
+        else:   # Displays only bookmarked users
             bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
             for bookmarked_user in bookmarked_users_db:
                 users_db.append(User.query.get(bookmarked_user.user2_id))
