@@ -3,3 +3,18 @@
   password: "G34BBW"
   manager: nf_1
   members: [nf_1, nf_2, nf_3, nf_7]
+- name: "7 Wonders Duel fans"
+  is_private: True
+  password: "FJE348"
+  manager: nf_8
+  members: [nf_8]
+- name: "COVID friendly"
+  is_private: False
+  password: "FAZ904"
+  manager: nf_3
+  members: [nf_2, nf_3, nf_5, nf_6]
+- name: "Omega potes"
+  is_private: True
+  password: "573DZA"
+  manager: nf_1
+  members: [nf_1, nf_2, nf_3]
