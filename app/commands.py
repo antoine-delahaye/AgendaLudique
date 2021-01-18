@@ -1,5 +1,6 @@
 import click
 from flask import Blueprint
+from app import db
 
 # bp qui permet l'administration de l'application
 admin_blueprint = Blueprint('admin', __name__)
@@ -7,8 +8,11 @@ admin_blueprint = Blueprint('admin', __name__)
 
 @admin_blueprint.cli.command('resetDB')
 def reset_db():
-    """ réinitialise la base de données """
-    pass
+    """ Clear all the data of the database """
+    for table in reversed(db.metadata.sorted_tables):
+        print(f'Clear table {table}')
+        db.session.execute(table.delete())
+    db.session.commit()
 
 
 @admin_blueprint.cli.command('sendMail')
@@ -24,7 +28,6 @@ def send_mail(email):
         print("mail successfully sent to " + email)
 
 
-from app import db
 import yaml
 from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre, Classification
 
