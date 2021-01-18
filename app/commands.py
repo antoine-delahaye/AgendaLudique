@@ -26,7 +26,7 @@ def send_mail(email):
 
 from app import db
 import yaml
-from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre
+from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre, Classification
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -88,7 +88,7 @@ def loaddb_games(filename):
             for typ in game["type"]:
                 genre_id = Genre.from_name(typ).id
                 if Classification.from_both_ids(g.id, genre_id) == None:
-                    o = Classification(g.id, genre_id)
+                    o = Classification(game_id=g.id, genre_id=genre_id)
                     db.session.add(o)
 
     db.session.commit()
