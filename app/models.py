@@ -22,11 +22,10 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512))
 
-    statistics_id = db.Column(db.Integer, db.ForeignKey("statistics.id"))
     statistics = db.relationship(
         "Statistic",
         back_populates="user",
-        foreign_keys=[statistics_id])
+        uselist=False)
 
     @property
     def password(self):
@@ -179,8 +178,7 @@ class Statistic(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship(
         "User",
-        back_populates="statistics",
-        uselist=False)
+        back_populates="statistics")
 
 
 class Wish(db.Model):
