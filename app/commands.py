@@ -1,3 +1,6 @@
+import yaml
+from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, \
+    Genre, Classification
 import click
 from flask import Blueprint
 from app import db
@@ -27,10 +30,6 @@ def send_mail(email):
     with current_app.test_request_context("localhost.com"):
         mail.send_mail("Testing mail sending", email, 'mails/testing.html', url="google.com")
         print("mail successfully sent to " + email)
-
-
-import yaml
-from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre, Classification
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -70,7 +69,7 @@ def loaddb_games(filename):
         else:
             print("X", title)
             nb_jeux_rejetes += 1
-        for typ in game["type"]: # creation des genres
+        for typ in game["type"]:  # creation des genres
             if Genre.from_name(typ) is None:
                 o = Genre(name=typ)
                 db.session.add(o)
@@ -126,11 +125,14 @@ def fast_loaddb_games(filename):
         db.session.commit()
     bgg_id = bgg.id
 
+    print("Premier tour de boucle...")
     # premier tour de boucle, creation des jeux et des genres
     nb_jeux_rejetes = 0
     dico_games = dict()  # {game.title: game}
+    i = 0
     for title, game in games.items():
-        if len(title) > 128:    # Continue la boucle et ignore le reste
+        if len(title) > 128 or 'á' in game["title"]:  # Continue la boucle et ignore le reste
+            nb_jeux_rejetes += 1
             continue
         game_object = Game(
             title=game["title"],
@@ -140,18 +142,23 @@ def fast_loaddb_games(filename):
             min_playtime=game["min_playtime"],
             image=game["images"]["original"])
         db.session.add(game_object)
-        print("V", title)
-        # nb_jeux_rejetes += 1
         dico_games[title] = game_object
         for typ in game["type"]:  # creation des genres
             if Genre.from_name(typ) is None:
                 game_object = Genre(name=typ)
                 db.session.add(game_object)
+        i += 1
+        if i % 100 == 0:
+            print(f"{i} jeux insere")
     db.session.commit()
 
+    print("Deuxieme tour de boucle...")
     # deuxieme tour de boucle pour les notes de bgg et les genres du jeu
     default_message = "Auto-generated note, the average rating of the game at boardgamegeek.com"
+    i = 0
     for title, game in games.items():
+        if 'á' in game["title"]:
+            continue
         g_id = dico_games[title].id
         rating = Note(
             note=round(game["average_rating"]),
@@ -159,12 +166,14 @@ def fast_loaddb_games(filename):
             user_id=bgg_id,
             game_id=g_id)
         db.session.add(rating)
-        print("V Note", title)
 
         for typ in game["type"]:
             genre_id = Genre.from_name(typ).id
             game_object = Classification(game_id=g_id, genre_id=genre_id)
             db.session.add(game_object)
+        i += 1
+        if i % 100 == 0:
+            print(f"{i} genres insere")
     db.session.commit()
 
     print("Nombre de jeux rejetés : ", nb_jeux_rejetes)
@@ -177,7 +186,7 @@ def load_relationship(user, u_id, keyword_yml, rs, get_id, kw, list_kwsup=[], ge
             elem_id = get_id(elem[get_id_kw]).id
         else:
             elem_id = get_id(elem).id
-        if rs.from_both_ids(u_id,elem_id) == None:
+        if rs.from_both_ids(u_id, elem_id) is None:
             dico_kwsup = dict()
             for kwsup in list_kwsup:
                 dico_kwsup[kwsup] = elem[kwsup]
@@ -196,7 +205,7 @@ def loaddb_users(filename):
 
     # premier tour de boucle, creation des users
     for u in users:
-        if User.from_username(u["username"]) == None:
+        if User.from_username(u["username"]) is None:
             o = User(
                 email=u["email"],
                 username=u["username"],
@@ -212,7 +221,7 @@ def loaddb_users(filename):
 
     # deuxieme tour de boucle, creation des relations UserXGame et UserXUser
     for u in users:
-        u_id = User.from_username(u["username"]).id # existe forcement
+        u_id = User.from_username(u["username"]).id  # existe forcement
         relations_uxu = {"bookmarked_users": BookmarkUser, "hidden_users": HideUser}
         relations_uxg = {"wishes": Wish, "known": KnowRules, "collection": Collect}
 
@@ -221,7 +230,7 @@ def loaddb_users(filename):
         get_id = Game.from_title
         kw = 'game_id'
         for kw_yml, rs in relations_uxg.items():
-            load_relationship(u, u_id, kw_yml, rs , get_id, kw)
+            load_relationship(u, u_id, kw_yml, rs, get_id, kw)
         get_id_kw = 'title'
         load_relationship(u, u_id, 'preferences', Prefer, get_id, kw, ['frequency'], get_id_kw)
         load_relationship(u, u_id, 'notes', Note, get_id, kw, ['note', 'message'], get_id_kw)
@@ -236,7 +245,7 @@ def loaddb_groups(filename):
 
     # premier tour de boucle, creation des groupes
     for g in groups:
-        if Group.from_name(g["name"]) == None:
+        if Group.from_name(g["name"]) is None:
             o = Group(
                 name=g["name"],
                 is_private=g["is_private"],
@@ -253,7 +262,7 @@ def loaddb_groups(filename):
         g_id = Group.from_name(g["name"]).id
         for u in g["members"]:
             u_id = User.from_username(u).id
-            if Participate.from_both_ids(u_id, g_id) == None:
+            if Participate.from_both_ids(u_id, g_id) is None:
                 o = Participate(member_id=u_id, group_id=g_id)
                 db.session.add(o)
                 print("V", Participate, g_id, u_id)

@@ -28,26 +28,6 @@ games_type_dict = {
 }
 
 
-# yaml Structure
-#     140620: <-- int (id)
-#       title: str
-#       publication_year: int
-#       min_players: int
-#       max_players: int
-#       min_playtime: int
-#       images:
-#         micro: str (url)
-#         small: str (url)
-#         medium: str (url)
-#         large: str (url)
-#         square: str (url)
-#         expanded: str (url)
-#         crop_100: str (url)
-#         square_200: str (url)
-#         original: str (url)
-#       rank: id
-
-
 def get_cover(image_id):
     try:
         json_file = requests.get(cover_url + str(image_id)).json()['images']
@@ -124,10 +104,7 @@ def create_game_list(raw_html):
             game_title = game_info["title"].upper()  # Assign title
             game_list_dict[game_title] = game_info  # Transfer game info into the big ass dict
             game_list_dict[game_title]["rank"] = i  # Add rank to save order
-            print(f"Jeu n⁰{i}: {game_title}")  # Just to inform where the program is
             i += 1
-        else:
-            print("Informations manquantes pour ce jeu, skipping...")
     return game_list_dict
 
 
@@ -188,7 +165,7 @@ def scrape_thread(j):
         "html.parser"
     )
     game_list_dict = create_game_list(main_html)
-    print("Sauvegarde dans le fichier yaml en cours...")
+    print("Ajout des jeux scrapé dans le yaml...")
     save_yaml(game_list_dict)  # Save yaml into games-data.yaml
     print("Fini !")
 
@@ -202,7 +179,7 @@ def scraper():
         print("Ancien game-data.yaml supprimé et création d'un nouveau")
     except FileNotFoundError:
         print("Création de game-data.yaml")
-
+    print("On commence à scrape... Ca va prendre un peu de temps... ")
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
             executor.submit(scrape_thread, j)
