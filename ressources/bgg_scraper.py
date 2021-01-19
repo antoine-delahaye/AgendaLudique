@@ -27,6 +27,7 @@ games_type_dict = {
     'Thematic': "Thématique",
     'Family ': "Familial"
 }
+game_list_dict = {}
 
 
 def get_cover(image_id):
@@ -50,6 +51,16 @@ def get_cover(image_id):
     }
 
 
+def save_json(dico):
+    with open('games-data.json', 'a') as f:
+        json.dump(dico, f)
+
+
+def load_json(path):
+    with open(path, 'r') as f:
+        return json.load(f)
+
+
 def get_type_game(json_obj):
     types = []
     for game_type in json_obj["rankinfo"]:
@@ -59,6 +70,7 @@ def get_type_game(json_obj):
 
 
 def get_game_info(url):
+    # Scrap du jeu de la page
     beautiful_html = BeautifulSoup(  # Get raw html of domain + url
         requests.get(domain + url).text,
         "html.parser"
@@ -91,11 +103,16 @@ def get_game_info(url):
     }
 
 
-def create_game_list(raw_html):
-    game_list_dict = {}
+def scrape_thread(j):
     global i
+    global game_list_dict
+    main_html = BeautifulSoup(  # Request raw page and make a bs4 object
+        requests.get(main_url + str(j)).text,
+        "html.parser"
+    )
+    temp_dict_page = {}
 
-    for game in map(str, raw_html.find_all("a", {"class": "primary"})):  # This way we can iterate and parse html
+    for game in map(str, main_html.find_all("a", {"class": "primary"})):  # This way we can iterate and parse html
         game = BeautifulSoup(game, "html.parser")  # Convert str into bs4 object
         href = game.find('a')['href']  # extract href content
 
@@ -103,31 +120,10 @@ def create_game_list(raw_html):
 
         if game_info is not None:  # Check if we have game info, if not skip this game
             game_title = game_info["title"].upper()  # Assign title
-            game_list_dict[game_title] = game_info  # Transfer game info into the big ass dict
-            game_list_dict[game_title]["rank"] = i  # Add rank to save order
+            temp_dict_page[game_title] = game_info  # Transfer game info into the big ass dict
+            temp_dict_page[game_title]["rank"] = i  # Add rank to save order
             i += 1
-    return game_list_dict
-
-
-def save_json(game_list_dict):
-    with open('games-data.json', 'a') as f:
-        json.dump(game_list_dict, f)
-
-
-def load_json(path):
-    with open(path, 'r') as f:
-        return json.load(f)
-
-
-def scrape_thread(j):
-    main_html = BeautifulSoup(  # Request raw page and make a bs4 object
-        requests.get(main_url + str(j)).text,
-        "html.parser"
-    )
-    game_list_dict = create_game_list(main_html)
-    print("Ajout des jeux scrapé dans le yaml...")
-    save_json(game_list_dict)  # Save yaml into games-data.yaml
-    print("Fini !")
+    game_list_dict = {**game_list_dict, **temp_dict_page}
 
 
 def scraper():
@@ -135,14 +131,15 @@ def scraper():
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
     try:
-        os.remove("games-data.yaml")
+        os.remove("games-data.json")
         print("Ancien game-data.yaml supprimé et création d'un nouveau")
     except FileNotFoundError:
-        print("Création de game-data.yaml")
+        print("Création de game-data.json")
     print("On commence à scrape... Ca va prendre un peu de temps... ")
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
             executor.submit(scrape_thread, j)
+    save_json(game_list_dict)  # Save yaml into games-data.yaml
 
 
 def main():
