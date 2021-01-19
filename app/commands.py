@@ -1,5 +1,7 @@
 import click
 from flask import Blueprint
+from app import db
+import time
 
 # bp qui permet l'administration de l'application
 admin_blueprint = Blueprint('admin', __name__)
@@ -7,8 +9,11 @@ admin_blueprint = Blueprint('admin', __name__)
 
 @admin_blueprint.cli.command('resetDB')
 def reset_db():
-    """ réinitialise la base de données """
-    pass
+    """ Clear all the data of the database """
+    for table in reversed(db.metadata.sorted_tables):
+        print(f'Clear table {table}')
+        db.session.execute(table.delete())
+    db.session.commit()
 
 
 @admin_blueprint.cli.command('sendMail')
@@ -24,9 +29,8 @@ def send_mail(email):
         print("mail successfully sent to " + email)
 
 
-from app import db
 import yaml
-from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre
+from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre, Classification
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -35,9 +39,10 @@ def loaddb_games(filename):
     """ Populates the database with games from a yml file """
     games = yaml.safe_load(open(filename))
 
+    deb = time.perf_counter()
     # creation d'un profil BGG
     bgg = User.from_username("BGG")
-    if bgg == None:
+    if bgg is None:
         bgg = User(
             email="mmm.dupuis45@gmail.com",
             username="BGG",
@@ -47,11 +52,12 @@ def loaddb_games(filename):
             profile_picture="https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg")
         db.session.add(bgg)
         db.session.commit()
+    bgg_id = bgg.id
 
     # premier tour de boucle, creation des jeux et des genres
     nb_jeux_rejetes = 0
     for title, game in games.items():
-        if len(title) <= 128 and Game.from_title(title) == None:
+        if len(title) <= 128 and Game.from_title(title) is None:
             o = Game(
                 title=title,
                 publication_year=game["publication_year"],
@@ -65,7 +71,7 @@ def loaddb_games(filename):
             print("X", title)
             nb_jeux_rejetes += 1
         for typ in game["type"]: # creation des genres
-            if Genre.from_name(typ) == None:
+            if Genre.from_name(typ) is None:
                 o = Genre(name=typ)
                 db.session.add(o)
     db.session.commit()
@@ -74,12 +80,13 @@ def loaddb_games(filename):
     for title, game in games.items():
         g = Game.from_title(title)
         if g != None:
-            if Note.from_both_ids(bgg.id, g.id) == None:
+            g_id = g.id
+            if Note.from_both_ids(bgg_id, g_id) is None:
                 rating = Note(
                     note=round(game["average_rating"]),
                     message="Auto-generated note, the average rating of the game at boardgamegeek.com",
-                    user_id=bgg.id,
-                    game_id=g.id)
+                    user_id=bgg_id,
+                    game_id=g_id)
                 db.session.add(rating)
                 print("V", Note, title)
             else:
@@ -87,13 +94,79 @@ def loaddb_games(filename):
 
             for typ in game["type"]:
                 genre_id = Genre.from_name(typ).id
-                if Classification.from_both_ids(g.id, genre_id) == None:
-                    o = Classification(g.id, genre_id)
+                if Classification.from_both_ids(g_id, genre_id) is None:
+                    o = Classification(game_id=g_id, genre_id=genre_id)
                     db.session.add(o)
 
     db.session.commit()
 
     print("Nombre de jeux rejetés : ", nb_jeux_rejetes)
+    print(f"Temps d'exécutuion : {time.perf_counter() - deb:0.4f} sec")
+
+
+@admin_blueprint.cli.command('fast_loaddb_games')
+@click.argument('filename')
+def fast_loaddb_games(filename):
+    """ WARNING ! ONLY WITH AN EMPTY DATABASE ! Populates the database with games from a yml file """
+    games = yaml.safe_load(open(filename))
+
+    deb = time.perf_counter()
+    # creation d'un profil BGG (existe deja)
+    bgg = User.from_username("BGG")
+    if bgg == None:
+        bgg = User(
+            email="mmm.dupuis45@gmail.com",
+            username="BGG",
+            first_name="Board Game",
+            last_name="Geek",
+            password="BGGdu45",
+            profile_picture="https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg")
+        db.session.add(bgg)
+        db.session.commit()
+    bgg_id = bgg.id
+
+    # premier tour de boucle, creation des jeux et des genres
+    nb_jeux_rejetes = 0
+    dico_games = dict() # {game.title: game}
+    for title, game in games.items():
+        if len(title) <= 128:
+            o = Game(
+                title=title,
+                publication_year=game["publication_year"],
+                min_players=game["min_players"],
+                max_players=game["max_players"],
+                min_playtime=game["min_playtime"],
+                image=game["images"]["original"])
+            db.session.add(o)
+            print("V", title)
+            nb_jeux_rejetes += 1
+        dico_games[title] = o
+        for typ in game["type"]: # creation des genres
+            if Genre.from_name(typ) is None:
+                o = Genre(name=typ)
+                db.session.add(o)
+    db.session.commit()
+
+    # deuxieme tour de boucle pour les notes de bgg et les genres du jeu
+    default_message = "Auto-generated note, the average rating of the game at boardgamegeek.com"
+    for title, game in games.items():
+        g_id = dico_games[title].id
+        rating = Note(
+            note=round(game["average_rating"]),
+            message=default_message,
+            user_id=bgg_id,
+            game_id=g_id)
+        db.session.add(rating)
+        print("V Note", title)
+
+        for typ in game["type"]:
+            genre_id = Genre.from_name(typ).id
+            o = Classification(game_id=g_id, genre_id=genre_id)
+            db.session.add(o)
+    db.session.commit()
+
+    print("Nombre de jeux rejetés : ", nb_jeux_rejetes)
+    print(f"Temps d'exécutuion : {time.perf_counter() - deb:0.4f} sec")
 
 
 def load_relationship(user, u_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
