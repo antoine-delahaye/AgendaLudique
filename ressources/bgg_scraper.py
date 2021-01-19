@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 from concurrent.futures.thread import ThreadPoolExecutor
 
 import mariadb
@@ -108,55 +109,14 @@ def create_game_list(raw_html):
     return game_list_dict
 
 
-def save_yaml(game_list_dict):
-    with open('games-data.yaml', 'a') as f:
-        f.write(yaml.dump(game_list_dict, sort_keys=False, allow_unicode=True))  # write game_list_dict to the file
-        # and disable auto sort
+def save_json(game_list_dict):
+    with open('games-data.json', 'a') as f:
+        json.dump(game_list_dict, f)
 
 
-def load_yaml(path):
+def load_json(path):
     with open(path, 'r') as f:
-        return yaml.full_load(f)
-
-
-def save_yaml_to_db(path):
-    try:
-        conn = mariadb.connect(
-            user='al_admin',
-            password='al_admin',
-            host='agenda-ludique.ddns.net',
-            port=3306,
-            database='agendaludique'
-
-        )
-    except mariadb.Error as e:
-        print(f'Error connecting to MariaDB Platform: {e}')
-        sys.exit(1)
-
-    cur = conn.cursor()
-    game_id = 0
-    cur.execute("SELECT * FROM games")
-    for max_game_id in cur:
-        if max_game_id[0] is not None:
-            game_id = int(max_game_id)
-
-    # Since we have the name of the game as key, we don't have to check for duplicates because if a game have
-    # the same name, so the same key, it will not be added to the dict due to the nature of dict implementation
-    # Now... Time to load some data !
-    games_from_yaml = load_yaml(path)
-    for title, data in games_from_yaml.items():
-        try:
-            cur.execute("INSERT INTO games VALUES (?, ?, ?, ?, ?, ?, ?)", (game_id,
-                                                                           title,
-                                                                           data['publication_year'],
-                                                                           data['min_players'],
-                                                                           data['max_players'],
-                                                                           data['min_playtime'],
-                                                                           data['images']['original']))
-        except mariadb.Error as e:
-            print(f'Error: {e}')
-        conn.commit()
-        game_id = game_id + 1
+        return json.load(f)
 
 
 def scrape_thread(j):
@@ -166,7 +126,7 @@ def scrape_thread(j):
     )
     game_list_dict = create_game_list(main_html)
     print("Ajout des jeux scrapé dans le yaml...")
-    save_yaml(game_list_dict)  # Save yaml into games-data.yaml
+    save_json(game_list_dict)  # Save yaml into games-data.yaml
     print("Fini !")
 
 
@@ -189,15 +149,11 @@ def main():
     while True:
         usr_input = int(input("Mode :\n"
                               " (1) Juste scrape des pages\n"
-                              " (2) Charger un yaml dans la BDD\n"
-                              " (3) Quitter\n"
+                              " (2) Quitter\n"
                               ))
 
         if usr_input == 1:
             scraper()
-        elif usr_input == 2:
-            path = input("Chemin vers le yaml : ")
-            save_yaml_to_db(path)
         elif usr_input == 3:
             sys.exit(0)
 
