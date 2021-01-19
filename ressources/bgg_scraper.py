@@ -121,8 +121,7 @@ def create_game_list(raw_html):
         game_info = get_game_info(href)  # Get game info into dict
 
         if game_info is not None:  # Check if we have game info, if not skip this game
-            game_title = game_info["title"]  # Assign title
-            game_info.pop("title")  # Then removes it from game_info since this is now the key
+            game_title = game_info["title"].upper()  # Assign title
             game_list_dict[game_title] = game_info  # Transfer game info into the big ass dict
             game_list_dict[game_title]["rank"] = i  # Add rank to save order
             print(f"Jeu n⁰{i}: {game_title}")  # Just to inform where the program is
