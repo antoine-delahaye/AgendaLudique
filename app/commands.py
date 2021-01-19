@@ -58,22 +58,22 @@ def loaddb_games(filename):
     nb_jeux_rejetes = 0
     for title, game in games.items():
         if len(title) <= 128 and Game.from_title(title) is None:
-            o = Game(
-                title=title,
+            game_object = Game(
+                title=game["title"],
                 publication_year=game["publication_year"],
                 min_players=game["min_players"],
                 max_players=game["max_players"],
                 min_playtime=game["min_playtime"],
                 image=game["images"]["original"])
-            db.session.add(o)
+            db.session.add(game_object)
             print("V", title)
         else:
             print("X", title)
             nb_jeux_rejetes += 1
         for typ in game["type"]: # creation des genres
             if Genre.from_name(typ) is None:
-                o = Genre(name=typ)
-                db.session.add(o)
+                genre_object = Genre(name=typ)
+                db.session.add(genre_object)
     db.session.commit()
 
     # deuxieme tour de boucle pour les notes de bgg et les genres du jeu
@@ -95,8 +95,8 @@ def loaddb_games(filename):
             for typ in game["type"]:
                 genre_id = Genre.from_name(typ).id
                 if Classification.from_both_ids(g_id, genre_id) is None:
-                    o = Classification(game_id=g_id, genre_id=genre_id)
-                    db.session.add(o)
+                    classification = Classification(game_id=g_id, genre_id=genre_id)
+                    db.session.add(classification)
 
     db.session.commit()
 
@@ -108,43 +108,41 @@ def loaddb_games(filename):
 @click.argument('filename')
 def fast_loaddb_games(filename):
     """ WARNING ! ONLY WITH AN EMPTY DATABASE ! Populates the database with games from a yml file """
+    print("Chargement du fichier yaml en memoire")
     games = yaml.safe_load(open(filename))
 
     deb = time.perf_counter()
-    # creation d'un profil BGG (existe deja)
-    bgg = User.from_username("BGG")
-    if bgg == None:
-        bgg = User(
-            email="mmm.dupuis45@gmail.com",
-            username="BGG",
-            first_name="Board Game",
-            last_name="Geek",
-            password="BGGdu45",
-            profile_picture="https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg")
-        db.session.add(bgg)
-        db.session.commit()
+    # creation d'un profil BGG
+    bgg = User(
+        email="mmm.dupuis45@gmail.com",
+        username="BGG",
+        first_name="Board Game",
+        last_name="Geek",
+        password="BGGdu45",
+        profile_picture="https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg")
+    db.session.add(bgg)
+    db.session.commit()
     bgg_id = bgg.id
 
     # premier tour de boucle, creation des jeux et des genres
-    nb_jeux_rejetes = 0
-    dico_games = dict() # {game.title: game}
+    dico_games = dict()  # {game.title: game}
     for title, game in games.items():
-        if len(title) <= 128:
-            o = Game(
-                title=title,
-                publication_year=game["publication_year"],
-                min_players=game["min_players"],
-                max_players=game["max_players"],
-                min_playtime=game["min_playtime"],
-                image=game["images"]["original"])
-            db.session.add(o)
-            print("V", title)
-            nb_jeux_rejetes += 1
-        dico_games[title] = o
-        for typ in game["type"]: # creation des genres
+        if len(title) > 128:    # Continue la boucle et ignore le reste
+            continue
+        game_object = Game(
+            title=game["title"],
+            publication_year=game["publication_year"],
+            min_players=game["min_players"],
+            max_players=game["max_players"],
+            min_playtime=game["min_playtime"],
+            image=game["images"]["original"])
+        db.session.add(game_object)
+        print("V", title)
+        dico_games[title] = game_object
+        for typ in game["type"]:  # creation des genres
             if Genre.from_name(typ) is None:
-                o = Genre(name=typ)
-                db.session.add(o)
+                game_object = Genre(name=typ)
+                db.session.add(game_object)
     db.session.commit()
 
     # deuxieme tour de boucle pour les notes de bgg et les genres du jeu
@@ -161,11 +159,10 @@ def fast_loaddb_games(filename):
 
         for typ in game["type"]:
             genre_id = Genre.from_name(typ).id
-            o = Classification(game_id=g_id, genre_id=genre_id)
-            db.session.add(o)
+            classification = Classification(game_id=g_id, genre_id=genre_id)
+            db.session.add(classification)
     db.session.commit()
 
-    print("Nombre de jeux rejetés : ", nb_jeux_rejetes)
     print(f"Temps d'exécutuion : {time.perf_counter() - deb:0.4f} sec")
 
 
@@ -195,14 +192,14 @@ def loaddb_users(filename):
     # premier tour de boucle, creation des users
     for u in users:
         if User.from_username(u["username"]) == None:
-            o = User(
+            user_object = User(
                 email=u["email"],
                 username=u["username"],
                 first_name=u["first_name"],
                 last_name=u["last_name"],
                 password=u["password"],
                 profile_picture=u["profile_picture"])
-            db.session.add(o)
+            db.session.add(user_object)
             print("V", u["username"])
         else:
             print("X", u["username"])
@@ -235,12 +232,12 @@ def loaddb_groups(filename):
     # premier tour de boucle, creation des groupes
     for g in groups:
         if Group.from_name(g["name"]) == None:
-            o = Group(
+            group_object = Group(
                 name=g["name"],
                 is_private=g["is_private"],
                 password=g["password"],
                 manager_id=User.from_username(g["manager"]).id)
-            db.session.add(o)
+            db.session.add(group_object)
             print("V", g["name"])
         else:
             print("X", g["name"])
@@ -252,8 +249,8 @@ def loaddb_groups(filename):
         for u in g["members"]:
             u_id = User.from_username(u).id
             if Participate.from_both_ids(u_id, g_id) == None:
-                o = Participate(member_id=u_id, group_id=g_id)
-                db.session.add(o)
+                participation = Participate(member_id=u_id, group_id=g_id)
+                db.session.add(participation)
                 print("V", Participate, g_id, u_id)
             else:
                 print("X", Participate, g_id, u_id)
