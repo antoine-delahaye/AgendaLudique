@@ -130,11 +130,6 @@ def scraper():
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
-    try:
-        os.remove("games-data.json")
-        print("Ancien game-data.yaml supprimé et création d'un nouveau")
-    except FileNotFoundError:
-        print("Création de game-data.json")
     print("On commence à scrape... Ca va prendre un peu de temps... ")
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
