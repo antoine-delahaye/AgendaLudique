@@ -48,7 +48,15 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return f'<Employee: {self.username}>'
+        return f'<User: {self.username}>'
+
+    @classmethod
+    def is_registered(cls, email):
+        """
+        Check if an email is already used.
+        """
+        req = User.query.filter(User.email == email).first()
+        return True if req else False
 
     @classmethod
     def from_username(cls, username):
@@ -71,7 +79,7 @@ class User(UserMixin, db.Model):
         users_db = []
         result = []
 
-        if "ONLY_BOOKMARKED" not in parameters:     # Displays only bookmarked users
+        if "ONLY_BOOKMARKED" not in parameters:  # Displays only bookmarked users
             users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
         else:
             bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
@@ -439,6 +447,7 @@ class Group(db.Model):
         """
         req = Group.query.filter(Group.name == name).first()
         return req if req else None
+
 
 class Participate(db.Model):
     """

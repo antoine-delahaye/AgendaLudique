@@ -36,6 +36,13 @@
             </div>
             {{ form.submit(class="btn btn-block text-uppercase mb-3") }}
             <p class="text-center">Vous avez déjà un compte ? <a href="{{ url_for("auth.login") }}">Se connecter</a></p>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="text-center alert-danger rounded-lg py-1">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
         </form>
     </main>
 {% endblock %}
