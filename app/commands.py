@@ -108,12 +108,13 @@ def loaddb_games(filename):
 @click.argument('filename')
 def fast_loaddb_games(filename):
     """ WARNING ! ONLY WITH AN EMPTY DATABASE ! Populates the database with games from a yml file """
+    print("Chargement du fichier yaml en memoire")
     games = yaml.safe_load(open(filename))
 
     deb = time.perf_counter()
     # creation d'un profil BGG (existe deja)
     bgg = User.from_username("BGG")
-    if bgg == None:
+    if bgg is None:
         bgg = User(
             email="mmm.dupuis45@gmail.com",
             username="BGG",
@@ -127,24 +128,25 @@ def fast_loaddb_games(filename):
 
     # premier tour de boucle, creation des jeux et des genres
     nb_jeux_rejetes = 0
-    dico_games = dict() # {game.title: game}
+    dico_games = dict()  # {game.title: game}
     for title, game in games.items():
-        if len(title) <= 128:
-            o = Game(
-                title=title,
-                publication_year=game["publication_year"],
-                min_players=game["min_players"],
-                max_players=game["max_players"],
-                min_playtime=game["min_playtime"],
-                image=game["images"]["original"])
-            db.session.add(o)
-            print("V", title)
-            nb_jeux_rejetes += 1
-        dico_games[title] = o
-        for typ in game["type"]: # creation des genres
+        if len(title) > 128:    # Continue la boucle et ignore le reste
+            continue
+        game_object = Game(
+            title=game["title"],
+            publication_year=game["publication_year"],
+            min_players=game["min_players"],
+            max_players=game["max_players"],
+            min_playtime=game["min_playtime"],
+            image=game["images"]["original"])
+        db.session.add(game_object)
+        print("V", title)
+        # nb_jeux_rejetes += 1
+        dico_games[title] = game_object
+        for typ in game["type"]:  # creation des genres
             if Genre.from_name(typ) is None:
-                o = Genre(name=typ)
-                db.session.add(o)
+                game_object = Genre(name=typ)
+                db.session.add(game_object)
     db.session.commit()
 
     # deuxieme tour de boucle pour les notes de bgg et les genres du jeu
@@ -161,8 +163,8 @@ def fast_loaddb_games(filename):
 
         for typ in game["type"]:
             genre_id = Genre.from_name(typ).id
-            o = Classification(game_id=g_id, genre_id=genre_id)
-            db.session.add(o)
+            game_object = Classification(game_id=g_id, genre_id=genre_id)
+            db.session.add(game_object)
     db.session.commit()
 
     print("Nombre de jeux rejetés : ", nb_jeux_rejetes)
