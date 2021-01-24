@@ -291,8 +291,6 @@ def scrape_thread(j):
 
     # Iterate over the 100 games in the page
     for game in map(str, main_html.find_all("a", {"class": "primary"})):
-        if i == 10:  # REMOVE THIS !! ONLY FOR DEBUGGING
-            break
         game = BeautifulSoup(game, "html.parser")
         href = game.find('a')['href']  # extract href content
 
@@ -305,6 +303,8 @@ def scrape_thread(j):
                 temp_games_infos_dict[game_title] = game_info
                 temp_games_infos_dict[game_title]["rank"] = i
                 i += 1
+        if i % 100 == 0:
+            print(f"{i} jeux scrapés")
 
     # Create Game object and send it to db
     global engine, thread_safe_session_factory
@@ -323,19 +323,6 @@ def scrape_thread(j):
 
 @admin_blueprint.cli.command('rapidfire_loaddb_games')
 def rapidfire_loaddb_games():
-    bgg = User.from_username("BGG")
-    if bgg is None:
-        bgg = User(
-            email="mmm.dupuis45@gmail.com",
-            username="BGG",
-            first_name="Board Game",
-            last_name="Geek",
-            password="BGGdu45",
-            profile_picture="https://cf.geekdo-static.com/images/logos/navbar-logo-bgg-b2.svg")
-        db.session.add(bgg)
-        db.session.commit()
-    bgg_id = bgg.id
-
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
