@@ -131,7 +131,6 @@ def fast_loaddb_games(filename):
     i = 0
     for title, game in games.items():
         if len(title) > 128 or 'á' in game["title"]:  # Continue la boucle et ignore le reste
-            nb_jeux_rejetes += 1
             continue
         game_object = Game(
             title=game["title"],
