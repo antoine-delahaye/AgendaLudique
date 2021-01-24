@@ -180,6 +180,11 @@ def fast_loaddb_games(filename):
     print(f"Temps d'exécutuion : {time.perf_counter() - deb:0.4f} sec")
 
 
+@admin_blueprint.cli.command('rapidfire_loaddb_games')
+def rapidfire_loaddb_games():
+    pass
+
+
 def load_relationship(user, u_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
     for elem in user[keyword_yml]:
         if get_id_kw:
