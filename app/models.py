@@ -3,6 +3,7 @@
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import join
+from datetime import date, time, datetime
 
 from app import db, login_manager
 
@@ -492,6 +493,8 @@ class TimeSlot(db.Model):
     end = db.Column(db.Time)
     day = db.Column(db.Date)
 
+    def __repr__(self):
+        return f'<TimeSlot: from {self.beginning} to {self.end} the {self.day}>'
 
 class Available(db.Model):
     """
@@ -596,7 +599,7 @@ class Session(db.Model):
     timeout = db.Column(db.DateTime)
     archived = db.Column(db.Boolean)
 
-    timeslot_id = db.Column(db.Integer, db.ForeignKey("timeslots.id"))
+    timeslot_id = db.Column(db.Integer, db.ForeignKey("timeslots.id"), default=None)
     timeslot = db.relationship(
         "TimeSlot",
         backref=db.backref("sessions", lazy="dynamic"),
@@ -681,6 +684,17 @@ class Use(db.Model):
         "Game",
         backref=db.backref("games", lazy="dynamic"),
         foreign_keys=[game_id])
+
+    def __init__(self, expected_time, session_id, game_id, real_time=None):
+        """
+        Create a Use instance with expected_time and real_time using the format
+        HH:MM:SS
+        """
+        self.session_id = session_id
+        self.game_id = game_id
+        self.expected_time = time.fromisoformat(expected_time)
+        if real_time:
+            self.real_time = time.fromisoformat(real_time)
 
     @classmethod
     def from_both_ids(cls, session_id, game_id):

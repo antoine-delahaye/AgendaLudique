@@ -30,7 +30,7 @@ def send_mail(email):
 
 
 import yaml
-from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre, Classification
+from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre, Classification, Session, TimeSlot, Play, Use
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -184,7 +184,7 @@ def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_k
             elem_id = get_id(elem[get_id_kw]).id
         else:
             elem_id = get_id(elem).id
-        if rs.from_both_ids(object_id, elem_id) is None:
+        if rs.from_both_ids(**{kw_id: object_id}, **{kw: elem_id}) is None:
             dico_kwsup = dict()
             for kwsup in list_kwsup:
                 dico_kwsup[kwsup] = elem[kwsup]
@@ -244,7 +244,7 @@ def loaddb_groups(filename):
 
     # premier tour de boucle, creation des groupes
     for g in groups:
-        if Group.from_name(g["name"]) == None:
+        if Group.from_name(g["name"]) is None:
             group_object = Group(
                 name=g["name"],
                 is_private=g["is_private"],
@@ -259,13 +259,45 @@ def loaddb_groups(filename):
     # deuxieme tour de boucle, creation des relations UserXGroup
     for g in groups:
         g_id = Group.from_name(g["name"]).id
-        # for u in g["members"]:
-        #     u_id = User.from_username(u).id
-        #     if Participate.from_both_ids(u_id, g_id) is None:
-        #         participation = Participate(member_id=u_id, group_id=g_id)
-        #         db.session.add(participation)
-        #         print("V", Participate, g_id, u_id)
-        #     else:
-        #         print("X", Participate, g_id, u_id)
         load_relationship(g, 'group_id', g_id, 'members', Participate, User.from_username, 'member_id')
+    db.session.commit()
+
+
+from datetime import date, time, datetime
+
+
+@admin_blueprint.cli.command('loaddb_sessions')
+@click.argument('filename')
+def loaddb_sessions(filename):
+    """ Populates the database with sessions and session-related relationships from a yml file. Requires loaddb_games and loaddb_users """
+    sessions = yaml.safe_load(open(filename))
+
+    # premier tour de boucle, creation des sessions et des timeslots
+    dico_timeslots = dict() # k=session_yml_id, v=timeslot_object
+    dico_sessions = dict() # k=session_yml_id, v=session_object
+    for id, s in sessions.items():
+        session_object = Session(
+            nb_players_required=s["nb_players_required"],
+            notifactions_sent=s["notifactions_sent"],
+            confirmed=s["confirmed"],
+            timeout=datetime.fromisoformat(s["timeout"]),
+            archived=s["archived"])
+        db.session.add(session_object)
+        dico_sessions[id] = session_object
+
+        timeslot = s["timeslot"]
+        timeslot_object = TimeSlot(
+            beginning=time.fromisoformat(timeslot["beginning"]),
+            end=time.fromisoformat(timeslot["end"]),
+            day=date.fromisoformat(timeslot["day"]))
+        db.session.add(timeslot_object)
+        dico_timeslots[id] = timeslot_object
+    db.session.commit()
+
+    #deuxieme tour de boucle, ajout des relations SessionXTimeslot, SessionXGame et SessionXUser
+    for id, s in sessions.items():
+        session_object = dico_sessions[id]
+        session_object.timeslot_id = dico_timeslots[id].id
+        load_relationship(s, 'session_id', session_object.id, 'games', Use, Game.from_title, 'game_id', ['expected_time'], 'title')
+        load_relationship(s, 'session_id', session_object.id, 'players', Play, User.from_username, 'user_id', ['confirmed', 'won'], 'username')
     db.session.commit()
