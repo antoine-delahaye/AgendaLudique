@@ -5,4 +5,5 @@ venv/
 app/__pycache__/
 __pycache__/
 ressources/games-data.yaml
+ressources/games-data.json
 log.log
