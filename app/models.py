@@ -490,7 +490,7 @@ class TimeSlot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     beginning = db.Column(db.Time)
     end = db.Column(db.Time)
-    day = db.Column(db.Date)  #  db.Column(db.Date) ?
+    day = db.Column(db.Date)
 
 
 class Available(db.Model):
@@ -498,7 +498,7 @@ class Available(db.Model):
     Create a relationship between a TimeSlot and a User
     """
 
-    periodicity = db.Column(db.Integer)  # db.Column(db.String) ?
+    periodicity = db.Column(db.Integer)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     user = db.relationship(
@@ -608,8 +608,8 @@ class Play(db.Model):
     Create a relationship between a Session and an User
     """
 
-    confirmed = db.Column(db.Boolean)
-    won = db.Column(db.Boolean)
+    confirmed = db.Column(db.Boolean, default=False)
+    won = db.Column(db.Boolean, default=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     user = db.relationship(

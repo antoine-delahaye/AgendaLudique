@@ -166,27 +166,39 @@ def fast_loaddb_games(filename):
     print(f"Temps d'exécutuion : {time.perf_counter() - deb:0.4f} sec")
 
 
-def load_relationship(user, u_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
-    for elem in user[keyword_yml]:
+def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
+    """
+    Create a relationship and add it to the current session.
+    :param yml: a yml dict which represent the first object of the relationship
+    :param kw_id: the first keyword argument of the relationship (eg: 'user_id')
+    :param object_id: the id of the first object of the relationship (eg: 54)
+    :param keyword_yml: the keyword that determines which part of the yml will be added (eg: 'preferences')
+    :param rs: the relationship class (eg: Prefer)
+    :param get_id: the method used to get the id of the second object of the relationship (eg: Game.from_title)
+    :param kw: the second keyword argument of the relationship (eg: 'game_id')
+    :param list_kwsup: list of additional keyword arguments (eg: ['frequency'])
+    :param get_id_kw: the keyword that determines which part of the yml the get_id method uses as an argument
+    """
+    for elem in yml[keyword_yml]:
         if get_id_kw:
             elem_id = get_id(elem[get_id_kw]).id
         else:
             elem_id = get_id(elem).id
-        if rs.from_both_ids(u_id,elem_id) == None:
+        if rs.from_both_ids(object_id, elem_id) is None:
             dico_kwsup = dict()
             for kwsup in list_kwsup:
                 dico_kwsup[kwsup] = elem[kwsup]
-            o = rs(user_id=u_id, **{kw: elem_id}, **dico_kwsup)
-            db.session.add(o)
-            print("V", rs, u_id, elem_id)
+            rs_object = rs(**{kw_id: object_id}, **{kw: elem_id}, **dico_kwsup)
+            db.session.add(rs_object)
+            print("V", rs, object_id, elem_id)
         else:
-            print("X", rs, u_id, elem_id)
+            print("X", rs, object_id, elem_id)
 
 
 @admin_blueprint.cli.command('loaddb_users')
 @click.argument('filename')
 def loaddb_users(filename):
-    """ Populates the database with users and user-related relationships from a yml file. Require loaddb_games. """
+    """ Populates the database with users and user-related relationships from a yml file. Requires loaddb_games. """
     users = yaml.safe_load(open(filename))
 
     # premier tour de boucle, creation des users
@@ -208,25 +220,26 @@ def loaddb_users(filename):
     # deuxieme tour de boucle, creation des relations UserXGame et UserXUser
     for u in users:
         u_id = User.from_username(u["username"]).id # existe forcement
+        kw_id = 'user_id'
         relations_uxu = {"bookmarked_users": BookmarkUser, "hidden_users": HideUser}
         relations_uxg = {"wishes": Wish, "known": KnowRules, "collection": Collect}
 
         for kw_yml, rs in relations_uxu.items():
-            load_relationship(u, u_id, kw_yml, rs, User.from_username, 'user2_id')
+            load_relationship(u, kw_id, u_id, kw_yml, rs, User.from_username, 'user2_id')
         get_id = Game.from_title
         kw = 'game_id'
         for kw_yml, rs in relations_uxg.items():
-            load_relationship(u, u_id, kw_yml, rs , get_id, kw)
+            load_relationship(u, kw_id, u_id, kw_yml, rs , get_id, kw)
         get_id_kw = 'title'
-        load_relationship(u, u_id, 'preferences', Prefer, get_id, kw, ['frequency'], get_id_kw)
-        load_relationship(u, u_id, 'notes', Note, get_id, kw, ['note', 'message'], get_id_kw)
+        load_relationship(u, kw_id, u_id, 'preferences', Prefer, get_id, kw, ['frequency'], get_id_kw)
+        load_relationship(u, kw_id, u_id, 'notes', Note, get_id, kw, ['note', 'message'], get_id_kw)
     db.session.commit()
 
 
 @admin_blueprint.cli.command('loaddb_groups')
 @click.argument('filename')
 def loaddb_groups(filename):
-    """ Populates the database with groups and group-related relationships from a yml file. Require loaddb_users. """
+    """ Populates the database with groups and group-related relationships from a yml file. Requires loaddb_users. """
     groups = yaml.safe_load(open(filename))
 
     # premier tour de boucle, creation des groupes
@@ -246,12 +259,13 @@ def loaddb_groups(filename):
     # deuxieme tour de boucle, creation des relations UserXGroup
     for g in groups:
         g_id = Group.from_name(g["name"]).id
-        for u in g["members"]:
-            u_id = User.from_username(u).id
-            if Participate.from_both_ids(u_id, g_id) == None:
-                participation = Participate(member_id=u_id, group_id=g_id)
-                db.session.add(participation)
-                print("V", Participate, g_id, u_id)
-            else:
-                print("X", Participate, g_id, u_id)
+        # for u in g["members"]:
+        #     u_id = User.from_username(u).id
+        #     if Participate.from_both_ids(u_id, g_id) is None:
+        #         participation = Participate(member_id=u_id, group_id=g_id)
+        #         db.session.add(participation)
+        #         print("V", Participate, g_id, u_id)
+        #     else:
+        #         print("X", Participate, g_id, u_id)
+        load_relationship(g, 'group_id', g_id, 'members', Participate, User.from_username, 'member_id')
     db.session.commit()
