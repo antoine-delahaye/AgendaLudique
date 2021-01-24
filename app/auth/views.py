@@ -1,6 +1,6 @@
 # app/auth/views.py
 
-from flask import redirect, render_template, url_for
+from flask import redirect, render_template, url_for, flash
 from flask_login import login_required, login_user, logout_user
 
 from app.auth import auth
@@ -22,6 +22,8 @@ def login():
                 form.password.data):
             login_user(user)
             return redirect(url_for('site.catalog'))
+        else:
+            flash('Adresse électronique ou mot de passe invalide.')
     return render_template('login.html', form=form, stylesheet='login')
 
 
@@ -45,9 +47,13 @@ def register():
                     )
         db.session.add(user)
         db.session.commit()
+        flash('Inscription réussite, vous pouvez maintenant vous connecter !')
         mail.send_mail("Confirmation inscription", form.email.data, "mails/registerMail.html", user=user,
                        url=request.base_url)
         return redirect(url_for('auth.login'))
+    else:
+        if form.email.data is not None:
+            flash('Adresse électronique déjà utilisé')
     return render_template('register.html', form=form, stylesheet='register')
 
 

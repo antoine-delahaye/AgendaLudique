@@ -2,7 +2,7 @@
 {% block main %}
     <main class="container-fluid d-flex flex-column justify-content-center align-items-center mt-auto mb-auto">
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
-             src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
+             src="{{ url_for("static", filename="images/logo_no_background.svg") }}" alt="Logo">
         <h2 class="text-center mb-3">Bienvenue sur votre agenda ludique !</h2>
         {% if current_user.is_authenticated %}
             <button class="btn text-white text-uppercase m-2"

@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 2e8fc54d09c2
+Revision ID: de5f77b63b6c
 Revises: 
-Create Date: 2021-01-17 03:02:46.391328
+Create Date: 2021-01-18 10:30:54.573244
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '2e8fc54d09c2'
+revision = 'de5f77b63b6c'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -152,6 +152,16 @@ def upgrade():
     sa.ForeignKeyConstraint(['timeslot_id'], ['timeslots.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('statistics',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('avg_complexity', sa.Integer(), nullable=True),
+    sa.Column('avg_playtime', sa.Integer(), nullable=True),
+    sa.Column('avg_nb_players', sa.Integer(), nullable=True),
+    sa.Column('frequency', sa.Integer(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('wish',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('game_id', sa.Integer(), nullable=False),
@@ -212,6 +222,7 @@ def downgrade():
     op.drop_table('participate')
     op.drop_table('comment')
     op.drop_table('wish')
+    op.drop_table('statistics')
     op.drop_table('sessions')
     op.drop_table('prefer')
     op.drop_table('note')
