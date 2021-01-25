@@ -1,7 +1,12 @@
-import click
-from flask import Blueprint
-from app import db
 import time
+import yaml
+import click
+from app import db
+from flask import Blueprint
+from app.utils.scraper import scrape_thread
+from concurrent.futures.thread import ThreadPoolExecutor
+from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, \
+    Genre, Classification, Session, TimeSlot, Play, Use
 
 # bp qui permet l'administration de l'application
 admin_blueprint = Blueprint('admin', __name__)
@@ -27,10 +32,6 @@ def send_mail(email):
     with current_app.test_request_context("localhost.com"):
         mail.send_mail("Testing mail sending", email, 'mails/testing.html', url="google.com")
         print("mail successfully sent to " + email)
-
-
-import yaml
-from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, Genre, Classification, Session, TimeSlot, Play, Use
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -70,7 +71,7 @@ def loaddb_games(filename):
         else:
             print("X", title)
             nb_jeux_rejetes += 1
-        for typ in game["type"]: # creation des genres
+        for typ in game["type"]:  # creation des genres
             if Genre.from_name(typ) is None:
                 genre_object = Genre(name=typ)
                 db.session.add(genre_object)
@@ -124,10 +125,12 @@ def fast_loaddb_games(filename):
     db.session.commit()
     bgg_id = bgg.id
 
+    print("Premier tour de boucle...")
     # premier tour de boucle, creation des jeux et des genres
     dico_games = dict()  # {game.title: game}
+    i = 0
     for title, game in games.items():
-        if len(title) > 128:    # Continue la boucle et ignore le reste
+        if len(title) > 128 or 'á' in game["title"]:  # Continue la boucle et ignore le reste
             continue
         game_object = Game(
             title=game["title"],
@@ -143,11 +146,18 @@ def fast_loaddb_games(filename):
             if Genre.from_name(typ) is None:
                 game_object = Genre(name=typ)
                 db.session.add(game_object)
+        i += 1
+        if i % 100 == 0:
+            print(f"{i} jeux insere")
     db.session.commit()
 
+    print("Deuxieme tour de boucle...")
     # deuxieme tour de boucle pour les notes de bgg et les genres du jeu
     default_message = "Auto-generated note, the average rating of the game at boardgamegeek.com"
+    i = 0
     for title, game in games.items():
+        if 'á' in game["title"]:
+            continue
         g_id = dico_games[title].id
         rating = Note(
             note=round(game["average_rating"]),
@@ -155,7 +165,6 @@ def fast_loaddb_games(filename):
             user_id=bgg_id,
             game_id=g_id)
         db.session.add(rating)
-        print("V Note", title)
 
         for typ in game["type"]:
             genre_id = Genre.from_name(typ).id
@@ -164,6 +173,17 @@ def fast_loaddb_games(filename):
     db.session.commit()
 
     print(f"Temps d'exécutuion : {time.perf_counter() - deb:0.4f} sec")
+
+
+@admin_blueprint.cli.command('rapidfire_loaddb_games')
+def rapidfire_loaddb_games():
+    from_page = input("Scrap de la page : ")  # Get first page to scrape
+    to_page = input("Jusqu'à la page : ")  # Get last page to scrape
+
+    print("On commence à scrape... Ca va prendre un peu de temps... ")
+    with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
+        for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
+            executor.submit(scrape_thread, j)
 
 
 def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
