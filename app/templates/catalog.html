@@ -11,7 +11,7 @@
         </form>
         <div class="row">
             {% for game in games.items %}
-                {% if game.id not in user_collection %}
+                {% if game.id not in owned_games %}
                     <div class="col-xl-3 col-lg-4 col-md-6">
                         <div class="card mb-4 shadow-sm">
                             <img class="card-img mx-auto"
@@ -22,7 +22,18 @@
                                     ({{ game.publication_year }})</p>
                                 <div class="d-flex flex-row align-items-center">
                                     <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
-                                    <a class="ml-auto"
+                                    {% if game.id in wished_games %}
+                                        <a class="ml-auto"
+                                           href="{{ url_for("site.remove_game_wish", game_id=game.id) }}">
+                                            <i class="fas fa-heart-broken"></i>
+                                        </a>
+                                    {% else %}
+                                        <a class="ml-auto"
+                                           href="{{ url_for("site.add_game_wish", game_id=game.id) }}">
+                                            <i class="far fa-heart"></i>
+                                        </a>
+                                    {% endif %}
+                                    <a class="ml-2"
                                        href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
                                         <i class="far fa-plus-square"></i>
                                     </a>

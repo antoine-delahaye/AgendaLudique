@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from sqlalchemy import text
 
 from app import db
-from app.models import User, Game, Group, HideUser, BookmarkUser, Collect
+from app.models import User, Game, Group, HideUser, BookmarkUser, Collect, Wish, HideGame
 from app.site import site
 from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 
@@ -18,6 +18,21 @@ def home():
     return render_template('home.html', stylesheet='home')
 
 
+# Games adding/editing related ###################################################
+@site.route('/catalog')
+@login_required
+def catalog():
+    """
+    Render the catalog template on the /catalog route
+    """
+    page = request.args.get('page', 1, type=int)
+    games = Game.query.paginate(page=page, per_page=20)
+    owned_games = User.get_owned_games(flask_login.current_user.id, True)
+    wished_games = User.get_wished_games(flask_login.current_user.id, True)
+    return render_template('catalog.html', stylesheet='catalog', games=games, owned_games=owned_games,
+                           wished_games=wished_games)
+
+
 @site.route('/library')
 @login_required
 def library():
@@ -25,10 +40,18 @@ def library():
     Render the library template on the /library route
     """
     page = request.args.get('page', 1, type=int)
-    games = db.session.query(Game).join(Collect).filter(Collect.user_id == flask_login.current_user.id,
-                                                        Game.id == Collect.game_id).paginate(page=page,
-                                                                                             per_page=20)
-    return render_template('library.html', stylesheet='library', games=games)
+    owned_games = User.get_owned_games(flask_login.current_user.id).paginate(page=page, per_page=20)
+    wished_games = User.get_wished_games(flask_login.current_user.id, True)
+    return render_template('library.html', stylesheet='library', owned_games=owned_games, wished_games=wished_games)
+
+
+@site.route('/add-collection', methods=['GET', 'POST'])
+@site.route('/add-collection/<game_id>', methods=['GET', 'POST'])
+@login_required
+def add_game_collection(game_id):
+    db.session.add(Collect(user_id=flask_login.current_user.id, game_id=game_id))
+    db.session.commit()
+    return redirect(request.referrer)
 
 
 @site.route('/remove', methods=['GET', 'POST'])
@@ -36,6 +59,36 @@ def library():
 @login_required
 def remove_game_collection(game_id):
     db.session.delete(Collect.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@site.route('/wishes')
+@login_required
+def wishes():
+    """
+    Render the library template on the /wish route
+    """
+    page = request.args.get('page', 1, type=int)
+    wished_games = User.get_wished_games(flask_login.current_user.id).paginate(page=page, per_page=20)
+    owned_games = User.get_owned_games(flask_login.current_user.id, True)
+    return render_template('wishes.html', stylesheet='library', wished_games=wished_games, owned_games=owned_games)
+
+
+@site.route('/add-wishes', methods=['GET', 'POST'])
+@site.route('/add-wishes/<game_id>', methods=['GET', 'POST'])
+@login_required
+def add_game_wish(game_id):
+    db.session.add(Wish(user_id=flask_login.current_user.id, game_id=game_id))
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@site.route('/remove-wishes', methods=['GET', 'POST'])
+@site.route('/remove-wishes/<game_id>', methods=['GET', 'POST'])
+@login_required
+def remove_game_wish(game_id):
+    db.session.delete(Wish.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
     db.session.commit()
     return redirect(request.referrer)
 
@@ -167,7 +220,7 @@ def parameters():
 @site.route('/set_parameters', methods=['POST'])
 @login_required
 def set_parameters():
-    color_theme = "On" if request.form.get('color-theme') != None else "Off"
+    color_theme = "On" if request.form.get('color-theme') is not None else "Off"
     param = make_response(redirect(url_for('site.parameters')))
     param.set_cookie('color-theme', color_theme)
     return param
@@ -238,30 +291,6 @@ def organize_session():
     Render the organize_session template on the /organize_session route
     """
     return render_template('organize_session.html', stylesheet='organize_session')
-
-
-# Games adding/editing related ###################################################
-@site.route('/catalog')
-@login_required
-def catalog():
-    """
-    Render the catalog template on the /catalog route
-    """
-    page = request.args.get('page', 1, type=int)
-    games = Game.query.paginate(page=page, per_page=20)
-    user_collection = []
-    for data in Collect.query.filter_by(user_id=flask_login.current_user.id).all():
-        user_collection.append(data.game_id)
-    return render_template('catalog.html', stylesheet='catalog', games=games, user_collection=user_collection)
-
-
-@site.route('/add', methods=['GET', 'POST'])
-@site.route('/add/<game_id>', methods=['GET', 'POST'])
-@login_required
-def add_game_collection(game_id):
-    db.session.add(Collect(user_id=flask_login.current_user.id, game_id=game_id))
-    db.session.commit()
-    return redirect(request.referrer)
 
 
 @site.route('/game', methods=['GET', 'POST'])
