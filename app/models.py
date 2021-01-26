@@ -493,8 +493,20 @@ class TimeSlot(db.Model):
     end = db.Column(db.Time)
     day = db.Column(db.Date)
 
+    def __init__(self, beginning, end, day):
+        """
+        Create a TimeSlot object.
+        :param beginning: string in ISO 8601 format HH:MM:SS
+        :param end: string in ISO 8601 format HH:MM:SS
+        :param day: string in ISO 8601 format YYYY-MM-DD
+        """
+        self.beginning = time.fromisoformat(beginning)
+        self.end = time.fromisoformat(end)
+        self.day = date.fromisoformat(day)
+
     def __repr__(self):
         return f'<TimeSlot: from {self.beginning} to {self.end} the {self.day}>'
+
 
 class Available(db.Model):
     """
@@ -604,6 +616,17 @@ class Session(db.Model):
         "TimeSlot",
         backref=db.backref("sessions", lazy="dynamic"),
         foreign_keys=[timeslot_id])
+
+    def __init__(self, nb_players_required, timeout, notifactions_sent=False, confirmed=False, archived=False):
+        """
+        Create a Session object.
+        :param timeout: a string in ISO 8601 format YYYY-MM-DDTHH-MM-SS
+        """
+        self.nb_players_required = nb_players_required
+        self.notifactions_sent = notifactions_sent
+        self.confirmed = confirmed
+        self.timeout = datetime.fromisoformat(timeout)
+        self.archived = archived
 
 
 class Play(db.Model):

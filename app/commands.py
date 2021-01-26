@@ -283,9 +283,6 @@ def loaddb_groups(filename):
     db.session.commit()
 
 
-from datetime import date, time, datetime
-
-
 @admin_blueprint.cli.command('loaddb_sessions')
 @click.argument('filename')
 def loaddb_sessions(filename):
@@ -300,16 +297,16 @@ def loaddb_sessions(filename):
             nb_players_required=s["nb_players_required"],
             notifactions_sent=s["notifactions_sent"],
             confirmed=s["confirmed"],
-            timeout=datetime.fromisoformat(s["timeout"]),
+            timeout=s["timeout"],
             archived=s["archived"])
         db.session.add(session_object)
         dico_sessions[id] = session_object
 
         timeslot = s["timeslot"]
         timeslot_object = TimeSlot(
-            beginning=time.fromisoformat(timeslot["beginning"]),
-            end=time.fromisoformat(timeslot["end"]),
-            day=date.fromisoformat(timeslot["day"]))
+            beginning=timeslot["beginning"],
+            end=timeslot["end"],
+            day=timeslot["day"])
         db.session.add(timeslot_object)
         dico_timeslots[id] = timeslot_object
     db.session.commit()
