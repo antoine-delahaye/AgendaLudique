@@ -33,7 +33,7 @@
                 <div class="card card-body">
                     <div class="row profile-card-content">
                         <div class="col-md-6">
-                            <img class="profile-picture" width="75vh" height="auto"
+                            <img class="profile-picture rounded-lg" width="75vh" height="auto"
                                     {% if item["profile_picture"] %}
                                  src="{{ item["profile_picture"] }}"
                                     {% else %}
@@ -42,7 +42,7 @@
                                  alt="Image de profil de {{ item["username"] }}">
                         </div>
                         <div class="col-md-auto profile-informations">
-                            <h5 class="card-title">{{ item["username"] }}</h5>
+                            <h5>{{ item["username"] }}</h5>
                             <i class="far fa-star"></i>
                             <i class="fas fa-caret-down"></i>
                         </div>
