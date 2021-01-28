@@ -27,28 +27,29 @@
             </div>
         </form>
 
-        <div class="row">
+        <div class="users-list row">
             {% for item in users_data %}
-                <div class="col-xl-3 col-lg-4 col-md-6">
-                    <div class="card mb-4 shadow-sm">
-                        <img class="card-img mx-auto"
-                             {% if item["profile_picture"] %}
-                                src="{{ item["profile_picture"] }}"
-                             {% else %}
-                                src="{{ url_for("static", filename="images/blank_pp.png") }}"
-                             {% endif %}
-                             alt="Image de profil de {{ item["username"] }}">
-                        <div class="card-body">
-                            <p class="text-truncate font-weight-bold">{{ item["title"] }}
-                                {{ item["username"] }}</p>
-                            <div class="d-flex flex-row align-items-center">
-                                <p class="mb-0">{{ item["first_name"] }} {{ item["last_name"] }}</p>
-                                <i class="ml-auto far fa-star" id="{{ item["id"] }}"></i>
-                            </div>
+            <div class="col-md-3">
+                <div class="card card-body">
+                    <div class="row profile-card-content">
+                        <div class="col-md-6">
+                            <img class="profile-picture" width="75vh" height="auto"
+                                    {% if item["profile_picture"] %}
+                                 src="{{ item["profile_picture"] }}"
+                                    {% else %}
+                                 src="{{ url_for("static", filename="images/blank_pp.png") }}"
+                                    {% endif %}
+                                 alt="Image de profil de {{ item["username"] }}">
+                        </div>
+                        <div class="col-md-auto profile-informations">
+                            <h5 class="card-title">{{ item["username"] }}</h5>
+                            <i class="far fa-star"></i>
+                            <i class="fas fa-caret-down"></i>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
+            {%  endfor %}
         </div>
     </main>
 {% endblock %}

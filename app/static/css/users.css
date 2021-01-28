@@ -7,3 +7,23 @@
 #advanced-search-title {
     margin-top: 2%;
 }
+
+@media only screen and (max-width: 1590px) {
+    .profile-card-content {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media only screen and (min-width: 1590px) {
+    .profile-informations {
+        display: block;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+}
+
+.card {
+    margin-bottom: 30px;
+}
