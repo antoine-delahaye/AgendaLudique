@@ -143,12 +143,12 @@ def user(id=None):
     return render_template('user.html', stylesheet='user', user=user)
 
 
-@site.route('/hide-user', methods=['GET'])
+@site.route('/hidden-users/add', methods=['GET'])
 @login_required
-def hide_user(user_id=None):
+def add_hidden_user(user_id=None):
     """
     Add the declared user (property "user" in the query string) to the hidden users
-    on the /hide-user route.
+    on the /hidden-users/add route.
     """
     connected_user = current_user
     user_id = request.args.get('user')
@@ -163,12 +163,12 @@ def hide_user(user_id=None):
     return redirect(url_for('site.users'))
 
 
-@site.route('/bookmark-user', methods=['GET'])
+@site.route('/bookmarked-users/add', methods=['GET'])
 @login_required
-def bookmark_user(user_id=None):
+def add_bookmarked_user(user_id=None):
     """
     Add the declared user (property "user" in the query string) to the bookmarked users
-    on the /bookmark-user route.
+    on the /bookmarked-users/add route.
     """
     connected_user = current_user
     user_id = request.args.get('user')
