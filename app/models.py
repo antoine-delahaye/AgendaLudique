@@ -1,6 +1,7 @@
 # app/models.py
 
 from flask_login import UserMixin
+from flask_sqlalchemy import Pagination
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import join
 
@@ -115,6 +116,23 @@ class User(UserMixin, db.Model):
                  'profile_picture': data.profile_picture})
 
         return result
+
+    @classmethod
+    def search_with_pagination(cls, current_user, username_hint="", parameters=[], current_page=1, per_page=20):
+        """
+        Search users with defined parameters and return them as a Pagination object.
+        :param current_user The user who made the research
+        :param username_hint: A hint gave by the user to search similar usernames
+        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
+        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
+        :param current_page: The current page number
+        :param per_page: The number of users shown on a search results page
+        :return: A list of users
+        """
+        results = User.search(current_user, username_hint, parameters)
+        page_elements = results[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        pagination = Pagination(None, current_page, per_page, len(results), page_elements)
+        return pagination
 
 
 # Set up user_loader
