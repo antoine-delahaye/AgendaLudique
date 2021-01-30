@@ -42,3 +42,7 @@
     padding-bottom: 0;
     height: 1.7rem;
 }
+
+.danger-button {
+    background-color: #dc3545;
+}

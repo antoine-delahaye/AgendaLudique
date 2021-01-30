@@ -44,6 +44,7 @@
                                 <div class="col-md-auto profile-informations">
                                     <h5>{{ item["username"] }}</h5>
                                     <a class="btn thin-button" href="{{ url_for('site.bookmark_user', user=item["id"]) }}" role="button"><i class="far fa-star"></i></a>
+                                    <a class="btn thin-button danger-button" href="{{ url_for('site.hide_user', user=item["id"]) }}" role="button"><i class="fas fa-eye-slash"></i></a>
                                 </div>
                             </div>
                         </div>
