@@ -163,6 +163,26 @@ def add_hidden_user(user_id=None):
     return redirect(url_for('site.users'))
 
 
+@site.route('/hidden-users/remove', methods=['GET'])
+@login_required
+def remove_hidden_user(user_id=None):
+    """
+    Remove the declared user (property "user" in the query string) from the hidden users
+    on the /hidden-users/remove route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_remove = User.query.get(user_id)
+        if user_to_remove is not None:
+            hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_remove.id)
+            db.session.remove(hidden_user)
+            db.session.commit()
+
+    return redirect(url_for('site.users'))
+
+
 @site.route('/bookmarked-users/add', methods=['GET'])
 @login_required
 def add_bookmarked_user(user_id=None):
@@ -178,6 +198,26 @@ def add_bookmarked_user(user_id=None):
         if user_to_bookmark is not None:
             bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
             db.session.add(bookmarked_user)
+            db.session.commit()
+
+    return redirect(url_for('site.users'))
+
+
+@site.route('/bookmarked-users/remove', methods=['GET'])
+@login_required
+def remove_bookmarked_user(user_id=None):
+    """
+    Remove the declared user (property "user" in the query string) from the bookmarked users
+    on the /bookmarked-users/remove route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_remove = User.query.get(user_id)
+        if user_to_remove is not None:
+            bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_remove.id)
+            db.session.remove(bookmarked_user)
             db.session.commit()
 
     return redirect(url_for('site.users'))
