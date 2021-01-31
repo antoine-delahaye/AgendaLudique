@@ -93,24 +93,24 @@ class User(UserMixin, db.Model):
         users_db = []
         items = []
 
-        results = UsersSearchResults()  # Will contain the search results
+        results = UsersSearchResults(bookmarked_users_ids=[], hidden_users_ids=[])  # Will contain the search results
 
 
         if "ONLY_BOOKMARKED" not in parameters:
             users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
-        else:   # Displays only bookmarked users
-            bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
-            for bookmarked_user in bookmarked_users_db:
-                bookmarked_user_id = bookmarked_user.user2_id
-                users_db.append(User.query.get(bookmarked_user_id))
-                results.bookmarked_users_ids.append(bookmarked_user_id)     # Adds the bookmarked user id to the results object
 
-        if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
-            hidden_users_db = User.query.get(current_user.id).hidden_users.all()
-            for hidden_user in hidden_users_db:
-                hidden_user_id = hidden_user.user2_id
+        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
+        for bookmarked_user in bookmarked_users_db:
+            bookmarked_user_id = bookmarked_user.user2_id
+            results.bookmarked_users_ids.append(bookmarked_user_id)     # Adds the bookmarked user id to the results object
+
+        hidden_users_db = User.query.get(current_user.id).hidden_users.all()
+        for hidden_user in hidden_users_db:
+            hidden_user_id = hidden_user.user2_id
+            # Adds the hidden user id to the results object
+            results.hidden_users_ids.append(hidden_user_id)
+            if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
                 user_to_be_removed = User.query.get(hidden_user_id)
-                results.hidden_users_ids.append(hidden_user_id)     # Adds the hidden user id to the results object
                 if user_to_be_removed in users_db:
                     users_db.remove(user_to_be_removed)
 
@@ -119,8 +119,9 @@ class User(UserMixin, db.Model):
                 {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
                  'last_name': data.last_name,
                  'profile_picture': data.profile_picture})
+        results.items = items
 
-        return UsersSearchResults(items=items)
+        return results
 
     @classmethod
     def search_with_pagination(cls, current_user, username_hint="", parameters=[], current_page=1, per_page=20):
@@ -738,14 +739,14 @@ class UsersSearchResults:
     """
     An utility class that stores users search results.
     """
-    def __init__(self, items=None, pagination=None, hidden_users_ids=[], bookmarked_users_ids=[]):
+    def __init__(self, items=None, pagination=None, hidden_users_ids=None, bookmarked_users_ids=None):
         """
         Initializes a UsersSearchResults object.
         :param items: Found users in a list, None if the search results doesn't use an items list.
         :param pagination: Found users in a Pagination object, None if the search results doesn't use SQLAlchemy's
         pagination system.
-        :param hidden_users_ids: A list which contains the hidden users ids.
-        :param bookmarked_users_ids: A list which contains the bookmarked users ids.
+        :param hidden_users_ids: A list which contains the hidden users ids, None if not used.
+        :param bookmarked_users_ids: A list which contains the bookmarked users ids, None if not used.
         """
         self.items = items
         self.pagination = pagination
