@@ -103,6 +103,8 @@ class User(UserMixin, db.Model):
         for bookmarked_user in bookmarked_users_db:
             bookmarked_user_id = bookmarked_user.user2_id
             results.bookmarked_users_ids.append(bookmarked_user_id)     # Adds the bookmarked user id to the results object
+            if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
+                users_db.append(User.query.get(bookmarked_user_id))
 
         hidden_users_db = User.query.get(current_user.id).hidden_users.all()
         for hidden_user in hidden_users_db:

@@ -156,9 +156,10 @@ def add_hidden_user(user_id=None):
     if user_id is not None:
         user_to_hide = User.query.get(user_id)
         if user_to_hide is not None:
-            hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
-            db.session.add(hidden_user)
-            db.session.commit()
+            if HideUser.query.filter_by(user_id=connected_user.id, user2_id=user_to_hide.id).count() == 0:
+                hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
+                db.session.add(hidden_user)
+                db.session.commit()
 
     return redirect(url_for('site.users'))
 
@@ -197,9 +198,10 @@ def add_bookmarked_user(user_id=None):
     if user_id is not None:
         user_to_bookmark = User.query.get(user_id)
         if user_to_bookmark is not None:
-            bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
-            db.session.add(bookmarked_user)
-            db.session.commit()
+            if BookmarkUser.query.filter_by(user_id=connected_user.id, user2_id=user_to_bookmark.id).count() == 0:
+                bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
+                db.session.add(bookmarked_user)
+                db.session.commit()
 
     return redirect(url_for('site.users'))
 
