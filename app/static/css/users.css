@@ -44,17 +44,30 @@
 }
 
 .hide-user {
-    background-color: #dc3545;
+    background-color: transparent;
+    color: #dc3545;
+    padding-left: 3px;
+    padding-right: 3px;
 }
 
-.bookmarked-user {
-    background-color: #28a745;
-}
-
-.bookmarked-user:hover {
+.hidden-user {
     background-color: #dc3545;
+    padding-left: 3px;
+    padding-right: 3px;
 }
 
 .hidden-user:hover {
     background-color: #28a745;
+}
+
+.bookmark-button:hover {
+    background-color: #ffda0a;
+}
+
+.bookmarked-user {
+    background-color: #ffda0a;
+}
+
+.bookmarked-user:hover {
+    background-color: #dc3545;
 }
