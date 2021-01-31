@@ -1,4 +1,5 @@
 # app/site/views.py
+
 import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required, current_user
@@ -105,7 +106,6 @@ def users():
     username_hint = request.args.get('username', '', type=str)
     search_parameters = []
     qs_search_parameters = request.args.get('searchParameters', None, type=str)
-    search_results = None
 
     if form.validate_on_submit():
         username_hint = form.username_hint.data
@@ -129,7 +129,7 @@ def users():
 
     search_results = User.search_with_pagination(current_user, username_hint, search_parameters, page, 20)
 
-    return render_template('users.html', stylesheet='users', form=form, users_data=search_results)
+    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id, users_data=search_results)
 
 
 @site.route('/user')
@@ -176,11 +176,12 @@ def remove_hidden_user(user_id=None):
     if user_id is not None:
         user_to_remove = User.query.get(user_id)
         if user_to_remove is not None:
-            hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_remove.id)
-            db.session.remove(hidden_user)
-            db.session.commit()
+            hidden_user = HideUser.query.get({"user_id": connected_user.id, "user2_id": user_to_remove.id})
+            if hidden_user is not None:
+                db.session.delete(hidden_user)
+                db.session.commit()
 
-    return redirect(url_for('site.users'))
+    return redirect(url_for('site.users', searchParameters="HIDDEN"))
 
 
 @site.route('/bookmarked-users/add', methods=['GET'])
@@ -216,9 +217,10 @@ def remove_bookmarked_user(user_id=None):
     if user_id is not None:
         user_to_remove = User.query.get(user_id)
         if user_to_remove is not None:
-            bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_remove.id)
-            db.session.remove(bookmarked_user)
-            db.session.commit()
+            bookmarked_user = BookmarkUser.query.get({"user_id": connected_user.id, "user2_id": user_to_remove.id})
+            if bookmarked_user is not None:
+                db.session.delete(bookmarked_user)
+                db.session.commit()
 
     return redirect(url_for('site.users'))
 

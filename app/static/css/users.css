@@ -43,6 +43,18 @@
     height: 1.7rem;
 }
 
-.danger-button {
+.hide-user {
     background-color: #dc3545;
+}
+
+.bookmarked-user {
+    background-color: #28a745;
+}
+
+.bookmarked-user:hover {
+    background-color: #dc3545;
+}
+
+.hidden-user:hover {
+    background-color: #28a745;
 }
