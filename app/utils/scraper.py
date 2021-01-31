@@ -1,12 +1,10 @@
 import json
-
 import requests
 from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
-
-from app.models import Game
+from app.models import Game, Genre
 
 domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
@@ -26,6 +24,7 @@ games_type_dict = {
     'Thematic': "Thématique",
     'Family ': "Familial"
 }
+genres_set = set()  # List all genres to avoid creating new genre object each time
 game_name_set = set()  # Only storing name to save memory
 engine = create_engine(
     'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
@@ -102,6 +101,7 @@ def get_game_info(url):
 def scrape_thread(j):
     global i
     global game_name_set
+    global genres_set
     main_html = BeautifulSoup(  # Request raw page and make a bs4 object
         requests.get(main_url + str(j)).text,
         "html.parser"
@@ -129,6 +129,8 @@ def scrape_thread(j):
     global engine, thread_safe_session_factory
     session = thread_safe_session_factory()
     for title, infos in temp_games_infos_dict.items():
+        if len(title) > 128 or 'á' in infos["title"]:  # Fix très sale
+            continue
         session.add(Game(
             title=title,
             publication_year=infos["publication_year"],
@@ -136,5 +138,9 @@ def scrape_thread(j):
             max_players=infos["max_players"],
             min_playtime=infos["min_playtime"],
             image=infos["images"]["original"]))
+        for genre in infos["type"]:
+            if genre not in genres_set:
+                genres_set.add(genre)
+                session.add(Genre(name=genre))
     session.commit()
     session.remove()

@@ -399,6 +399,7 @@ class Genre(db.Model):
         Get a Genre from its name. Return None if the game does not exist.
         """
         req = Genre.query.filter(Genre.name == name).first()
+        req = Genre
         return req if req else None
 
 
