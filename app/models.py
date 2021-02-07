@@ -3,6 +3,8 @@
 from flask_login import UserMixin
 from flask_sqlalchemy import Pagination
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import join
+from datetime import date, time, datetime
 
 from app import db, login_manager
 
@@ -391,7 +393,7 @@ class Game(UserMixin, db.Model):
 
     __tablename__ = 'games'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     title = db.Column(db.String(128), unique=True)
     publication_year = db.Column(db.Integer)
     min_players = db.Column(db.Integer)
@@ -409,6 +411,11 @@ class Game(UserMixin, db.Model):
         """
         req = Game.query.filter(Game.title == title).first()
         return req if req else None
+
+    @classmethod
+    def max_id(cls):
+        """ Return the maximum id of the Game class. Used for increment """
+        return db.session.query(func.max(Game.id)).one()[0]
 
 
 class Genre(db.Model):
@@ -535,7 +542,21 @@ class TimeSlot(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     beginning = db.Column(db.Time)
     end = db.Column(db.Time)
-    day = db.Column(db.Date)  #  db.Column(db.Date) ?
+    day = db.Column(db.Date)
+
+    def __init__(self, beginning, end, day):
+        """
+        Create a TimeSlot object.
+        :param beginning: string in ISO 8601 format HH:MM:SS
+        :param end: string in ISO 8601 format HH:MM:SS
+        :param day: string in ISO 8601 format YYYY-MM-DD
+        """
+        self.beginning = time.fromisoformat(beginning)
+        self.end = time.fromisoformat(end)
+        self.day = date.fromisoformat(day)
+
+    def __repr__(self):
+        return f'<TimeSlot: from {self.beginning} to {self.end} the {self.day}>'
 
 
 class Available(db.Model):
@@ -543,7 +564,7 @@ class Available(db.Model):
     Create a relationship between a TimeSlot and a User
     """
 
-    periodicity = db.Column(db.Integer)  # db.Column(db.String) ?
+    periodicity = db.Column(db.Integer)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     user = db.relationship(
@@ -641,11 +662,22 @@ class Session(db.Model):
     timeout = db.Column(db.DateTime)
     archived = db.Column(db.Boolean)
 
-    timeslot_id = db.Column(db.Integer, db.ForeignKey("timeslots.id"))
+    timeslot_id = db.Column(db.Integer, db.ForeignKey("timeslots.id"), default=None)
     timeslot = db.relationship(
         "TimeSlot",
         backref=db.backref("sessions", lazy="dynamic"),
         foreign_keys=[timeslot_id])
+
+    def __init__(self, nb_players_required, timeout, notifactions_sent=False, confirmed=False, archived=False):
+        """
+        Create a Session object.
+        :param timeout: a string in ISO 8601 format YYYY-MM-DDTHH-MM-SS
+        """
+        self.nb_players_required = nb_players_required
+        self.notifactions_sent = notifactions_sent
+        self.confirmed = confirmed
+        self.timeout = datetime.fromisoformat(timeout)
+        self.archived = archived
 
 
 class Play(db.Model):
@@ -653,8 +685,8 @@ class Play(db.Model):
     Create a relationship between a Session and an User
     """
 
-    confirmed = db.Column(db.Boolean)
-    won = db.Column(db.Boolean)
+    confirmed = db.Column(db.Boolean, default=False)
+    won = db.Column(db.Boolean, default=False)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     user = db.relationship(
@@ -727,6 +759,17 @@ class Use(db.Model):
         backref=db.backref("games", lazy="dynamic"),
         foreign_keys=[game_id])
 
+    def __init__(self, expected_time, session_id, game_id, real_time=None):
+        """
+        Create a Use instance with expected_time and real_time using the format
+        HH:MM:SS
+        """
+        self.session_id = session_id
+        self.game_id = game_id
+        self.expected_time = time.fromisoformat(expected_time)
+        if real_time:
+            self.real_time = time.fromisoformat(real_time)
+
     @classmethod
     def from_both_ids(cls, session_id, game_id):
         """
@@ -754,4 +797,3 @@ class UsersSearchResults:
         self.pagination = pagination
         self.hidden_users_ids = hidden_users_ids
         self.bookmarked_users_ids = bookmarked_users_ids
-
