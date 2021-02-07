@@ -393,7 +393,7 @@ class Game(UserMixin, db.Model):
 
     __tablename__ = 'games'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     title = db.Column(db.String(128), unique=True)
     publication_year = db.Column(db.Integer)
     min_players = db.Column(db.Integer)
@@ -411,6 +411,11 @@ class Game(UserMixin, db.Model):
         """
         req = Game.query.filter(Game.title == title).first()
         return req if req else None
+
+    @classmethod
+    def max_id(cls):
+        """ Return the maximum id of the Game class. Used for increment """
+        return db.session.query(func.max(Game.id)).one()[0]
 
 
 class Genre(db.Model):
