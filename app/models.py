@@ -1,6 +1,7 @@
 # app/models.py
 
 from flask_login import UserMixin
+from flask_sqlalchemy import Pagination
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import join
 from datetime import date, time, datetime
@@ -60,6 +61,20 @@ class User(UserMixin, db.Model):
         return True if req else False
 
     @classmethod
+    def get_owned_games(cls, user_id, only_id=False):
+        if only_id:
+            return [data[0] for data in db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id,
+                                                                                       Game.id == Collect.game_id)]
+        return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
+
+    @classmethod
+    def get_wished_games(cls, user_id, only_id=False):
+        if only_id:
+            return [data[0] for data in
+                    db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
+        return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
+
+    @classmethod
     def from_username(cls, username):
         """
         Get an user from its username. Return None if the user does not exist.
@@ -75,32 +90,63 @@ class User(UserMixin, db.Model):
         :param username_hint: A hint gave by the user to search similar usernames
         :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
         and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
-        :return: A list of users
+        :return: A UsersSearchResults object with an items list.
         """
         users_db = []
-        result = []
+        items = []
 
-        if "ONLY_BOOKMARKED" not in parameters:  # Displays only bookmarked users
+        results = UsersSearchResults(bookmarked_users_ids=[], hidden_users_ids=[])  # Will contain the search results
+
+
+        if "ONLY_BOOKMARKED" not in parameters:
             users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
-        else:
-            bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
-            for bookmarked_user in bookmarked_users_db:
-                users_db.append(User.query.get(bookmarked_user.user2_id))
 
-        if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
-            hidden_users_db = User.query.get(current_user.id).hidden_users.all()
-            for hidden_user in hidden_users_db:
-                user_to_be_removed = User.query.get(hidden_user.user2_id)
+        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
+        for bookmarked_user in bookmarked_users_db:
+            bookmarked_user_id = bookmarked_user.user2_id
+            results.bookmarked_users_ids.append(bookmarked_user_id)     # Adds the bookmarked user id to the results object
+            if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
+                users_db.append(User.query.get(bookmarked_user_id))
+
+        hidden_users_db = User.query.get(current_user.id).hidden_users.all()
+        for hidden_user in hidden_users_db:
+            hidden_user_id = hidden_user.user2_id
+            # Adds the hidden user id to the results object
+            results.hidden_users_ids.append(hidden_user_id)
+            if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
+                user_to_be_removed = User.query.get(hidden_user_id)
                 if user_to_be_removed in users_db:
                     users_db.remove(user_to_be_removed)
 
         for data in users_db:
-            result.append(
+            items.append(
                 {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
                  'last_name': data.last_name,
                  'profile_picture': data.profile_picture})
+        results.items = items
 
-        return result
+        return results
+
+    @classmethod
+    def search_with_pagination(cls, current_user, username_hint="", parameters=[], current_page=1, per_page=20):
+        """
+        Search users with defined parameters and return them as a UsersSearchResults object which contains a
+        Pagination object.
+        :param current_user The user who made the research
+        :param username_hint: A hint gave by the user to search similar usernames
+        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
+        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
+        :param current_page: The current page number
+        :param per_page: The number of users shown on a search results page
+        :return: A UsersSearchResults with a Pagination object.
+        """
+        results = User.search(current_user, username_hint, parameters)
+        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
+        results.pagination = pagination
+        results.items = None
+
+        return results
 
 
 # Set up user_loader
@@ -727,3 +773,22 @@ class Use(db.Model):
         """
         req = Use.query.filter(Use.session_id == session_id, Use.game_id == game_id).first()
         return req if req else None
+
+
+class UsersSearchResults:
+    """
+    An utility class that stores users search results.
+    """
+    def __init__(self, items=None, pagination=None, hidden_users_ids=None, bookmarked_users_ids=None):
+        """
+        Initializes a UsersSearchResults object.
+        :param items: Found users in a list, None if the search results doesn't use an items list.
+        :param pagination: Found users in a Pagination object, None if the search results doesn't use SQLAlchemy's
+        pagination system.
+        :param hidden_users_ids: A list which contains the hidden users ids, None if not used.
+        :param bookmarked_users_ids: A list which contains the bookmarked users ids, None if not used.
+        """
+        self.items = items
+        self.pagination = pagination
+        self.hidden_users_ids = hidden_users_ids
+        self.bookmarked_users_ids = bookmarked_users_ids

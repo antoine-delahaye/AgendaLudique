@@ -1,11 +1,12 @@
 # app/site/views.py
+
 import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required, current_user
 from sqlalchemy import text
 
 from app import db
-from app.models import User, Game, Group, HideUser, BookmarkUser, Collect
+from app.models import User, Game, Group, HideUser, BookmarkUser, Collect, Wish, HideGame
 from app.site import site
 from app.site.forms import UpdateInformationForm, GamesSearchForm, UsersSearchForm
 
@@ -18,6 +19,21 @@ def home():
     return render_template('home.html', stylesheet='home')
 
 
+# Games adding/editing related ###################################################
+@site.route('/catalog')
+@login_required
+def catalog():
+    """
+    Render the catalog template on the /catalog route
+    """
+    page = request.args.get('page', 1, type=int)
+    games = Game.query.paginate(page=page, per_page=20)
+    owned_games = User.get_owned_games(flask_login.current_user.id, True)
+    wished_games = User.get_wished_games(flask_login.current_user.id, True)
+    return render_template('catalog.html', stylesheet='catalog', games=games, owned_games=owned_games,
+                           wished_games=wished_games)
+
+
 @site.route('/library')
 @login_required
 def library():
@@ -25,10 +41,18 @@ def library():
     Render the library template on the /library route
     """
     page = request.args.get('page', 1, type=int)
-    games = db.session.query(Game).join(Collect).filter(Collect.user_id == flask_login.current_user.id,
-                                                        Game.id == Collect.game_id).paginate(page=page,
-                                                                                             per_page=20)
-    return render_template('library.html', stylesheet='library', games=games)
+    owned_games = User.get_owned_games(flask_login.current_user.id).paginate(page=page, per_page=20)
+    wished_games = User.get_wished_games(flask_login.current_user.id, True)
+    return render_template('library.html', stylesheet='library', owned_games=owned_games, wished_games=wished_games)
+
+
+@site.route('/add-collection', methods=['GET', 'POST'])
+@site.route('/add-collection/<game_id>', methods=['GET', 'POST'])
+@login_required
+def add_game_collection(game_id):
+    db.session.add(Collect(user_id=flask_login.current_user.id, game_id=game_id))
+    db.session.commit()
+    return redirect(request.referrer)
 
 
 @site.route('/remove', methods=['GET', 'POST'])
@@ -36,6 +60,36 @@ def library():
 @login_required
 def remove_game_collection(game_id):
     db.session.delete(Collect.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@site.route('/wishes')
+@login_required
+def wishes():
+    """
+    Render the library template on the /wish route
+    """
+    page = request.args.get('page', 1, type=int)
+    wished_games = User.get_wished_games(flask_login.current_user.id).paginate(page=page, per_page=20)
+    owned_games = User.get_owned_games(flask_login.current_user.id, True)
+    return render_template('wishes.html', stylesheet='library', wished_games=wished_games, owned_games=owned_games)
+
+
+@site.route('/add-wishes', methods=['GET', 'POST'])
+@site.route('/add-wishes/<game_id>', methods=['GET', 'POST'])
+@login_required
+def add_game_wish(game_id):
+    db.session.add(Wish(user_id=flask_login.current_user.id, game_id=game_id))
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@site.route('/remove-wishes', methods=['GET', 'POST'])
+@site.route('/remove-wishes/<game_id>', methods=['GET', 'POST'])
+@login_required
+def remove_game_wish(game_id):
+    db.session.delete(Wish.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
     db.session.commit()
     return redirect(request.referrer)
 
@@ -52,7 +106,6 @@ def users():
     username_hint = request.args.get('username', '', type=str)
     search_parameters = []
     qs_search_parameters = request.args.get('searchParameters', None, type=str)
-    search_results = None
 
     if form.validate_on_submit():
         username_hint = form.username_hint.data
@@ -74,14 +127,9 @@ def users():
             if parameter == "HIDDEN":
                 form.display_masked_players.data = True
 
-    search_results = User.search(current_user, username_hint, search_parameters)
+    search_results = User.search_with_pagination(current_user, username_hint, search_parameters, page, 20)
 
-    nb_results = len(search_results)
-    nb_pages = nb_results / 20
-    elements = search_results[(page - 1) * 20:page * 20]  # the users that will be displayed on the page
-
-    return render_template('users.html', stylesheet='users', form=form, users_data=elements,
-                           nb_results=nb_results, nb_pages=nb_pages)
+    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id, users_data=search_results)
 
 
 @site.route('/user')
@@ -95,12 +143,12 @@ def user(id=None):
     return render_template('user.html', stylesheet='user', user=user)
 
 
-@site.route('/hide-user', methods=['GET'])
+@site.route('/hidden-users/add', methods=['GET'])
 @login_required
-def hide_user(user_id=None):
+def add_hidden_user(user_id=None):
     """
     Add the declared user (property "user" in the query string) to the hidden users
-    on the /hide-user route.
+    on the /hidden-users/add route.
     """
     connected_user = current_user
     user_id = request.args.get('user')
@@ -108,19 +156,41 @@ def hide_user(user_id=None):
     if user_id is not None:
         user_to_hide = User.query.get(user_id)
         if user_to_hide is not None:
-            hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
-            db.session.add(hidden_user)
-            db.session.commit()
+            if HideUser.query.filter_by(user_id=connected_user.id, user2_id=user_to_hide.id).count() == 0:
+                hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
+                db.session.add(hidden_user)
+                db.session.commit()
 
     return redirect(url_for('site.users'))
 
 
-@site.route('/bookmark-user', methods=['GET'])
+@site.route('/hidden-users/remove', methods=['GET'])
 @login_required
-def bookmark_user(user_id=None):
+def remove_hidden_user(user_id=None):
+    """
+    Remove the declared user (property "user" in the query string) from the hidden users
+    on the /hidden-users/remove route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_remove = User.query.get(user_id)
+        if user_to_remove is not None:
+            hidden_user = HideUser.query.get({"user_id": connected_user.id, "user2_id": user_to_remove.id})
+            if hidden_user is not None:
+                db.session.delete(hidden_user)
+                db.session.commit()
+
+    return redirect(url_for('site.users', searchParameters="HIDDEN"))
+
+
+@site.route('/bookmarked-users/add', methods=['GET'])
+@login_required
+def add_bookmarked_user(user_id=None):
     """
     Add the declared user (property "user" in the query string) to the bookmarked users
-    on the /bookmark-user route.
+    on the /bookmarked-users/add route.
     """
     connected_user = current_user
     user_id = request.args.get('user')
@@ -128,9 +198,31 @@ def bookmark_user(user_id=None):
     if user_id is not None:
         user_to_bookmark = User.query.get(user_id)
         if user_to_bookmark is not None:
-            bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
-            db.session.add(bookmarked_user)
-            db.session.commit()
+            if BookmarkUser.query.filter_by(user_id=connected_user.id, user2_id=user_to_bookmark.id).count() == 0:
+                bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
+                db.session.add(bookmarked_user)
+                db.session.commit()
+
+    return redirect(url_for('site.users'))
+
+
+@site.route('/bookmarked-users/remove', methods=['GET'])
+@login_required
+def remove_bookmarked_user(user_id=None):
+    """
+    Remove the declared user (property "user" in the query string) from the bookmarked users
+    on the /bookmarked-users/remove route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_remove = User.query.get(user_id)
+        if user_to_remove is not None:
+            bookmarked_user = BookmarkUser.query.get({"user_id": connected_user.id, "user2_id": user_to_remove.id})
+            if bookmarked_user is not None:
+                db.session.delete(bookmarked_user)
+                db.session.commit()
 
     return redirect(url_for('site.users'))
 
@@ -167,7 +259,7 @@ def parameters():
 @site.route('/set_parameters', methods=['POST'])
 @login_required
 def set_parameters():
-    color_theme = "On" if request.form.get('color-theme') != None else "Off"
+    color_theme = "On" if request.form.get('color-theme') is not None else "Off"
     param = make_response(redirect(url_for('site.parameters')))
     param.set_cookie('color-theme', color_theme)
     return param
@@ -238,30 +330,6 @@ def organize_session():
     Render the organize_session template on the /organize_session route
     """
     return render_template('organize_session.html', stylesheet='organize_session')
-
-
-# Games adding/editing related ###################################################
-@site.route('/catalog')
-@login_required
-def catalog():
-    """
-    Render the catalog template on the /catalog route
-    """
-    page = request.args.get('page', 1, type=int)
-    games = Game.query.paginate(page=page, per_page=20)
-    user_collection = []
-    for data in Collect.query.filter_by(user_id=flask_login.current_user.id).all():
-        user_collection.append(data.game_id)
-    return render_template('catalog.html', stylesheet='catalog', games=games, user_collection=user_collection)
-
-
-@site.route('/add', methods=['GET', 'POST'])
-@site.route('/add/<game_id>', methods=['GET', 'POST'])
-@login_required
-def add_game_collection(game_id):
-    db.session.add(Collect(user_id=flask_login.current_user.id, game_id=game_id))
-    db.session.commit()
-    return redirect(request.referrer)
 
 
 @site.route('/game', methods=['GET', 'POST'])
