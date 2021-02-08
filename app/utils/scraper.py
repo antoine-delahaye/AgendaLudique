@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
-from app.models import Game, Genre
+from app.models import Game, Genre, Note
 
 domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
@@ -128,7 +128,10 @@ def scrape_thread(j):
     # Create Game object and send it to db
     global engine, thread_safe_session_factory
     session = thread_safe_session_factory()
+    default_message = "Auto-generated note, the average rating of the game at boardgamegeek.com"
     for title, infos in temp_games_infos_dict.items():
+
+        # Adding game
         if len(title) > 128 or 'á' in infos["title"]:  # Fix très sale
             continue
         session.add(Game(
@@ -137,10 +140,25 @@ def scrape_thread(j):
             min_players=infos["min_players"],
             max_players=infos["max_players"],
             min_playtime=infos["min_playtime"],
-            image=infos["images"]["original"]))
+            image=infos["images"]["original"])
+        )
+
+
+
+        # Adding genre
         for genre in infos["type"]:
             if genre not in genres_set:
                 genres_set.add(genre)
                 session.add(Genre(name=genre))
     session.commit()
+
+    for title, infos in temp_games_infos_dict.items():
+        # Adding note
+        session.add(Note(
+            note=round(infos["average_rating"]),
+            message=default_message,
+            user_id=0,
+            game_id=infos["id"])
+        )
+
     session.remove()
