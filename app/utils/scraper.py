@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
-from app.models import Game, Genre, Note
+from app.models import Game, Genre, Note, Classification
 
 domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
@@ -24,8 +24,11 @@ games_type_dict = {
     'Thematic': "Thématique",
     'Family ': "Familial"
 }
-genres_set = set()  # List all genres to avoid creating new genre object each time
+
+genres_dict = {}  # List all genres to avoid creating new genre object each time
 game_name_set = set()  # Only storing name to save memory
+
+# Database
 engine = create_engine(
     'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
     pool_size=5,  # default in SQLAlchemy
@@ -101,7 +104,7 @@ def get_game_info(url):
 def scrape_thread(j):
     global i
     global game_name_set
-    global genres_set
+    global genres_dict
     main_html = BeautifulSoup(  # Request raw page and make a bs4 object
         requests.get(main_url + str(j)).text,
         "html.parser"
@@ -134,6 +137,7 @@ def scrape_thread(j):
         # Adding game
         if len(title) > 128 or 'á' in infos["title"]:  # Fix très sale
             continue
+
         session.add(Game(
             id=infos["rank"],
             title=title,
@@ -144,12 +148,6 @@ def scrape_thread(j):
             image=infos["images"]["original"])
         )
 
-        # Adding genre
-        for genre in infos["type"]:
-            if genre not in genres_set:
-                genres_set.add(genre)
-                session.add(Genre(name=genre))
-
         # Adding note
         session.add(Note(
             note=round(infos["average_rating"]),
@@ -157,5 +155,20 @@ def scrape_thread(j):
             user_id=0,
             game_id=infos["rank"])
         )
+
+        # Adding genre
+        for genre in infos["type"]:
+            print(genres_dict)
+            if genre not in genres_dict:
+                if genres_dict == {}:
+                    genres_dict[genre] = 1
+                else:
+                    genres_dict[genre] = max(genres_dict.values()) + 1
+                session.add(Genre(id=genres_dict[genre], name=genre))
+
+        # # Adding classification
+        # for typ in infos["type"]:
+        #     genre_id = Genre.from_name(typ).id
+        #     session.add(Classification(game_id=infos["rank"], genre_id=genre_id))
     session.commit()
-    session.remove()
+    thread_safe_session_factory.remove()

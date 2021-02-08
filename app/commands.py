@@ -194,15 +194,22 @@ def rapidfire_loaddb_games():
     session = thread_safe_session_factory()
 
     # List all genres to avoid creating new genre object each time
-    scraper.genres_set = {r.name for r in session.query(Genre.name)}
+    db_genres = session.query(Genre)
+    for genres in db_genres:
+        scraper.genres_dict[genres.name] = genres.id
 
-    from_page = input("Scrap de la page : ")  # Get first page to scrape
-    to_page = input("Jusqu'à la page : ")  # Get last page to scrape
+    # max_game_id_db = session.query(Game.id).all()
+    # print(max_game_id_db)
+    # #scraper.i = max(session.query(Game.id))
 
-    print("On commence à scrape... Ca va prendre un peu de temps... ")
-    with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
-        for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
-            executor.submit(scrape_thread, j)
+    # from_page = input("Scrap de la page : ")  # Get first page to scrape
+    # to_page = input("Jusqu'à la page : ")  # Get last page to scrape
+
+    scrape_thread(1)
+    # print("On commence à scrape... Ca va prendre un peu de temps... ")
+    # with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
+    #     for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
+    #         executor.submit(scrape_thread, j)
 
 
 def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):

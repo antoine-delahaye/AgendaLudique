@@ -2,10 +2,9 @@
 
 from flask_login import UserMixin
 from flask_sqlalchemy import Pagination
+from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.orm import join
 from datetime import date, time, datetime
-
 from app import db, login_manager
 
 
@@ -425,7 +424,7 @@ class Genre(db.Model):
 
     __tablename__ = 'genres'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True,  autoincrement=False)
     name = db.Column(db.String(32), unique=True)
 
     def __repr__(self):
