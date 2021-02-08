@@ -135,6 +135,7 @@ def scrape_thread(j):
         if len(title) > 128 or 'á' in infos["title"]:  # Fix très sale
             continue
         session.add(Game(
+            id=infos["rank"],
             title=title,
             publication_year=infos["publication_year"],
             min_players=infos["min_players"],
@@ -143,22 +144,18 @@ def scrape_thread(j):
             image=infos["images"]["original"])
         )
 
-
-
         # Adding genre
         for genre in infos["type"]:
             if genre not in genres_set:
                 genres_set.add(genre)
                 session.add(Genre(name=genre))
-    session.commit()
 
-    for title, infos in temp_games_infos_dict.items():
         # Adding note
         session.add(Note(
             note=round(infos["average_rating"]),
             message=default_message,
             user_id=0,
-            game_id=infos["id"])
+            game_id=infos["rank"])
         )
-
+    session.commit()
     session.remove()
