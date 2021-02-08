@@ -203,14 +203,13 @@ def rapidfire_loaddb_games():
         max_game_id_db = 1
     scraper.i = max_game_id_db
 
-    # from_page = input("Scrap de la page : ")  # Get first page to scrape
-    # to_page = input("Jusqu'à la page : ")  # Get last page to scrape
+    from_page = input("Scrap de la page : ")  # Get first page to scrape
+    to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
-    # scrape_thread(1)
-    # print("On commence à scrape... Ca va prendre un peu de temps... ")
-    # with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
-    #     for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
-    #         executor.submit(scrape_thread, j)
+    print("On commence à scrape... Ca va prendre un peu de temps... ")
+    with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
+        for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
+            executor.submit(scrape_thread, j)
 
 
 def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
