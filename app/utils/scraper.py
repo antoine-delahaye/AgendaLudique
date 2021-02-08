@@ -156,9 +156,8 @@ def scrape_thread(j):
             game_id=infos["rank"])
         )
 
-        # Adding genre
         for genre in infos["type"]:
-            print(genres_dict)
+            # Adding genre
             if genre not in genres_dict:
                 if genres_dict == {}:
                     genres_dict[genre] = 1
@@ -166,9 +165,8 @@ def scrape_thread(j):
                     genres_dict[genre] = max(genres_dict.values()) + 1
                 session.add(Genre(id=genres_dict[genre], name=genre))
 
-        # # Adding classification
-        # for typ in infos["type"]:
-        #     genre_id = Genre.from_name(typ).id
-        #     session.add(Classification(game_id=infos["rank"], genre_id=genre_id))
+            # Adding classification
+            session.add(Classification(game_id=infos["rank"], genre_id=genres_dict[genre]))
+
     session.commit()
     thread_safe_session_factory.remove()
