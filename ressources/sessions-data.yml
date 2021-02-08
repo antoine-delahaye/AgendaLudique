@@ -1,15 +1,16 @@
-- nb_players_required: 3
+1:
+  nb_players_required: 3
   notifactions_sent: True
   confirmed: False
-  timeout: 2020-01-19T23:59:00
+  timeout: '2020-01-19T23:59:00'
   archived: False
   games:
     - title: Gloomhaven
-      expected_time: 01:30:00
+      expected_time: '01:30:00'
   timeslot:
-    beginning: 16:00:00
-    end: 17:30:00
-    day: 2020-01-15
+    beginning: '16:00:00'
+    end: '17:30:00'
+    day: '2020-01-15'
   players:
     - username: nf_1
       confirmed: True

@@ -1,4 +1,5 @@
 # app/site/views.py
+
 import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required, current_user
@@ -105,7 +106,6 @@ def users():
     username_hint = request.args.get('username', '', type=str)
     search_parameters = []
     qs_search_parameters = request.args.get('searchParameters', None, type=str)
-    search_results = None
 
     if form.validate_on_submit():
         username_hint = form.username_hint.data
@@ -127,14 +127,9 @@ def users():
             if parameter == "HIDDEN":
                 form.display_masked_players.data = True
 
-    search_results = User.search(current_user, username_hint, search_parameters)
+    search_results = User.search_with_pagination(current_user, username_hint, search_parameters, page, 20)
 
-    nb_results = len(search_results)
-    nb_pages = nb_results / 20
-    elements = search_results[(page - 1) * 20:page * 20]  # the users that will be displayed on the page
-
-    return render_template('users.html', stylesheet='users', form=form, users_data=elements,
-                           nb_results=nb_results, nb_pages=nb_pages)
+    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id, users_data=search_results)
 
 
 @site.route('/user')
@@ -148,12 +143,12 @@ def user(id=None):
     return render_template('user.html', stylesheet='user', user=user)
 
 
-@site.route('/hide-user', methods=['GET'])
+@site.route('/hidden-users/add', methods=['GET'])
 @login_required
-def hide_user(user_id=None):
+def add_hidden_user(user_id=None):
     """
     Add the declared user (property "user" in the query string) to the hidden users
-    on the /hide-user route.
+    on the /hidden-users/add route.
     """
     connected_user = current_user
     user_id = request.args.get('user')
@@ -161,19 +156,41 @@ def hide_user(user_id=None):
     if user_id is not None:
         user_to_hide = User.query.get(user_id)
         if user_to_hide is not None:
-            hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
-            db.session.add(hidden_user)
-            db.session.commit()
+            if HideUser.query.filter_by(user_id=connected_user.id, user2_id=user_to_hide.id).count() == 0:
+                hidden_user = HideUser(user_id=connected_user.id, user2_id=user_to_hide.id)
+                db.session.add(hidden_user)
+                db.session.commit()
 
     return redirect(url_for('site.users'))
 
 
-@site.route('/bookmark-user', methods=['GET'])
+@site.route('/hidden-users/remove', methods=['GET'])
 @login_required
-def bookmark_user(user_id=None):
+def remove_hidden_user(user_id=None):
+    """
+    Remove the declared user (property "user" in the query string) from the hidden users
+    on the /hidden-users/remove route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_remove = User.query.get(user_id)
+        if user_to_remove is not None:
+            hidden_user = HideUser.query.get({"user_id": connected_user.id, "user2_id": user_to_remove.id})
+            if hidden_user is not None:
+                db.session.delete(hidden_user)
+                db.session.commit()
+
+    return redirect(url_for('site.users', searchParameters="HIDDEN"))
+
+
+@site.route('/bookmarked-users/add', methods=['GET'])
+@login_required
+def add_bookmarked_user(user_id=None):
     """
     Add the declared user (property "user" in the query string) to the bookmarked users
-    on the /bookmark-user route.
+    on the /bookmarked-users/add route.
     """
     connected_user = current_user
     user_id = request.args.get('user')
@@ -181,9 +198,31 @@ def bookmark_user(user_id=None):
     if user_id is not None:
         user_to_bookmark = User.query.get(user_id)
         if user_to_bookmark is not None:
-            bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
-            db.session.add(bookmarked_user)
-            db.session.commit()
+            if BookmarkUser.query.filter_by(user_id=connected_user.id, user2_id=user_to_bookmark.id).count() == 0:
+                bookmarked_user = BookmarkUser(user_id=connected_user.id, user2_id=user_to_bookmark.id)
+                db.session.add(bookmarked_user)
+                db.session.commit()
+
+    return redirect(url_for('site.users'))
+
+
+@site.route('/bookmarked-users/remove', methods=['GET'])
+@login_required
+def remove_bookmarked_user(user_id=None):
+    """
+    Remove the declared user (property "user" in the query string) from the bookmarked users
+    on the /bookmarked-users/remove route.
+    """
+    connected_user = current_user
+    user_id = request.args.get('user')
+
+    if user_id is not None:
+        user_to_remove = User.query.get(user_id)
+        if user_to_remove is not None:
+            bookmarked_user = BookmarkUser.query.get({"user_id": connected_user.id, "user2_id": user_to_remove.id})
+            if bookmarked_user is not None:
+                db.session.delete(bookmarked_user)
+                db.session.commit()
 
     return redirect(url_for('site.users'))
 
