@@ -1,3 +1,5 @@
+import resource
+import threading
 import time
 import yaml
 import click
@@ -210,6 +212,18 @@ def rapidfire_loaddb_games():
     with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
         for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
             executor.submit(scrape_thread, j)
+
+
+def monitoring():
+    while 1:
+        print(str(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1000) + " MB")
+        time.sleep(1)
+
+
+@admin_blueprint.cli.command('rewrite_scraper')
+def rewrite_scraper():
+    threading.Thread(target=monitoring).start()
+    print("Getting all the pages")
 
 
 def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
