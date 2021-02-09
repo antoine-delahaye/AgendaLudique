@@ -5,6 +5,7 @@ import yaml
 import click
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from app.utils.rewrite_scraper import RewriteScraper
 
 from app import db
 from flask import Blueprint
@@ -214,6 +215,13 @@ def rapidfire_loaddb_games():
             executor.submit(scrape_thread, j)
 
 
+
+
+
+
+
+
+
 def monitoring():
     while 1:
         print(str(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1000) + " MB")
@@ -222,8 +230,20 @@ def monitoring():
 
 @admin_blueprint.cli.command('rewrite_scraper')
 def rewrite_scraper():
-    threading.Thread(target=monitoring).start()
+    # r = threading.Thread(target=monitoring)
+    # r.start()
     print("Getting all the pages")
+
+    rs = RewriteScraper()
+    rs.get_list_pages(1, 5)
+    print(len(rs.list_pages))
+
+
+
+
+
+
+
 
 
 def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
