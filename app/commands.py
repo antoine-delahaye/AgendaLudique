@@ -1,15 +1,27 @@
 import time
 import yaml
 import click
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 from app import db
 from flask import Blueprint
 from app.utils.scraper import scrape_thread
+import app.utils.scraper as scraper
 from concurrent.futures.thread import ThreadPoolExecutor
 from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, \
     Genre, Classification, Session, TimeSlot, Play, Use
 
 # bp qui permet l'administration de l'application
 admin_blueprint = Blueprint('admin', __name__)
+
+engine = create_engine(
+    'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
+    pool_size=5,  # default in SQLAlchemy
+    max_overflow=10,  # default in SQLAlchemy
+    pool_timeout=1,  # raise an error faster than default
+)
+thread_safe_session_factory = scoped_session(sessionmaker(bind=engine))
 
 
 @admin_blueprint.cli.command('resetDB')
@@ -177,6 +189,20 @@ def fast_loaddb_games(filename):
 
 @admin_blueprint.cli.command('rapidfire_loaddb_games')
 def rapidfire_loaddb_games():
+    global engine, thread_safe_session_factory
+    session = thread_safe_session_factory()
+
+    # List all genres to avoid creating new genre object each time
+    db_genres = session.query(Genre)
+    for genres in db_genres:
+        scraper.genres_dict[genres.name] = genres.id
+
+    try:
+        max_game_id_db = max(session.query(Game.id))[0]  # [0] bc it's a tuple with only this value
+    except ValueError: # If there is no games
+        max_game_id_db = 1
+    scraper.i = max_game_id_db
+
     from_page = input("Scrap de la page : ")  # Get first page to scrape
     to_page = input("Jusqu'à la page : ")  # Get last page to scrape
 
@@ -239,7 +265,7 @@ def loaddb_users(filename):
 
     # deuxieme tour de boucle, creation des relations UserXGame et UserXUser
     for u in users:
-        u_id = User.from_username(u["username"]).id # existe forcement
+        u_id = User.from_username(u["username"]).id  # existe forcement
         kw_id = 'user_id'
         relations_uxu = {"bookmarked_users": BookmarkUser, "hidden_users": HideUser}
         relations_uxg = {"wishes": Wish, "known": KnowRules, "collection": Collect}
@@ -249,7 +275,7 @@ def loaddb_users(filename):
         get_id = Game.from_title
         kw = 'game_id'
         for kw_yml, rs in relations_uxg.items():
-            load_relationship(u, kw_id, u_id, kw_yml, rs , get_id, kw)
+            load_relationship(u, kw_id, u_id, kw_yml, rs, get_id, kw)
         get_id_kw = 'title'
         load_relationship(u, kw_id, u_id, 'preferences', Prefer, get_id, kw, ['frequency'], get_id_kw)
         load_relationship(u, kw_id, u_id, 'notes', Note, get_id, kw, ['note', 'message'], get_id_kw)
@@ -290,8 +316,8 @@ def loaddb_sessions(filename):
     sessions = yaml.safe_load(open(filename))
 
     # premier tour de boucle, creation des sessions et des timeslots
-    dico_timeslots = dict() # k=session_yml_id, v=timeslot_object
-    dico_sessions = dict() # k=session_yml_id, v=session_object
+    dico_timeslots = dict()  # k=session_yml_id, v=timeslot_object
+    dico_sessions = dict()  # k=session_yml_id, v=session_object
     for id, s in sessions.items():
         session_object = Session(
             nb_players_required=s["nb_players_required"],
@@ -311,10 +337,12 @@ def loaddb_sessions(filename):
         dico_timeslots[id] = timeslot_object
     db.session.commit()
 
-    #deuxieme tour de boucle, ajout des relations SessionXTimeslot, SessionXGame et SessionXUser
+    # deuxieme tour de boucle, ajout des relations SessionXTimeslot, SessionXGame et SessionXUser
     for id, s in sessions.items():
         session_object = dico_sessions[id]
         session_object.timeslot_id = dico_timeslots[id].id
-        load_relationship(s, 'session_id', session_object.id, 'games', Use, Game.from_title, 'game_id', ['expected_time'], 'title')
-        load_relationship(s, 'session_id', session_object.id, 'players', Play, User.from_username, 'user_id', ['confirmed', 'won'], 'username')
+        load_relationship(s, 'session_id', session_object.id, 'games', Use, Game.from_title, 'game_id',
+                          ['expected_time'], 'title')
+        load_relationship(s, 'session_id', session_object.id, 'players', Play, User.from_username, 'user_id',
+                          ['confirmed', 'won'], 'username')
     db.session.commit()

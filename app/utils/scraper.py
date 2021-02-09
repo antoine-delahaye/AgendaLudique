@@ -1,12 +1,10 @@
 import json
-
 import requests
 from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
-
-from app.models import Game
+from app.models import Game, Genre, Note, Classification
 
 domain = "https://boardgamegeek.com"
 main_url = "https://boardgamegeek.com/browse/boardgame/page/"
@@ -26,7 +24,11 @@ games_type_dict = {
     'Thematic': "Thématique",
     'Family ': "Familial"
 }
+
+genres_dict = {}  # List all genres to avoid creating new genre object each time
 game_name_set = set()  # Only storing name to save memory
+
+# Database
 engine = create_engine(
     'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
     pool_size=5,  # default in SQLAlchemy
@@ -102,6 +104,7 @@ def get_game_info(url):
 def scrape_thread(j):
     global i
     global game_name_set
+    global genres_dict
     main_html = BeautifulSoup(  # Request raw page and make a bs4 object
         requests.get(main_url + str(j)).text,
         "html.parser"
@@ -128,13 +131,42 @@ def scrape_thread(j):
     # Create Game object and send it to db
     global engine, thread_safe_session_factory
     session = thread_safe_session_factory()
+    default_message = "Auto-generated note, the average rating of the game at boardgamegeek.com"
     for title, infos in temp_games_infos_dict.items():
+
+        # Adding game
+        if len(title) > 128 or 'á' in infos["title"]:  # Fix très sale
+            continue
+
         session.add(Game(
+            id=infos["rank"],
             title=title,
             publication_year=infos["publication_year"],
             min_players=infos["min_players"],
             max_players=infos["max_players"],
             min_playtime=infos["min_playtime"],
-            image=infos["images"]["original"]))
+            image=infos["images"]["original"])
+        )
+
+        # Adding note
+        session.add(Note(
+            note=round(infos["average_rating"]),
+            message=default_message,
+            user_id=0,
+            game_id=infos["rank"])
+        )
+
+        for genre in infos["type"]:
+            # Adding genre
+            if genre not in genres_dict:
+                if genres_dict == {}:
+                    genres_dict[genre] = 1
+                else:
+                    genres_dict[genre] = max(genres_dict.values()) + 1
+                session.add(Genre(id=genres_dict[genre], name=genre))
+
+            # Adding classification
+            session.add(Classification(game_id=infos["rank"], genre_id=genres_dict[genre]))
+
     session.commit()
-    session.remove()
+    thread_safe_session_factory.remove()
