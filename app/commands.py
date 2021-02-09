@@ -1,5 +1,4 @@
-import resource
-import threading
+import json
 import time
 import yaml
 import click
@@ -202,7 +201,7 @@ def rapidfire_loaddb_games():
 
     try:
         max_game_id_db = max(session.query(Game.id))[0]  # [0] bc it's a tuple with only this value
-    except ValueError: # If there is no games
+    except ValueError:  # If there is no games
         max_game_id_db = 1
     scraper.i = max_game_id_db
 
@@ -215,35 +214,18 @@ def rapidfire_loaddb_games():
             executor.submit(scrape_thread, j)
 
 
-
-
-
-
-
-
-
-def monitoring():
-    while 1:
-        print(str(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss/1000) + " MB")
-        time.sleep(1)
-
-
 @admin_blueprint.cli.command('rewrite_scraper')
 def rewrite_scraper():
-    # r = threading.Thread(target=monitoring)
-    # r.start()
+    import threading
     print("Getting all the pages")
 
     rs = RewriteScraper()
-    rs.get_list_pages(1, 5)
-    print(len(rs.list_pages))
-
-
-
-
-
-
-
+    t = threading.Thread(target=rs.get_game_numer)
+    t.start()
+    a = rs.scrap(1, 50)
+    with open("test.json", 'w') as f:
+        json.dump(a, f)
+    print("fini")
 
 
 def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
