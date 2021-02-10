@@ -1,10 +1,10 @@
-import json
 import time
 import yaml
 import click
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from app.utils.rewrite_scraper import RewriteScraper
+from app.utils.insert_db import insertDB
 
 from app import db
 from flask import Blueprint
@@ -214,18 +214,19 @@ def rapidfire_loaddb_games():
             executor.submit(scrape_thread, j)
 
 
+
+
 @admin_blueprint.cli.command('rewrite_scraper')
 def rewrite_scraper():
-    import threading
-    print("Getting all the pages")
+    from_page = input("Scrap de la page : ")
+    to_page = input("Jusqu'à la page : ")
 
     rs = RewriteScraper()
-    t = threading.Thread(target=rs.get_game_numer)
-    t.start()
-    a = rs.scrap(1, 50)
-    with open("test.json", 'w') as f:
-        json.dump(a, f)
-    print("fini")
+    iDB = insertDB()
+
+    data = rs.scrap(from_page, to_page)
+    iDB.insert(data)
+    print("Done!")
 
 
 def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):

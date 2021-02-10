@@ -1,9 +1,10 @@
 import json
 import time
-from concurrent.futures.thread import ThreadPoolExecutor
-
 import requests
+import threading
+from tqdm import tqdm
 from bs4 import BeautifulSoup
+from concurrent.futures.thread import ThreadPoolExecutor
 
 
 class RewriteScraper:
@@ -31,9 +32,7 @@ class RewriteScraper:
         self.__game_info_dict = {}
 
     def get_game_numer(self):
-        while 1:
-            print(self.__game_number)
-            time.sleep(1)
+        return self.__game_number
 
     def __get_cover(self, image_id):
         try:
@@ -125,9 +124,24 @@ class RewriteScraper:
     def scrap(self, from_page, to_page):
         print("Récupération des pages...")
         self.get_list_pages(from_page, to_page)
-        print("Récupération des informations des jeux...")
+
+        print("Récupération des informations des jeux... Ca peut prendre longtemps")
+        t = threading.Thread(target=self.__progression_bar, args=(1 * 100,))
+        t.start()
         with ThreadPoolExecutor(max_workers=50) as executor:
             for page in self.__list_pages:
                 executor.submit(self.__get_games_from_page, page)
+
+        # To close the thread
+        self.__game_number = to_page*100
+        t.join()
+
         print("Le scraper à fini son travail, on va push sur la BDD maintenant")
         return self.__game_info_dict
+
+    def __progression_bar(self, nb):
+        pbar = tqdm(range(nb), position=0, leave=True)
+        while nb > self.__game_number:
+            pbar.n = self.__game_number
+            pbar.refresh()
+            time.sleep(0.1)
