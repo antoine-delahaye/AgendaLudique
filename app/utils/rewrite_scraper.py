@@ -7,27 +7,28 @@ from bs4 import BeautifulSoup
 
 
 class RewriteScraper:
-    __domain = "https://boardgamegeek.com"
-    __page_url = "https://boardgamegeek.com/browse/boardgame/page/"
-    __cover_url = "https://api.geekdo.com/api/images/"
-    __list_pages = []
-    __games_type_dict = {
-        'Strategy ': "Stratégie",
-        'Abstract ': "Abstrait",
-        'War ': "Guerre",
-        'Party ': "Fête",
-        'Customizable': "Personnalisable",
-        'Amiga': "Amiga",
-        "Children's ": "Pour enfant",
-        'Atari ST': "Atari ST",
-        'Arcade': "Arcade",
-        'Commodore 64': "Commodore 64",
-        'Thematic': "Thématique",
-        'Family ': "Familial"
-    }
-    __game_name_set = set()
-    __game_number = 1
-    game_info_dict = {}
+    def __init__(self):
+        self.__domain = "https://boardgamegeek.com"
+        self.__page_url = "https://boardgamegeek.com/browse/boardgame/page/"
+        self.__cover_url = "https://api.geekdo.com/api/images/"
+        self.__list_pages = []
+        self.__games_type_dict = {
+            'Strategy ': "Stratégie",
+            'Abstract ': "Abstrait",
+            'War ': "Guerre",
+            'Party ': "Fête",
+            'Customizable': "Personnalisable",
+            'Amiga': "Amiga",
+            "Children's ": "Pour enfant",
+            'Atari ST': "Atari ST",
+            'Arcade': "Arcade",
+            'Commodore 64': "Commodore 64",
+            'Thematic': "Thématique",
+            'Family ': "Familial"
+        }
+        self.__game_name_set = set()
+        self.__game_number = 1
+        self.__game_info_dict = {}
 
     def get_game_numer(self):
         while 1:
@@ -105,8 +106,8 @@ class RewriteScraper:
                 game_title = game_info["title"].upper()
                 if game_title not in self.__game_name_set:
                     self.__game_name_set.add(game_title)
-                    self.game_info_dict[game_title] = game_info
-                    self.game_info_dict[game_title]["rank"] = self.__game_number
+                    self.__game_info_dict[game_title] = game_info
+                    self.__game_info_dict[game_title]["rank"] = self.__game_number
                     self.__game_number += 1
 
     def __get_page(self, url):
@@ -128,5 +129,5 @@ class RewriteScraper:
         with ThreadPoolExecutor(max_workers=50) as executor:
             for page in self.__list_pages:
                 executor.submit(self.__get_games_from_page, page)
-        print("Push dans la BDD")
-        return self.game_info_dict
+        print("Le scraper à fini son travail, on va push sur la BDD maintenant")
+        return self.__game_info_dict
