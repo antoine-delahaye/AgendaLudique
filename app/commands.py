@@ -1,16 +1,16 @@
 import time
-import yaml
+
 import click
+import yaml
+from flask import Blueprint
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from app import db
-from flask import Blueprint
-from app.utils.scraper import scrape_thread
-import app.utils.scraper as scraper
-from concurrent.futures.thread import ThreadPoolExecutor
 from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, \
     Genre, Classification, Session, TimeSlot, Play, Use
+from app.utils.insert_db import insertDB
+from app.utils.scraper import RewriteScraper
 
 # bp qui permet l'administration de l'application
 admin_blueprint = Blueprint('admin', __name__)
@@ -187,29 +187,18 @@ def fast_loaddb_games(filename):
     print(f"Temps d'exécutuion : {time.perf_counter() - deb:0.4f} sec")
 
 
-@admin_blueprint.cli.command('rapidfire_loaddb_games')
-def rapidfire_loaddb_games():
-    global engine, thread_safe_session_factory
-    session = thread_safe_session_factory()
+@admin_blueprint.cli.command('scraper')
+def scraper():
+    print("!!! PENSEZ À VIDER LA BD POUR ÉVITER LES CONFLITS !!!")
+    from_page = input("Scrap de la page : ")
+    to_page = input("Jusqu'à la page : ")
 
-    # List all genres to avoid creating new genre object each time
-    db_genres = session.query(Genre)
-    for genres in db_genres:
-        scraper.genres_dict[genres.name] = genres.id
+    rs = RewriteScraper()
+    iDB = insertDB()
 
-    try:
-        max_game_id_db = max(session.query(Game.id))[0]  # [0] bc it's a tuple with only this value
-    except ValueError: # If there is no games
-        max_game_id_db = 1
-    scraper.i = max_game_id_db
-
-    from_page = input("Scrap de la page : ")  # Get first page to scrape
-    to_page = input("Jusqu'à la page : ")  # Get last page to scrape
-
-    print("On commence à scrape... Ca va prendre un peu de temps... ")
-    with ThreadPoolExecutor(max_workers=50) as executor:  # Overkill but it's faster :)
-        for j in range(int(from_page), int(to_page) + 1):  # to_page + 1 bc its [from_page ; to_page[
-            executor.submit(scrape_thread, j)
+    data = rs.scrap(from_page, to_page)
+    iDB.insert(data)
+    print("Done!")
 
 
 def load_relationship(yml, kw_id, object_id, keyword_yml, rs, get_id, kw, list_kwsup=[], get_id_kw=""):
