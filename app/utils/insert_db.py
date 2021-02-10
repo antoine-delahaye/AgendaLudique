@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+
 from app.models import Game, Note, Genre, Classification
 
 
@@ -51,10 +52,9 @@ class insertDB:
                     i_genres += 1
 
                 # Adding classification
-                session.add(Classification(game_id=infos["rank"], genre_id=self.__genres_dict[genre]))
+                session.add(Classification(game_id=i_game, genre_id=self.__genres_dict[genre]))
 
             i_game += 1
 
         session.commit()
         self.__thread_safe_session_factory.remove()
-
