@@ -7,3 +7,67 @@
 #advanced-search-title {
     margin-top: 2%;
 }
+
+@media only screen and (max-width: 1590px) {
+    img {
+        margin-bottom: 25%;
+    }
+
+    .profile-card-content {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+    }
+}
+
+@media only screen and (min-width: 1590px) {
+    .profile-informations {
+        display: block;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+}
+
+.card {
+    margin-bottom: 2rem;
+}
+
+.pagination {
+    margin-top: 1rem;
+}
+
+.thin-button {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 1.7rem;
+}
+
+.hide-user {
+    background-color: transparent;
+    color: #dc3545;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.hidden-user {
+    background-color: #dc3545;
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+.hidden-user:hover {
+    background-color: #28a745;
+}
+
+.bookmark-button:hover {
+    background-color: #ffda0a;
+}
+
+.bookmarked-user {
+    background-color: #ffda0a;
+}
+
+.bookmarked-user:hover {
+    background-color: #dc3545;
+}
