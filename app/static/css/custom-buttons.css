@@ -7,14 +7,10 @@
 .hide-user {
     background-color: transparent;
     color: #dc3545;
-    padding-left: 3px;
-    padding-right: 3px;
 }
 
 .hidden-user {
     background-color: #dc3545;
-    padding-left: 3px;
-    padding-right: 3px;
 }
 
 .hidden-user:hover {
@@ -31,4 +27,9 @@
 
 .bookmarked-user:hover {
     background-color: #dc3545;
+}
+
+.reduced-width {
+    padding-left: 3px;
+    padding-right: 3px;
 }
