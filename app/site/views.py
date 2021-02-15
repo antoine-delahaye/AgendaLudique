@@ -28,40 +28,35 @@ def catalog():
     """
     form = GamesSimpleSearchForm()
     page = request.args.get('page', 1, type=int)
-    username_hint = request.args.get('games', '', type=str)
+    games_hint = request.args.get('games', '', type=str)
     search_parameters = []
     qs_search_parameters = request.args.get('searchParameters', None, type=str)
 
     if form.validate_on_submit():
         games_hint = form.games_hint.data
-
         if form.display_known_games.data:
             search_parameters.append("KNOWN")
-
         if form.display_noted_games.data:
             search_parameters.append("NOTED")
 
     if qs_search_parameters:
         # Add the search parameters contained in the query string into the search_parameters list
         parameters_list = qs_search_parameters.split(',')
-        search_results = Game.query.filter(False)
         for parameter in parameters_list:
             search_parameters.append(parameter)
             # Show in the advanced search menu the enabled parameters
             if parameter == "KNOWN":
                 form.display_known_games.data = True
-                search_results.join(User.get_known_games(flask_login.current_user.id))
             if parameter == "NOTED":
                 form.display_noted_games.data = True
-                search_results.join(User.get_noted_games(flask_login.current_user.id))
-        search_results.paginate(page=page, per_page=20)
+        games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameters, page, 20)
     else:
-        search_results = Game.query.paginate(page=page, per_page=20)
-    
+        games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameters, page, 20)
+
     owned_games = User.get_owned_games(flask_login.current_user.id, True)
     wished_games = User.get_wished_games(flask_login.current_user.id, True)
 
-    return render_template('catalog.html', stylesheet='catalog', form=form, games=search_results, owned_games=owned_games, wished_games=wished_games)
+    return render_template('catalog.html', stylesheet='catalog', form=form, games=games, owned_games=owned_games, wished_games=wished_games)
 
 
 @site.route('/library')
