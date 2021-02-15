@@ -364,12 +364,15 @@ def organize_session():
 
 
 @site.route('/game', methods=['GET', 'POST'])
+@site.route('/game/<game_id>', methods=['GET', 'POST'])
 @login_required
-def game():
+def game(game_id):
     """
     Render the game template on the /game route
     """
-    return render_template('game.html', stylesheet='game')
+    game = Game.from_id(game_id)
+    owned_games = User.get_owned_games(flask_login.current_user.id, True)
+    return render_template('game.html', stylesheet=None, game=game, owned_games=owned_games)
 
 
 @site.route('/add-games', methods=['GET', 'POST'])
