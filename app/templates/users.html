@@ -35,19 +35,23 @@
                         <div class="card card-body">
                             <div class="row profile-card-content">
                                 <div class="col-md-6">
-                                    <img class="profile-picture rounded-lg" width="75vh" height="auto"
-                                            {% if item["profile_picture"] %}
-                                         src="{{ item["profile_picture"] }}"
-                                            {% else %}
-                                         src="{{ url_for("static", filename="images/blank_pp.png") }}"
-                                            {% endif %}
-                                         alt="Image de profil de {{ item["username"] }}">
+                                    <a href="{{ url_for('site.user') }}/{{ item["id"] }}">
+                                        <img class="profile-picture rounded-lg" width="75vh" height="auto"
+                                                {% if item["profile_picture"] %}
+                                             src="{{ item["profile_picture"] }}"
+                                                {% else %}
+                                             src="{{ url_for("static", filename="images/blank_pp.png") }}"
+                                                {% endif %}
+                                             alt="Image de profil de {{ item["username"] }}">
+                                    </a>
                                 </div>
                                 <div class="col-md-auto profile-informations">
                                     {% if item["username"]|length > 9 %}
-                                    <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}" title="{{ item["username"] }}">{{ item["username"][0:9] }}...</a></h5>
+                                        <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}"
+                                               title="{{ item["username"] }}">{{ item["username"][0:9] }}...</a></h5>
                                     {% else %}
-                                    <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}"  title="{{ item["username"] }}">{{ item["username"] }}</a></h5>
+                                        <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}"
+                                               title="{{ item["username"] }}">{{ item["username"] }}</a></h5>
                                     {% endif %}
                                     {% if item["id"] == current_user_id %}
                                         <a class="btn thin-button disabled"
@@ -56,7 +60,8 @@
                                     {% elif item["id"] in users_data.bookmarked_users_ids %}
                                         <a class="btn thin-button bookmarked-user"
                                            href="{{ url_for('site.remove_bookmarked_user', user=item["id"]) }}"
-                                           role="button" title="Retirer cet utilisateur des favoris"><i class="fas fa-star"></i></a>
+                                           role="button" title="Retirer cet utilisateur des favoris"><i
+                                                class="fas fa-star"></i></a>
                                     {% else %}
                                         <a class="btn thin-button bookmark-button"
                                            href="{{ url_for('site.add_bookmarked_user', user=item["id"]) }}"
@@ -66,12 +71,13 @@
 
                                     {% if item["id"] in users_data.hidden_users_ids %}
                                         <a class="btn thin-button hidden-user reduced-width"
-                                       href="{{ url_for('site.remove_hidden_user', user=item["id"]) }}" role="button"
-                                       title="Démasquer cet utilisateur"><i class="fas fa-eye-slash"></i></a>
+                                           href="{{ url_for('site.remove_hidden_user', user=item["id"]) }}"
+                                           role="button"
+                                           title="Démasquer cet utilisateur"><i class="fas fa-eye-slash"></i></a>
                                     {% elif item["id"] != current_user_id %}
                                         <a class="btn thin-button hide-user reduced-width btn-outline-danger"
-                                       href="{{ url_for('site.add_hidden_user', user=item["id"]) }}" role="button"
-                                       title="Masquer cet utilisateur"><i class="far fa-eye-slash"></i></a>
+                                           href="{{ url_for('site.add_hidden_user', user=item["id"]) }}" role="button"
+                                           title="Masquer cet utilisateur"><i class="far fa-eye-slash"></i></a>
                                     {% endif %}
                                 </div>
                             </div>
@@ -88,13 +94,15 @@
             <ul class="pagination justify-content-center">
                 {% if users_data.pagination.page == 1 %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="{{ url_for("site.users", page=users_data.pagination.prev_num, searchParameters=search_parameters) }}">
+                        <a class="page-link"
+                           href="{{ url_for("site.users", page=users_data.pagination.prev_num, searchParameters=search_parameters) }}">
                             &laquo;
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for("site.users", page=users_data.pagination.prev_num, searchParameters=search_parameters) }}">
+                        <a class="page-link"
+                           href="{{ url_for("site.users", page=users_data.pagination.prev_num, searchParameters=search_parameters) }}">
                             &laquo;
                         </a>
                     </li>
@@ -103,13 +111,15 @@
                     {% if page_num %}
                         {% if users_data.pagination.page == page_num %}
                             <li class="page-item active">
-                                <a class="page-link" href="{{ url_for("site.users", page=page_num, searchParameters=search_parameters) }}">
+                                <a class="page-link"
+                                   href="{{ url_for("site.users", page=page_num, searchParameters=search_parameters) }}">
                                     {{ page_num }}
                                 </a>
                             </li>
                         {% else %}
                             <li class="page-item">
-                                <a class="page-link" href="{{ url_for("site.users", page=page_num, searchParameters=search_parameters) }}">
+                                <a class="page-link"
+                                   href="{{ url_for("site.users", page=page_num, searchParameters=search_parameters) }}">
                                     {{ page_num }}
                                 </a>
                             </li>
@@ -125,13 +135,15 @@
                 {% endfor %}
                 {% if users_data.pagination.page == users_data.pagination.pages %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="{{ url_for("site.users", page=users_data.pagination.next_num, searchParameters=search_parameters) }}">
+                        <a class="page-link"
+                           href="{{ url_for("site.users", page=users_data.pagination.next_num, searchParameters=search_parameters) }}">
                             &raquo;
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for("site.users", page=users_data.pagination.next_num, searchParameters=search_parameters) }}">
+                        <a class="page-link"
+                           href="{{ url_for("site.users", page=users_data.pagination.next_num, searchParameters=search_parameters) }}">
                             &raquo;
                         </a>
                     </li>
