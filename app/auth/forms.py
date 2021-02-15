@@ -12,7 +12,7 @@ class LoginForm(FlaskForm):
     Form for users to sign in
     """
     email = StringField('Adresse électronique',
-                        validators=[DataRequired(), Email("Il vous faut entrer une adresse mail")],
+                        validators=[DataRequired(), Email("L'adresse mail n'est pas valide")],
                         render_kw={'placeholder': 'Adresse électronique'})
     password = PasswordField('Mot de passe', validators=[DataRequired()], render_kw={'placeholder': 'Mot de passe'})
     submit = SubmitField('Connexion')
@@ -42,3 +42,25 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('Pseudo déjà utilisé')
+
+
+class ForgotPasswordForm(FlaskForm):
+    """
+    Form to allow user to reset his password
+    """
+    email = StringField("Votre adresse mail",
+                        validators=[DataRequired(), Email("L'adresse mail saisie n'est pas valide")],
+                        render_kw={
+                            'class': 'form-control',
+                            'placeholder': 'Entrez votre adresse mail',
+                        })
+    submit = SubmitField('Envoyer')
+
+
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('Mot de passe', validators=[DataRequired(), EqualTo('confirm_password',
+                                                                                 message="Les mots de passes ne correspondent pas")],
+                             render_kw={'placeholder': 'Mot de passe'})
+    confirm_password = PasswordField('Confirmer le mot de passe',
+                                     render_kw={'placeholder': 'Confirmer le mot de passe'})
+    submit = SubmitField('Valider')
