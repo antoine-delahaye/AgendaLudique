@@ -46,6 +46,19 @@ def send_mail(email):
         print("mail successfully sent to " + email)
 
 
+@admin_blueprint.cli.command('sendResetMail')
+@click.argument('email')
+def send_reset_mail(email):
+    """
+    envoie un mail de reset password à l'adresse mentionnée
+    """
+    from . import mail
+    from flask import current_app
+    with current_app.test_request_context("localhost.com"):
+        mail.send_mail("Testing reset password", email, 'mails/password_forgot_mail.html', url="google.com")
+        print("mail successfully sent to " + email)
+
+
 @admin_blueprint.cli.command('loaddb_games')
 @click.argument('filename')
 def loaddb_games(filename):
