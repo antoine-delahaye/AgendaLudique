@@ -22,144 +22,159 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512))
+    token_pwd = db.Column(db.String(32), unique=True)
 
     statistics = db.relationship(
         "Statistic",
         back_populates="user",
         uselist=False)
 
-    @property
-    def password(self):
-        """
-        Prevent password from being accessed
-        """
-        raise AttributeError('password is not a readable attribute.')
 
-    @password.setter
-    def password(self, password):
-        """
-        Set password to a hashed password
-        """
-        self.password_hash = generate_password_hash(password)
+@property
+def password(self):
+    """
+    Prevent password from being accessed
+    """
+    raise AttributeError('password is not a readable attribute.')
 
-    def verify_password(self, password):
-        """
-        Check if hashed password matches actual password
-        """
-        return check_password_hash(self.password_hash, password)
 
-    def __repr__(self):
-        return f'<User: {self.username}>'
+@password.setter
+def password(self, password):
+    """
+    Set password to a hashed password
+    """
+    self.password_hash = generate_password_hash(password)
 
-    @classmethod
-    def is_registered(cls, email):
-        """
-        Check if an email is already used.
-        """
-        req = User.query.filter(User.email == email).first()
-        return True if req else False
 
-    @classmethod
-    def get_known_games(cls, user_id, only_id=False):
-        if only_id:
-            return [data[0] for data in
-                db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)]
-        return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)
-    
-    @classmethod
-    def get_notes_games(cls, user_id, only_id=False):
-        if only_id:
-            return [data[0] for data in
+def verify_password(self, password):
+    """
+    Check if hashed password matches actual password
+    """
+    return check_password_hash(self.password_hash, password)
+
+
+def __repr__(self):
+    return f'<User: {self.username}>'
+
+
+@classmethod
+def is_registered(cls, email):
+    """
+    Check if an email is already used.
+    """
+    req = User.query.filter(User.email == email).first()
+    return True if req else False
+
+
+@classmethod
+def get_known_games(cls, user_id, only_id=False):
+    if only_id:
+        return [data[0] for data in
+                db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id,
+                                                                 Game.id == KnowRules.game_id)]
+    return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)
+
+
+@classmethod
+def get_notes_games(cls, user_id, only_id=False):
+    if only_id:
+        return [data[0] for data in
                 db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
-        return db.session.query(Game).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)
+    return db.session.query(Game).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)
 
-    @classmethod
-    def get_owned_games(cls, user_id, only_id=False):
-        if only_id:
-            return [data[0] for data in 
-                db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)]
-        return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
 
-    @classmethod
-    def get_wished_games(cls, user_id, only_id=False):
-        if only_id:
-            return [data[0] for data in 
+@classmethod
+def get_owned_games(cls, user_id, only_id=False):
+    if only_id:
+        return [data[0] for data in
+                db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id,
+                                                               Game.id == Collect.game_id)]
+    return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
+
+
+@classmethod
+def get_wished_games(cls, user_id, only_id=False):
+    if only_id:
+        return [data[0] for data in
                 db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
-        return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
+    return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
 
-    @classmethod
-    def from_username(cls, username):
-        """
-        Get an user from its username. Return None if the user does not exist.
-        """
-        req = User.query.filter(User.username == username).first()
-        return req if req else None
 
-    @classmethod
-    def search(cls, current_user, username_hint="", parameters=[]):
-        """
-        Search users with defined parameters
-        :param current_user The user who made the research
-        :param username_hint: A hint gave by the user to search similar usernames
-        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
-        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
-        :return: A UsersSearchResults object with an items list.
-        """
-        users_db = []
-        items = []
+@classmethod
+def from_username(cls, username):
+    """
+    Get an user from its username. Return None if the user does not exist.
+    """
+    req = User.query.filter(User.username == username).first()
+    return req if req else None
 
-        results = UsersSearchResults(bookmarked_users_ids=[], hidden_users_ids=[])  # Will contain the search results
 
-        if "ONLY_BOOKMARKED" not in parameters:
-            users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
+@classmethod
+def search(cls, current_user, username_hint="", parameters=[]):
+    """
+    Search users with defined parameters
+    :param current_user The user who made the research
+    :param username_hint: A hint gave by the user to search similar usernames
+    :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
+    and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
+    :return: A UsersSearchResults object with an items list.
+    """
+    users_db = []
+    items = []
 
-        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
-        for bookmarked_user in bookmarked_users_db:
-            bookmarked_user_id = bookmarked_user.user2_id
-            results.bookmarked_users_ids.append(bookmarked_user_id)  # Adds the bookmarked user id to the results object
-            if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
-                users_db.append(User.query.get(bookmarked_user_id))
+    results = UsersSearchResults(bookmarked_users_ids=[], hidden_users_ids=[])  # Will contain the search results
 
-        hidden_users_db = User.query.get(current_user.id).hidden_users.all()
-        for hidden_user in hidden_users_db:
-            hidden_user_id = hidden_user.user2_id
-            # Adds the hidden user id to the results object
-            results.hidden_users_ids.append(hidden_user_id)
-            if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
-                user_to_be_removed = User.query.get(hidden_user_id)
-                if user_to_be_removed in users_db:
-                    users_db.remove(user_to_be_removed)
+    if "ONLY_BOOKMARKED" not in parameters:
+        users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
 
-        for data in users_db:
-            items.append(
-                {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
-                 'last_name': data.last_name,
-                 'profile_picture': data.profile_picture})
-        results.items = items
+    bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
+    for bookmarked_user in bookmarked_users_db:
+        bookmarked_user_id = bookmarked_user.user2_id
+        results.bookmarked_users_ids.append(bookmarked_user_id)  # Adds the bookmarked user id to the results object
+        if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
+            users_db.append(User.query.get(bookmarked_user_id))
 
-        return results
+    hidden_users_db = User.query.get(current_user.id).hidden_users.all()
+    for hidden_user in hidden_users_db:
+        hidden_user_id = hidden_user.user2_id
+        # Adds the hidden user id to the results object
+        results.hidden_users_ids.append(hidden_user_id)
+        if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
+            user_to_be_removed = User.query.get(hidden_user_id)
+            if user_to_be_removed in users_db:
+                users_db.remove(user_to_be_removed)
 
-    @classmethod
-    def search_with_pagination(cls, current_user, username_hint="", parameters=[], current_page=1, per_page=20):
-        """
-        Search users with defined parameters and return them as a UsersSearchResults object which contains a
-        Pagination object.
-        :param current_user The user who made the research
-        :param username_hint: A hint gave by the user to search similar usernames
-        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
-        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
-        :param current_page: The current page number
-        :param per_page: The number of users shown on a search results page
-        :return: A UsersSearchResults with a Pagination object.
-        """
-        results = User.search(current_user, username_hint, parameters)
-        page_elements = results.items[(
-                                              current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
-        results.pagination = pagination
-        results.items = None
+    for data in users_db:
+        items.append(
+            {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
+             'last_name': data.last_name,
+             'profile_picture': data.profile_picture})
+    results.items = items
 
-        return results
+    return results
+
+
+@classmethod
+def search_with_pagination(cls, current_user, username_hint="", parameters=[], current_page=1, per_page=20):
+    """
+    Search users with defined parameters and return them as a UsersSearchResults object which contains a
+    Pagination object.
+    :param current_user The user who made the research
+    :param username_hint: A hint gave by the user to search similar usernames
+    :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
+    and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
+    :param current_page: The current page number
+    :param per_page: The number of users shown on a search results page
+    :return: A UsersSearchResults with a Pagination object.
+    """
+    results = User.search(current_user, username_hint, parameters)
+    page_elements = results.items[(
+                                          current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+    pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
+    results.pagination = pagination
+    results.items = None
+
+    return results
 
 
 # Set up user_loader
