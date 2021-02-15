@@ -13,7 +13,7 @@
         <tr>
         {% for group in groups_data %}
                 <td>
-                    <a href="{{ url_for(site.group) }}/{{group.id}}">{{ group.name }}</a>
+                    <a href="{{ url_for('site.group', id=group.id) }}">{{ group.name }}</a>
                 </td>
         {% endfor %}
         </tr>

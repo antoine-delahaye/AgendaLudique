@@ -272,25 +272,18 @@ def groups():
     """
     Render the groups template on the /groups route
     """
-    groups_data = []
-    for data in db.session.query(Group).all():
-        groups_data.append(
-            {'id': int(data.id), 'name': data.name})
+    groups_data = Group.query.all()
     return render_template('groups.html', stylesheet='groups', groups_data=groups_data)
 
 
-@site.route('/groups_private')
+@site.route('/groups_public')
 @login_required
-def groups_private():
+def groups_public():
     """
-    Render the groups template on the /groups_private route
+    Render the groups template on the /groups_public route
     """
-    groups_data = []
-    for data in db.session.query(Group).all():
-        if data.is_private == False:
-            groups_data.append(
-                {'id': int(data.id), 'name': data.name})
-    return render_template('groups_private.html', stylesheet='groups', groups_data=groups_data)
+    groups_data = Group.query.filter(Group.is_private==False).all()
+    return render_template('groups.html', stylesheet='groups', groups_data=groups_data)
 
 
 @site.route('/group')
