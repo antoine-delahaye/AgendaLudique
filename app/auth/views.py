@@ -49,7 +49,7 @@ def register():
         db.session.commit()
         flash('Inscription réussite, vous pouvez maintenant vous connecter !')
         mail.send_mail("Confirmation inscription", form.email.data, "mails/registerMail.html", user=user,
-                       url=request.base_url)
+                       url=request.url_root)
         return redirect(url_for('auth.login'))
     else:
         if form.email.data is not None:
