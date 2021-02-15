@@ -42,7 +42,7 @@
                                          alt="Image de profil de {{ item["username"] }}">
                                 </div>
                                 <div class="col-md-auto profile-informations">
-                                    <h5>{{ item["username"] }}</h5>
+                                    <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}">{{ item["username"] }}</a></h5>
                                     {% if item["id"] == current_user_id %}
                                         <a class="btn thin-button disabled"
                                            href="{{ url_for('site.add_bookmarked_user', user=item["id"]) }}"
