@@ -4,6 +4,14 @@
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
              src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
         <h2 class="text-center mb-3">Connexion</h2>
+        {% block message %}
+            {{ super() }}
+            {% for field in form.errors %}
+                {% for error in form.errors[field] %}
+                    <p class="text-center alert-danger alert-dismissable rounded-lg py-1 w-50">{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        {% endblock %}
         <form class="form" action="" method="POST">
             {{ form.hidden_tag() }}
             <div class="form-group">
@@ -16,18 +24,10 @@
             </div>
             {{ form.submit(class="btn btn-block text-white text-uppercase mb-3") }}
             <p class="text-center">Vous n'avez pas de compte ? <a href="{{ url_for("auth.register") }}">S'inscrire</a>
+            <p class="text-center"><a href="{{ url_for("auth.forgotpassword") }}">Mot de passe oublié</a>
             </p>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        {% if message == "Adresse électronique ou mot de passe invalide." %}
-                            <p class="text-center alert-danger rounded-lg py-1">{{ message }}</p>
-                        {% else %}
-                            <p class="text-center alert-success rounded-lg py-1">{{ message }}</p>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
         </form>
+
     </main>
+
 {% endblock %}

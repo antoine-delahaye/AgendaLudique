@@ -4,6 +4,14 @@
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
              src="{{ url_for("static", filename="images/logo.svg") }}" alt="Logo">
         <h2 class="text-center mb-3">Inscription</h2>
+        {% block message %}
+            {{ super() }}
+            {% for field in form.errors %}
+                {% for error in form.errors[field] %}
+                    <p class="text-center alert-danger alert-dismissable rounded-lg py-1 w-50">{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+        {% endblock %}
         <form class="form" action="" method="POST">
             {{ form.hidden_tag() }}
             <div class="form-row">
@@ -36,13 +44,6 @@
             </div>
             {{ form.submit(class="btn btn-block text-uppercase mb-3") }}
             <p class="text-center">Vous avez déjà un compte ? <a href="{{ url_for("auth.login") }}">Se connecter</a></p>
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <p class="text-center alert-danger rounded-lg py-1">{{ message }}</p>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
         </form>
     </main>
 {% endblock %}
