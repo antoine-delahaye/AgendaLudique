@@ -60,17 +60,31 @@ class User(UserMixin, db.Model):
         return True if req else False
 
     @classmethod
+    def get_known_games(cls, user_id, only_id=False):
+        if only_id:
+            return [data[0] for data in
+                db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)]
+        return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)
+    
+    @classmethod
+    def get_notes_games(cls, user_id, only_id=False):
+        if only_id:
+            return [data[0] for data in
+                db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
+        return db.session.query(Game).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)
+
+    @classmethod
     def get_owned_games(cls, user_id, only_id=False):
         if only_id:
-            return [data[0] for data in db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id,
-                                                                                       Game.id == Collect.game_id)]
+            return [data[0] for data in 
+                db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)]
         return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
 
     @classmethod
     def get_wished_games(cls, user_id, only_id=False):
         if only_id:
-            return [data[0] for data in
-                    db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
+            return [data[0] for data in 
+                db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
         return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
 
     @classmethod

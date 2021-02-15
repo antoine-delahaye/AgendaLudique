@@ -45,10 +45,10 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{{ url_for('site.catalog') }}">Tous les jeux</a>
+                            <a class="dropdown-item" href="{{ url_for('site.catalog') }}?searchParameters=KNOWN">Mes jeux connus</a>
+                            <a class="dropdown-item" href="{{ url_for('site.catalog') }}?searchParameters=NOTED">Mes jeux notés</a>
                             <a class="dropdown-item" href="{{ url_for('site.wishes') }}">Liste de souhaits</a>
                             <a class="dropdown-item" href="{{ url_for('site.library') }}">Ma collection</a>
-                            <a class="dropdown-item" href="{{ url_for('site.catalog') }}">Mes jeux connus</a>
-                            <a class="dropdown-item" href="{{ url_for('site.catalog') }}">Mes jeux notés</a>
                             <a class="dropdown-item" href="{{ url_for('site.add_games') }}">Ajouter des jeux</a>
                         </div>
                     </li>
@@ -60,9 +60,7 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{{ url_for('site.users') }}">Tous les joueurs</a>
-                            <a class="dropdown-item" href="{{ url_for('site.users') }}">Mes amis</a>
-                            <a class="dropdown-item" href="{{ url_for('site.users') }}">Favoris</a>
-                            <a class="dropdown-item" href="{{ url_for('site.users') }}">Masqués</a>
+                            <a class="dropdown-item" href="{{ url_for('site.users') }}?searchParameters=ONLY_BOOKMARKED">Favoris</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown mr-2">
