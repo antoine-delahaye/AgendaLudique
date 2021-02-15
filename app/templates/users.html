@@ -43,9 +43,9 @@
                                 </div>
                                 <div class="col-md-auto profile-informations">
                                     {% if item["username"]|length > 9 %}
-                                    <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}">{{ item["username"][0:9] }}...</a></h5>
+                                    <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}" title="{{ item["username"] }}">{{ item["username"][0:9] }}...</a></h5>
                                     {% else %}
-                                    <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}">{{ item["username"] }}</a></h5>
+                                    <h5><a href="{{ url_for('site.user') }}/{{ item["id"] }}"  title="{{ item["username"] }}">{{ item["username"] }}</a></h5>
                                     {% endif %}
                                     {% if item["id"] == current_user_id %}
                                         <a class="btn thin-button disabled"
