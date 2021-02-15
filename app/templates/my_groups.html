@@ -1,0 +1,36 @@
+{% extends "index.html" %}
+{% block main %}
+<main class="container-fluid col-9 mb-5">
+  <h2 class="text-center mb-5">Mes groupes</h2>
+  {% if managed_groups or groups_data %}
+    {% if managed_groups %}
+      <h4 class="my-3">Groupes gérés</h4>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+          {% for group in managed_groups %}
+                  <td>
+                      <a href="{{ url_for('site.group', id=group.id) }}">{{ group.name }}</a>
+                  </td>
+          {% endfor %}
+          </tr>
+      </table>
+    {% endif %}
+    {% if groups_data %}
+      <h4 class="my-3">Groupes</h4>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+          {% for group in groups_data %}
+                  <td>
+                      <a href="{{ url_for('site.group', id=group.id) }}">{{ group.name }}</a>
+                  </td>
+          {% endfor %}
+          </tr>
+      </table>
+    {% endif %}
+  {% else %}
+    <p>Vous n'êtes dans aucun groupe.</p>
+    <p>Pour rejoindre un groupe privé, demandez le code au chef du groupe.</p>
+    <p>Pour rejoindre un groupe public, allez sur la page des <a href="{{ url_for('site.groups_public') }}">groupes publics</a>.</p>
+  {% endif %}
+</main>
+{% endblock %}
