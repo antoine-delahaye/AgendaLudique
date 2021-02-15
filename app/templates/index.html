@@ -96,11 +96,13 @@
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{ current_user.username }}
                             {% if current_user.profile_picture == None %}
-                                <img class="rounded-lg ml-1" src="{{ url_for("static", filename="images/blank_pp.png") }}"
+                                <img class="rounded-lg ml-1"
+                                     src="{{ url_for("static", filename="images/blank_pp.png") }}"
                                      alt="Image de profil"
                                      width="32" height="32">
                             {% else %}
-                                <img class="rounded-lg ml-1" src="{{ current_user.profile_picture }}" alt="Image de profil"
+                                <img class="rounded-lg ml-1" src="{{ current_user.profile_picture }}"
+                                     alt="Image de profil"
                                      width="32" height="32">
                             {% endif %}
                         </a>
@@ -118,7 +120,18 @@
     </nav>
 </header>
 {% block main %}
-{% endblock %}
+    {% block message %}
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% for message in messages %}
+                {% if message is string %}
+                    <p class="text-center alert-success alert-dismissible rounded-lg py-1 w-50">{{ message }} </p>
+                {% else %}
+                    <p class="text-center alert-{{ message[1] }} alert-dismissible rounded-lg py-1 w-50">{{ message[0] }}</p>
+                {% endif %}
+            {% endfor %}
+        {% endwith %}
+    {% endblock message %}
+{% endblock main %}
 <footer class="py-3 text-white mt-5">
     <p class="text-center mb-0">&copy; 2020 Agenda Ludique - Université d'Orléans</p>
 </footer>
