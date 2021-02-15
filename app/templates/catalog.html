@@ -18,8 +18,10 @@
                                  src="{{ game.image }}"
                                  alt="Illustration">
                             <div class="card-body">
-                                <p class="text-truncate font-weight-bold">{{ game.title }}
-                                    ({{ game.publication_year }})</p>
+                                <a href="{{ url_for("site.game", game_id=game.id) }}">
+                                    <p class="text-truncate font-weight-bold">{{ game.title }}
+                                        ({{ game.publication_year }})</p>
+                                </a>
                                 <div class="d-flex flex-row align-items-center">
                                     <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
                                     {% if game.id in wished_games %}
