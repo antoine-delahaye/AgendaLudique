@@ -2,11 +2,27 @@
 {% block main %}
     <main class="container-fluid col-9 mt-auto mb-auto">
         <h2 class="text-center mb-5">Catalogue</h2>
-        <form class="my-5 mx-auto">
-            <div class="form-group">
-                <label class="d-none" for="search-input">Rechercher un jeu grâce à son nom</label>
-                <input class="form-control" id="search-input" type="text"
-                       placeholder="Rechercher un jeu grâce à son nom">
+        <form class="my-5 mx-auto" action="{{ url_for('site.catalog') }}" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="input-group">
+                {{ form.games_hint }}
+                <div class="input-group-append" id="search-buttons">
+                    <button class="btn show-advanced-search" type="button" data-toggle="collapse"
+                            data-target="#advanced-search" aria-expanded="false" aria-controls="advanced-search"
+                            title="Rechercher des jeux grâce à leurs noms">
+                        <i class="fa fa-sliders" aria-hidden="true"></i>
+                    </button>
+                    <button type="submit" class="btn btn-primary" title="Recherche">
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="collapse" id="advanced-search">
+                <div class="card card-body">
+                    <h5 id="advanced-search-title" class="card-title">Rechercher des jeux grâce à leurs noms</h5>
+                    <p>{{ form.display_known_games }} {{ form.display_known_games.label }}</p>
+                    <p>{{ form.display_noted_games }} {{ form.display_noted_games.label }}</p>
+                </div>
             </div>
         </form>
         <div class="row">

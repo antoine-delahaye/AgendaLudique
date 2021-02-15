@@ -22,6 +22,16 @@ class UpdateInformationForm(FlaskForm):
     submit = SubmitField('Mettre à jour')
 
 
+class GamesSimpleSearchForm(FlaskForm):
+    games_hint = StringField("Nom du jeu", id='search-input', render_kw={
+        'class': 'form-control',
+        'placeholder': 'Rechercher des jeux grâce à leurs noms',
+        'aria-describedby': 'search-buttons'
+    })
+    display_known_games = BooleanField('Afficher uniquement les jeux que vous connaissez')
+    display_noted_games = BooleanField('Afficher uniquement les jeux notés')
+
+
 class GamesSearchForm(FlaskForm):
     """
     Form for search games

@@ -23,8 +23,16 @@ def login():
             login_user(user)
             return redirect(url_for('site.catalog'))
         else:
-            flash('Adresse électronique ou mot de passe invalide.')
+            flash("warning", "Adresse électronique ou mot de passe invalide.")
     return render_template('login.html', form=form, stylesheet='login')
+
+
+def check_register_error(form):
+    if not User.query.filter_by(email=form.email.data):
+        flash("danger", "Adresse mail déjà utilisée")
+
+    if not User.query.filter_by(username=form.username.data) is not None:
+        flash("danger", "Nom d'utilisateur déjà utilisé")
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -47,13 +55,12 @@ def register():
                     )
         db.session.add(user)
         db.session.commit()
-        flash('Inscription réussite, vous pouvez maintenant vous connecter !')
+        flash("Inscription réussite, vous pouvez maintenant vous connecter !")
         mail.send_mail("Confirmation inscription", form.email.data, "mails/registerMail.html", user=user,
-                       url=request.base_url)
+                       url=request.url_root)
         return redirect(url_for('auth.login'))
     else:
-        if form.email.data is not None:
-            flash('Adresse électronique déjà utilisé')
+        check_register_error(form)
     return render_template('register.html', form=form, stylesheet='register')
 
 
@@ -65,4 +72,14 @@ def logout():
     Logout an user out through the logout link
     """
     logout_user()
+    return redirect(url_for('site.home'))
+
+
+@auth.route('/forgotpassword')
+def forgotpassword():
+    """
+    Allows the user to reset his password
+    Send him an email with his new mail
+    """
+
     return redirect(url_for('site.home'))
