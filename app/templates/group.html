@@ -1,3 +1,18 @@
 {% extends "index.html" %}
 {% block main %}
+<main class="container-fluid col-9 mb-5">
+  <h2 class="text-center mb-5">{{group.name}}
+    {% if group.is_private %}
+      <i class="fas fa-lock"></i>
+    {% else %}
+      <i class="fas fa-unlock"></i>
+    {% endif %}
+  </h2>
+  <h4>Responsable : {{group.manager.username}}</h4>
+  <h4>Membres du groupe : </h4>
+  {% for member in group.participations %}
+    {% set member = member.member %}
+    <p>{{member.username}}</p>
+  {% endfor %}
+</main>
 {% endblock %}

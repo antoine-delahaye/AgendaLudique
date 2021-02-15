@@ -298,25 +298,18 @@ def groups():
     """
     Render the groups template on the /groups route
     """
-    groups_data = []
-    for data in db.session.query(Group).all():
-        groups_data.append(
-            {'id': int(data.id), 'name': data.name})
+    groups_data = Group.query.all()
     return render_template('groups.html', stylesheet='groups', groups_data=groups_data)
 
 
-@site.route('/groups_private')
+@site.route('/groups_public')
 @login_required
-def groups_private():
+def groups_public():
     """
-    Render the groups template on the /groups_private route
+    Render the groups template on the /groups_public route
     """
-    groups_data = []
-    for data in db.session.query(Group).all():
-        if data.is_private == False:
-            groups_data.append(
-                {'id': int(data.id), 'name': data.name})
-    return render_template('groups_private.html', stylesheet='groups', groups_data=groups_data)
+    groups_data = Group.query.filter(Group.is_private==False).all()
+    return render_template('groups.html', stylesheet='groups', groups_data=groups_data)
 
 
 @site.route('/group')
@@ -328,6 +321,18 @@ def group(id=None):
     """
     group = Group.query.get_or_404(id)
     return render_template('group.html', stylesheet='group', group=group)
+
+
+@site.route('/my_groups')
+@login_required
+def my_groups():
+    """
+    Render the groups template on the /my_groups route
+    """
+    groups_data = []
+    for participation in current_user.participations:
+        groups_data.append(participation.group)
+    return render_template('my_groups.html', stylesheet='my_groups', groups_data=groups_data, managed_groups=list(current_user.managed_groups))
 
 
 # Session related ################################################################

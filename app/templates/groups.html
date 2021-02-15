@@ -9,14 +9,10 @@
                    placeholder="Rechercher un groupe grâce à son nom">
         </div>
     </form>
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-        <tr>
-        {% for group in groups_data %}
-                <td>
-                    <a href="{{ url_for(site.group) }}/{{group.id}}">{{ group.name }}</a>
-                </td>
-        {% endfor %}
-        </tr>
-    </table>
+    <div class="row">
+    {% for group in groups_data %}
+        {% include "group_card.html" %}
+    {% endfor %}
+    </div>
 </main>
 {% endblock %}
