@@ -110,14 +110,13 @@ class User(UserMixin, db.Model):
 
         results = UsersSearchResults(bookmarked_users_ids=[], hidden_users_ids=[])  # Will contain the search results
 
-
         if "ONLY_BOOKMARKED" not in parameters:
             users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
 
         bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
         for bookmarked_user in bookmarked_users_db:
             bookmarked_user_id = bookmarked_user.user2_id
-            results.bookmarked_users_ids.append(bookmarked_user_id)     # Adds the bookmarked user id to the results object
+            results.bookmarked_users_ids.append(bookmarked_user_id)  # Adds the bookmarked user id to the results object
             if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
                 users_db.append(User.query.get(bookmarked_user_id))
 
@@ -154,7 +153,8 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, parameters)
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        page_elements = results.items[(
+                                              current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
         pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.pagination = pagination
         results.items = None
@@ -426,6 +426,14 @@ class Game(UserMixin, db.Model):
         return req if req else None
 
     @classmethod
+    def from_id(cls, game_id):
+        """
+        Get a Game from its title. Return None if the game does not exist.
+        """
+        req = Game.query.filter(Game.id == game_id).first()
+        return req if req else None
+
+    @classmethod
     def max_id(cls):
         """ Return the maximum id of the Game class. Used for increment """
         return db.session.query(func.max(Game.id)).one()[0]
@@ -438,7 +446,7 @@ class Genre(db.Model):
 
     __tablename__ = 'genres'
 
-    id = db.Column(db.Integer, primary_key=True,  autoincrement=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     name = db.Column(db.String(32), unique=True)
 
     def __repr__(self):
@@ -798,6 +806,7 @@ class UsersSearchResults:
     """
     An utility class that stores users search results.
     """
+
     def __init__(self, items=None, pagination=None, hidden_users_ids=None, bookmarked_users_ids=None):
         """
         Initializes a UsersSearchResults object.
