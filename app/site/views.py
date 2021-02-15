@@ -129,7 +129,8 @@ def users():
 
     search_results = User.search_with_pagination(current_user, username_hint, search_parameters, page, 20)
 
-    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id, users_data=search_results)
+    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id,
+                           users_data=search_results, search_parameters=search_parameters)
 
 
 @site.route('/user')
