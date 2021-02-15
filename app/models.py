@@ -22,7 +22,7 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512))
-    token_pwd = db.Column(db.String(32), unique=True)
+    # token_pwd = db.Column(db.String(32), unique=True)
 
     statistics = db.relationship(
         "Statistic",
