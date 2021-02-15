@@ -296,6 +296,15 @@ def group(id=None):
     group = Group.query.get_or_404(id)
     return render_template('group.html', stylesheet='group', group=group)
 
+@site.route('/my_groups')
+@login_required
+def my_groups():
+    groups_data = []
+    for participation in current_user.participations:
+        print(current_user.participations)
+        groups_data.append(participation.group)
+    return render_template('groups.html', stylesheet='groups', groups_data=groups_data)
+
 
 # Session related ################################################################
 @site.route('/sessions', methods=['GET', 'POST'])
