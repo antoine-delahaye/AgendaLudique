@@ -17,27 +17,27 @@
             </div>
             <div id="user-buttons">
                 {% if user.id == current_user_id %}
-                    <a class="btn"
+                    <a class="btn pt-2"
                        href="{{ url_for('site.account') }}"
                        role="button"><i class="fas fa-pen"
                                         title="Modifier votre profil"></i> Modifier votre profil</a>
                 {% elif user.id in users_data.bookmarked_ids %}
-                    <a class="btn bookmarked-user"
+                    <a class="btn bookmarked-user pt-2"
                        href="{{ url_for('site.remove_bookmarked_user', user=user.id) }}"
                        role="button" title="Retirer cet utilisateur des favoris"><i class="fas fa-star"></i> Favori</a>
                 {% else %}
-                    <a class="btn bookmark-button"
+                    <a class="btn bookmark-button pt-2"
                        href="{{ url_for('site.add_bookmarked_user', user=user.id) }}"
                        role="button" title="Ajouter cet utilisateur aux favoris"><i
                             class="far fa-star"></i> Ajouter aux favoris</a>
                 {% endif %}
 
                 {% if user.id in users_data.hidden_ids %}
-                    <a class="btn hidden-user"
+                    <a class="btn hidden-user pt-2"
                        href="{{ url_for('site.remove_hidden_user', user=user.id) }}" role="button"
                        title="Démasquer cet utilisateur"><i class="fas fa-eye-slash"></i> Masqué</a>
                 {% elif user.id !=  current_user_id %}
-                    <a class="btn hide-user btn-outline-danger"
+                    <a class="btn hide-user btn-outline-danger pt-2"
                        href="{{ url_for('site.add_hidden_user', user=user.id) }}" role="button"
                        title="Masquer cet utilisateur"><i class="far fa-eye-slash"></i> Masquer</a>
                 {% endif %}
@@ -91,10 +91,10 @@
             </div>
         </div>
         <div class="carousel-navigation">
-            <a class="btn" href="#owned-games-controls" role="button" data-slide="prev">
+            <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="prev">
                 <i class="fa fa-arrow-left"></i>
             </a>
-            <a class="btn" href="#owned-games-controls" role="button" data-slide="next">
+            <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="next">
                 <i class="fa fa-arrow-right"></i>
             </a>
         </div>
@@ -146,10 +146,10 @@
                 </div>
             </div>
             <div class="carousel-navigation">
-                <a class="btn" href="#opinions-controls" role="button" data-slide="prev">
+                <a class="btn pt-2" href="#opinions-controls" role="button" data-slide="prev">
                     <i class="fa fa-arrow-left"></i>
                 </a>
-                <a class="btn" href="#opinions-controls" role="button" data-slide="next">
+                <a class="btn pt-2" href="#opinions-controls" role="button" data-slide="next">
                     <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
