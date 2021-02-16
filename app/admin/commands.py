@@ -1,3 +1,4 @@
+import json
 import time
 import click
 import yaml
@@ -10,14 +11,6 @@ from app.utils.insert_db import insertDB
 from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, \
     Genre, Classification, Session, TimeSlot, Play, Use
 from . import admin_blueprint
-
-engine = create_engine(
-    'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
-    pool_size=5,  # default in SQLAlchemy
-    max_overflow=10,  # default in SQLAlchemy
-    pool_timeout=1,  # raise an error faster than default
-)
-thread_safe_session_factory = scoped_session(sessionmaker(bind=engine))
 
 
 @admin_blueprint.cli.command('resetDB')
@@ -173,13 +166,23 @@ def fast_loaddb_games(filename):
 @admin_blueprint.cli.command('scraper')
 def scraper():
     print("!!! PENSEZ À VIDER LA BD POUR ÉVITER LES CONFLITS !!!")
-    from_page = input("Scrap de la page : ")
-    to_page = input("Jusqu'à la page : ")
+    choice = input("  1) Scraper\n  2) JSON\n")
 
-    rs = RewriteScraper()
+    data = None
+    if choice == "1":
+        from_page = input("Scrap de la page : ")
+        to_page = input("Jusqu'à la page : ")
+        rs = RewriteScraper()
+        data = rs.scrap(from_page, to_page)
+    elif choice == "2":
+        with open("data.json", 'r') as f:
+            data = json.load(f)
+        print("Chargement en mémoire terminé")
+    else:
+        exit(1)
+
+    print("Insertion dans la BDD en cours...")
     iDB = insertDB()
-
-    data = rs.scrap(from_page, to_page)
     iDB.insert(data)
     print("Done!")
 
