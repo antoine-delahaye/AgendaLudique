@@ -45,7 +45,7 @@ svg {
     height: 1rem;
 }
 
-.page-item.active .page-link {
+.page-item.active .page-link, .list-group-item.active {
     background-color: #0277BC;
     border-color: #0277BC;
 }
