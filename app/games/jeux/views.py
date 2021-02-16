@@ -21,50 +21,31 @@ def catalog():
     search_parameters = list()
     qs_search_parameters = request.args.get('searchParameters', None, type=str)
 
-    if form.validate_on_submit():
-        games_hint = form.games_hint.data
-        if form.display_known_games.data:
-            search_parameters.append("KNOWN")
-            title = "Jeux que vous connaissez"
-        elif form.display_noted_games.data:
-            search_parameters.append("NOTED")
-            title = "Jeux que vous avez déjà notés"
-        elif form.display_wished_games.data:
-            search_parameters.append("WISHED")
-            title = "Jeux que vous souhaitez"
-        elif form.display_owned_games.data:
-            search_parameters.append("OWNED")
-            title = "Jeux que vous possédez"
-    if not title:
-        title = "Tout les jeux"
+    # Get search format and hint if there are one
+    games_hint = form.games_hint.data if form.games_hint.data else ''
+    search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else None
 
     # We want to remove already owned and wished games from the page
     owned_games = User.get_owned_games(flask_login.current_user.id, True)
     wished_games = User.get_wished_games(flask_login.current_user.id, True)
 
-    if qs_search_parameters:
-        # Add the search parameters contained in the query string into the search_parameters list
-        parameters_list = qs_search_parameters.split(',')
-        print(qs_search_parameters)                
-        for parameter in parameters_list:
-            search_parameters.append(parameter)
-            # Show in the advanced search menu the enabled parameters
-            if parameter == "KNOWN":
-                form.display_known_games.data = True
-            elif parameter == "NOTED":
-                form.display_noted_games.data = True
-            elif parameter == "WISHED":
-                form.display_wished_games.data = True
-                wished_games = Game.query.filter(False)
-            elif parameter == "OWNED":
-                form.display_owned_games.data = True
-                owned_games = Game.query.filter(False)
-
-        games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameters, page, 20)
+    if search_parameter == "KNOWN":
+        title = "Jeux que vous connaissez"
+        form.display_known_games.data = True
+    elif search_parameter == "NOTED":
+        title = "Jeux que vous avez déjà notés"
+        form.display_noted_games.data = True
+    elif search_parameter == "WISHED":
+        title = "Jeux que vous souhaitez"
+        form.display_wished_games.data = True
+        wished_games = Game.query.filter(False)
+    elif search_parameter == "OWNED":
+        title = "Jeux que vous possédez"
+        form.display_owned_games.data = True
+        owned_games = Game.query.filter(False)
     else:
-        games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameters, page, 20)
-
-    
+        title = "Tout les jeux"
+    games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameter, page, 20)
 
     return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games)
 

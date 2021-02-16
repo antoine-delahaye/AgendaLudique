@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from markupsafe import Markup
-from wtforms import PasswordField, StringField, SubmitField, SelectField, BooleanField
+from wtforms import PasswordField, StringField, SubmitField, SelectField, BooleanField, RadioField
 from wtforms.validators import DataRequired, EqualTo
 
 
@@ -32,6 +32,12 @@ class GamesSimpleSearchForm(FlaskForm):
     display_noted_games = BooleanField('Afficher uniquement les jeux notés')
     display_wished_games = BooleanField('Afficher uniquement les jeux souhaités')
     display_owned_games = BooleanField('Afficher uniquement les jeux possédés')
+    display_search_parameter = RadioField('Catégories de la recherche : ', choices=
+        [('KNOWN',"Afficher uniquement les jeux que vous connaissez"),
+            ('NOTED',"Afficher uniquement les jeux notés"),
+            ('WISHED',"Afficher uniquement les jeux souhaités"),
+            ('OWNED',"Afficher uniquement les jeux possédés")
+        ])
 
 
 class GamesSearchForm(FlaskForm):

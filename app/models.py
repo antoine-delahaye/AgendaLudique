@@ -75,7 +75,7 @@ class User(UserMixin, db.Model):
 
 
     @classmethod
-    def get_notes_games(cls, user_id, only_id=False):
+    def get_noted_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
                 db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
@@ -496,18 +496,15 @@ class Game(UserMixin, db.Model):
         return db.session.query(func.max(Game.id)).one()[0]
     
     @classmethod
-    def search(cls, current_user_id, games_hint, typ, parameters_list):
-        if parameters_list:
-            for parameter in parameters_list:
-                # Show in the advanced search menu the enabled parameters
-                if parameter == "KNOWN":
-                    search_results = User.get_known_games(current_user_id)
-                elif parameter == "NOTED":
-                    search_results = User.get_noted_games(current_user_id)
-                elif parameter == "WISHED":
-                    search_results = User.get_wished_games(current_user_id)
-                elif parameter == "OWNED":
-                    search_results = User.get_owned_games(current_user_id)
+    def search(cls, current_user_id, games_hint, typ, search_parameter):
+        if search_parameter == "KNOWN":
+            search_results = User.get_known_games(current_user_id)
+        elif search_parameter == "NOTED":
+            search_results = User.get_noted_games(current_user_id)
+        elif search_parameter == "WISHED":
+            search_results = User.get_wished_games(current_user_id)
+        elif search_parameter == "OWNED":
+            search_results = User.get_owned_games(current_user_id)
         else:
             search_results = Game.query
         
