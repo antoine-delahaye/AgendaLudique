@@ -46,5 +46,5 @@ def my_groups():
     groups_data = []
     for participation in current_user.participations:
         groups_data.append(participation.group)
-    return render_template('my_groups.html', stylesheet='my_groups', groups_data=groups_data,
+    return render_template('my_groups.html', stylesheet='groups', groups_data=groups_data,
                            managed_groups=list(current_user.managed_groups))
