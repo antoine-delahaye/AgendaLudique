@@ -8,7 +8,7 @@ from sqlalchemy import text
 from app import db
 from app.models import User, Game, Group, HideUser, BookmarkUser, Collect, Wish, HideGame
 from app.site import site
-from app.site.forms import UpdateInformationForm, GamesSimpleSearchForm, GamesSearchForm, UsersSearchForm
+from app.site.forms import UpdateInformationForm, GamesSimpleSearchForm, GamesSearchForm, UsersSearchForm, AddGameForm
 
 
 @site.route('/')
@@ -67,7 +67,8 @@ def user(id=None):
     Render the user template on the /user route
     """
     user = User.query.get_or_404(id)
-    return render_template('user.html', stylesheet='user', user=user)
+    data = User.search(current_user, user.username, ["HIDDEN"])    # Retrieve the data from the database, including the hidden users.
+    return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id, users_data=data)
 
 
 @site.route('/hidden-users/add', methods=['GET'])
