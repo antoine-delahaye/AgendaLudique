@@ -45,12 +45,12 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}">Tous les jeux</a>
-                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameters=KNOWN">Mes
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=KNOWN">Mes
                                 jeux connus</a>
-                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameters=NOTED">Mes
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=NOTED">Mes
                                 jeux notés</a>
-                            <a class="dropdown-item" href="{{ url_for('jeux.wishes') }}">Liste de souhaits</a>
-                            <a class="dropdown-item" href="{{ url_for('jeux.library') }}">Ma collection</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=WISHED">Liste de souhaits</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=OWNED">Ma collection</a>
                             <a class="dropdown-item" href="{{ url_for('jeux.add_games') }}">Ajouter des jeux</a>
                         </div>
                     </li>
