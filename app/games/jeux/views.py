@@ -3,7 +3,7 @@ import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 
 from app.models import User, Game, Wish, Collect
-from app.site.forms import GamesSimpleSearchForm, UpdateInformationForm, GamesSearchForm
+from app.site.forms import GamesSimpleSearchForm, UpdateInformationForm, GamesSearchForm, AddGameForm
 from flask_login import login_required, current_user
 from . import jeux
 from ... import db
@@ -57,34 +57,47 @@ def add_games():
     """
     Render the add-games template on the /add-games route
     """
-    form = GamesSearchForm()
+    games_search_form = GamesSearchForm()
     for data in db.session.query(Game).all():
-        form.title.choices.append(data.title)
-        if data.publication_year not in form.years.choices:
-            form.years.choices.append(data.publication_year)
-        if data.min_players not in form.min_players.choices:
-            form.min_players.choices.append(data.min_players)
-        if data.max_players not in form.max_players.choices:
-            form.max_players.choices.append(data.max_players)
-        if data.min_playtime not in form.min_playtime.choices and data.min_playtime not in form.max_playtime.choices:
-            form.min_playtime.choices.append(data.min_playtime)
-            form.max_playtime.choices.append(data.min_playtime)
-    form.years.choices.sort()
-    form.min_players.choices.sort()
-    form.max_players.choices.sort()
-    form.min_playtime.choices.sort()
-    form.max_playtime.choices.sort()
-    form.title.choices.insert(0, 'Aucun')
-    form.years.choices.insert(0, 'Aucune')
-    form.min_players.choices.insert(0, 'Aucun')
-    form.max_players.choices.insert(0, 'Aucun')
-    form.min_playtime.choices.insert(0, 'Aucune')
-    form.max_playtime.choices.insert(0, 'Aucune')
-    if form.validate_on_submit():
-        researched_game = Game.query.filter_by(title=form.title.data).first()
+        games_search_form.title.choices.append(data.title)
+        if data.publication_year not in games_search_form.years.choices:
+            games_search_form.years.choices.append(data.publication_year)
+        if data.min_players not in games_search_form.min_players.choices:
+            games_search_form.min_players.choices.append(data.min_players)
+        if data.max_players not in games_search_form.max_players.choices:
+            games_search_form.max_players.choices.append(data.max_players)
+        if data.min_playtime not in games_search_form.min_playtime.choices and data.min_playtime not in games_search_form.max_playtime.choices:
+            games_search_form.min_playtime.choices.append(data.min_playtime)
+            games_search_form.max_playtime.choices.append(data.min_playtime)
+    games_search_form.years.choices.sort()
+    games_search_form.min_players.choices.sort()
+    games_search_form.max_players.choices.sort()
+    games_search_form.min_playtime.choices.sort()
+    games_search_form.max_playtime.choices.sort()
+    games_search_form.title.choices.insert(0, 'Aucun')
+    games_search_form.years.choices.insert(0, 'Aucune')
+    games_search_form.min_players.choices.insert(0, 'Aucun')
+    games_search_form.max_players.choices.insert(0, 'Aucun')
+    games_search_form.min_playtime.choices.insert(0, 'Aucune')
+    games_search_form.max_playtime.choices.insert(0, 'Aucune')
+    add_game_form = AddGameForm()
+    if games_search_form.validate_on_submit():
+        researched_game = Game.query.filter_by(title=games_search_form.title.data).first()
         print(researched_game)
-        return render_template('add-games.html', form=form, stylesheet='add-games', researched_game=researched_game)
-    return render_template('add-games.html', stylesheet='add-games', form=form)
+        return render_template('add-games.html', games_search_form=games_search_form, stylesheet='add-games',
+                               researched_game=researched_game, add_game_form=add_game_form)
+    if add_game_form.validate_on_submit():
+        game_id = Game.max_id() + 1
+        if game_id is None:
+            game_id = 0
+        Game.add_game(game_id,
+                      {'title': add_game_form.title.data, 'publication_year': add_game_form.years.data,
+                       'min_players': int(add_game_form.min_players.data),
+                       'max_players': int(add_game_form.max_players.data),
+                       'min_playtime': int(add_game_form.min_playtime.data), 'image': add_game_form.image.data})
+        return redirect(url_for('jeux.game', game_id=game_id))
+    return render_template('add-games.html', stylesheet='add-games', games_search_form=games_search_form,
+                           add_game_form=add_game_form)
 
 
 @jeux.route('/edit-games', methods=['GET', 'POST'])
@@ -106,9 +119,8 @@ def game(game_id):
     """
     Render the game template on the /game route
     """
-    game = Game.from_id(game_id)
-    owned_games = User.get_owned_games(flask_login.current_user.id, True)
-    return render_template('game.html', stylesheet=None, game=game, owned_games=owned_games)
+    return render_template('game.html', stylesheet=None, game=Game.from_id(game_id),
+                           owned_games=User.get_owned_games(flask_login.current_user.id, True))
 
 
 @jeux.route('/wishes')

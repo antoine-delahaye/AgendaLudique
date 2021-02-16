@@ -8,7 +8,7 @@ from sqlalchemy import text
 from app import db
 from app.models import User, Game, Group, HideUser, BookmarkUser, Collect, Wish, HideGame
 from app.site import site
-from app.site.forms import UpdateInformationForm, GamesSimpleSearchForm, GamesSearchForm, UsersSearchForm
+from app.site.forms import UpdateInformationForm, GamesSimpleSearchForm, GamesSearchForm, UsersSearchForm, AddGameForm
 
 
 @site.route('/')

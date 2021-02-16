@@ -45,6 +45,24 @@ class GamesSearchForm(FlaskForm):
     submit = SubmitField('Rechercher')
 
 
+class AddGameForm(FlaskForm):
+    """
+    Form for add game
+    """
+    title = StringField('Titre', validators=[DataRequired()], render_kw={'placeholder': 'Titre'})
+    years = StringField('Année de sortie', validators=[DataRequired()], render_kw={'placeholder': 'Année de sortie'})
+    min_players = StringField('Joueurs minimum', validators=[DataRequired()],
+                              render_kw={'placeholder': 'Joueurs minimum'})
+    max_players = StringField('Joueurs maximum', validators=[DataRequired()],
+                              render_kw={'placeholder': 'Joueurs maximum'})
+    min_playtime = StringField('Durée minimale', validators=[DataRequired()],
+                               render_kw={'placeholder': 'Durée minimale'})
+    image = StringField('Illustration', validators=[DataRequired()],
+                        render_kw={'placeholder': "URL de l'illustration finissant par une extension de fichier image "
+                                                  "(comme sur l'exemple)"})
+    submit = SubmitField('Ajouter')
+
+
 class UsersSearchForm(FlaskForm):
     """
     Form to search users
