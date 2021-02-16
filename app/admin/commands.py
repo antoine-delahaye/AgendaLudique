@@ -174,8 +174,11 @@ def scraper():
         to_page = input("Jusqu'à la page : ")
         rs = RewriteScraper()
         data = rs.scrap(from_page, to_page)
+        with open("ressources/data.json", 'w') as f:
+            json.dump(data, f)
+        print("Données sauvegardé dans ressources/data.json")
     elif choice == "2":
-        with open("data.json", 'r') as f:
+        with open("ressources/data.json", 'r') as f:
             data = json.load(f)
         print("Chargement en mémoire terminé")
     else:
