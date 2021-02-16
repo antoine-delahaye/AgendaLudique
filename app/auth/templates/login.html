@@ -6,11 +6,6 @@
         <h2 class="text-center mb-3">Connexion</h2>
         {% block message %}
             {{ super() }}
-            {% for field in form.errors %}
-                {% for error in form.errors[field] %}
-                    <p class="text-center alert-danger alert-dismissable rounded-lg py-1 w-50">{{ error }}</p>
-                {% endfor %}
-            {% endfor %}
         {% endblock %}
         <form class="form" action="" method="POST">
             {{ form.hidden_tag() }}
@@ -24,7 +19,7 @@
             </div>
             {{ form.submit(class="btn btn-block text-white text-uppercase mb-3") }}
             <p class="text-center">Vous n'avez pas de compte ? <a href="{{ url_for("auth.register") }}">S'inscrire</a>
-            <p class="text-center"><a href="{{ url_for("auth.forgotpassword") }}">Mot de passe oublié</a>
+            <p class="text-center"><a href="{{ url_for("auth.forgot_password") }}">Mot de passe oublié</a>
             </p>
         </form>
 
