@@ -43,7 +43,7 @@ def catalog():
         title = "Jeux que vous possédez"
         owned_games = Game.query.filter(False)
     else:
-        title = "Tout les jeux"
+        title = "Tous les jeux"
     games = Game.search_with_pagination(flask_login.current_user.id, games_hint, form.display_search_type.data, search_parameter, page, 20)
 
     return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, search_parameter=search_parameter)

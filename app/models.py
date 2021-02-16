@@ -161,7 +161,7 @@ class User(UserMixin, db.Model):
         bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
         for bookmarked_user in bookmarked_users_db:
             bookmarked_user_id = bookmarked_user.user2_id
-            results.bookmarked_ids.append(bookmarked_user_id)  # Adds the bookmarked user id to the results object
+            results.bookmarked_ids.add(bookmarked_user_id)  # Adds the bookmarked user id to the results object
             if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
                 users_db.append(User.query.get(bookmarked_user_id))
 
@@ -169,7 +169,7 @@ class User(UserMixin, db.Model):
         for hidden_user in hidden_users_db:
             hidden_user_id = hidden_user.user2_id
             # Adds the hidden user id to the results object
-            results.hidden_ids.append(hidden_user_id)
+            results.hidden_ids.add(hidden_user_id)
             if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
                 user_to_be_removed = User.query.get(hidden_user_id)
                 if user_to_be_removed in users_db:
@@ -493,6 +493,7 @@ class Game(UserMixin, db.Model):
 
     @classmethod
     def search(cls, current_user_id, games_hint, typ, search_parameter):
+        # Search games via a known parameter
         if search_parameter == "KNOWN":
             search_results = User.get_known_games(current_user_id)
         elif search_parameter == "NOTED":
@@ -504,11 +505,22 @@ class Game(UserMixin, db.Model):
         else:
             search_results = Game.query
         
+        # Search games in search_results that corresponds to the type and the hint
         if typ=="year":
-            games_db = search_results.filter(Game.publication_year==int(games_hint)).all()
+            games_db = search_results.filter(Game.publication_year==int(games_hint))
+        elif typ=="genre":
+            temp = set()
+            games_db = Game.query.filter(False)
+            genres = Genre.query.filter(Genre.name.like("%"+games_hint+"%"))
+            for genre in genres:
+                genre_links = Classification.query.filter(Classification.genre_id==genre.id)
+                for genre_link in genre_links:
+                    temp.add(genre_link.game_id) 
+            games_db = search_results.filter(Game.id.in_(temp))
         else:
-            games_db = search_results.filter(Game.title.like("%" + games_hint + "%")).all()
+            games_db = search_results.filter(Game.title.like("%" + games_hint + "%"))
 
+        # Transform search into 
         results = SearchResults()
         for data in games_db:
             results.items.append(
@@ -906,6 +918,6 @@ class SearchResults:
         :param bookmarked_ids: A list which contains the bookmarked objtects ids, list() if not used.
         """
         self.items = list()
-        self.pagination = list()
-        self.hidden_ids = list()
-        self.bookmarked_ids = list()
+        self.pagination = None
+        self.hidden_ids = set()
+        self.bookmarked_ids = set()
