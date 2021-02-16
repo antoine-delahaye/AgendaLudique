@@ -57,7 +57,7 @@
                                         <a class="btn thin-button disabled"
                                            href="{{ url_for('site.add_bookmarked_user', user=item["id"]) }}"
                                            role="button"><i class="fas fa-user"></i> Vous</a>
-                                    {% elif item["id"] in users_data.bookmarked_users_ids %}
+                                    {% elif item["id"] in users_data.bookmarked_ids %}
                                         <a class="btn thin-button bookmarked-user"
                                            href="{{ url_for('site.remove_bookmarked_user', user=item["id"]) }}"
                                            role="button" title="Retirer cet utilisateur des favoris"><i
@@ -69,7 +69,7 @@
                                                 class="far fa-star"></i></a>
                                     {% endif %}
 
-                                    {% if item["id"] in users_data.hidden_users_ids %}
+                                    {% if item["id"] in users_data.hidden_ids %}
                                         <a class="btn thin-button hidden-user reduced-width"
                                            href="{{ url_for('site.remove_hidden_user', user=item["id"]) }}"
                                            role="button"
