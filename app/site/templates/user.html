@@ -21,7 +21,7 @@
                        href="{{ url_for('site.account') }}"
                        role="button"><i class="fas fa-pen"
                                         title="Modifier votre profil"></i> Modifier votre profil</a>
-                {% elif user.id in users_data.bookmarked_users_ids %}
+                {% elif user.id in users_data.bookmarked_ids %}
                     <a class="btn bookmarked-user"
                        href="{{ url_for('site.remove_bookmarked_user', user=user.id) }}"
                        role="button" title="Retirer cet utilisateur des favoris"><i class="fas fa-star"></i> Favori</a>
@@ -32,7 +32,7 @@
                             class="far fa-star"></i> Ajouter aux favoris</a>
                 {% endif %}
 
-                {% if user.id in users_data.hidden_users_ids %}
+                {% if user.id in users_data.hidden_ids %}
                     <a class="btn hidden-user"
                        href="{{ url_for('site.remove_hidden_user', user=user.id) }}" role="button"
                        title="Démasquer cet utilisateur"><i class="fas fa-eye-slash"></i> Masqué</a>
