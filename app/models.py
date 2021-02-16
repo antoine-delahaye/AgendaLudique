@@ -1,4 +1,4 @@
-# app/models.py
+# app/utils.py
 
 from flask_login import UserMixin
 from flask_sqlalchemy import Pagination

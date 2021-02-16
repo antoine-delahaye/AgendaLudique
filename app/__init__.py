@@ -6,8 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
-from .utils.mail import MailTool
-# Local imports
+from app.mail.utils.mailtools import MailTool
 from config import app_config
 
 # SQLAlchemy variable initialization
@@ -15,10 +14,6 @@ db = SQLAlchemy()
 
 # LoginManager variable initialization
 login_manager = LoginManager()
-# Blueprint imports
-from app.site import site as site_blueprint
-from app.auth import auth as auth_blueprint
-from .commands import admin_blueprint
 
 app = None
 mail = None
@@ -31,9 +26,10 @@ def create_app(config_name):
     # App configuration
     app = config_app(config_name)
     # Register blueprints
-    register_blueprint(app)
+    config_blueprint(app)
     # Initialize db and login_manager
     init_db(app)
+
     # Initialize Bootstrap
     Bootstrap(app)
     # Initialize mails
@@ -77,14 +73,27 @@ def config_mail(app):
     mail = MailTool(app)
 
 
-def register_blueprint(app):
+def config_blueprint(app):
     """
     add every blueprint that will be used
     :param app: app to be served
     """
-    app.register_blueprint(site_blueprint)
-    app.register_blueprint(auth_blueprint)
-    app.register_blueprint(admin_blueprint)
+    from app.site import site as site_blueprint  # renaming is totally useless
+    from app.auth import auth as auth_blueprint
+    from app.admin import admin_blueprint
+    from app.games import bp_list
+    from app.mail import mail as mail_blueprint
+    from app.games.group import group as group_blueprint
+    from app.games.session import session as session_blueprint
+
+    app.register_blueprint(site_blueprint, url_prefix="/")
+    app.register_blueprint(auth_blueprint, url_prefix="/auth")
+    app.register_blueprint(admin_blueprint, url_prefix="/admin")
+    app.register_blueprint(mail_blueprint, url_prefix="/mail")
+    app.register_blueprint(group_blueprint, url_prefix="/group")
+    app.register_blueprint(session_blueprint, url_prefix="/session")
+    for bp in bp_list:
+        app.register_blueprint(bp)
 
 
 def init_db(app):
@@ -97,6 +106,7 @@ def init_db(app):
     db.init_app(app)
     login_manager.init_app(app)
     login_manager.login_message = 'Vous devez être connecté pour avoir accès à cette page'
+    login_manager.login_message_category = "warning"
     login_manager.login_view = 'auth.login'
     # Initialize Migrate
     migrate = Migrate(app, db)
