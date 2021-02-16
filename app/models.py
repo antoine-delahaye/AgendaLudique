@@ -29,14 +29,12 @@ class User(UserMixin, db.Model):
         back_populates="user",
         uselist=False)
 
-
     @property
     def password(self):
         """
         Prevent password from being accessed
         """
         raise AttributeError('password is not a readable attribute.')
-
 
     @password.setter
     def password(self, password):
@@ -45,17 +43,14 @@ class User(UserMixin, db.Model):
         """
         self.password_hash = generate_password_hash(password)
 
-
     def verify_password(self, password):
         """
         Check if hashed password matches actual password
         """
         return check_password_hash(self.password_hash, password)
 
-
     def __repr__(self):
         return f'<User: {self.username}>'
-
 
     @classmethod
     def is_registered(cls, email):
@@ -65,14 +60,12 @@ class User(UserMixin, db.Model):
         req = User.query.filter(User.email == email).first()
         return True if req else False
 
-
     @classmethod
     def get_known_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
                 db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)]
         return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)
-
 
     @classmethod
     def get_noted_games(cls, user_id, only_id=False):
@@ -81,14 +74,12 @@ class User(UserMixin, db.Model):
                 db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
         return db.session.query(Game).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)
 
-
     @classmethod
     def get_owned_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
                 db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)]
         return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
-
 
     @classmethod
     def get_wished_games(cls, user_id, only_id=False):
@@ -97,7 +88,6 @@ class User(UserMixin, db.Model):
                 db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
         return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
 
-
     @classmethod
     def from_username(cls, username):
         """
@@ -105,52 +95,6 @@ class User(UserMixin, db.Model):
         """
         req = User.query.filter(User.username == username).first()
         return req if req else None
-
-    @classmethod
-    def search(cls, current_user, username_hint="", parameters=[]):
-        """
-        Search users with defined parameters
-        :param current_user The user who made the research
-        :param username_hint: A hint gave by the user to search similar usernames
-        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
-        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
-        :return: A UsersSearchResults object with an items list.
-        """
-        users_db = []
-        items = []
-
-        results = SearchResults()  # Will contain the search results
-
-
-        if "ONLY_BOOKMARKED" not in parameters:
-            users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
-
-        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
-        for bookmarked_user in bookmarked_users_db:
-            bookmarked_user_id = bookmarked_user.user2_id
-            results.bookmarked_ids.append(bookmarked_user_id)     # Adds the bookmarked user id to the results object
-            if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
-                users_db.append(User.query.get(bookmarked_user_id))
-
-        hidden_users_db = User.query.get(current_user.id).hidden_users.all()
-        for hidden_user in hidden_users_db:
-            hidden_user_id = hidden_user.user2_id
-            # Adds the hidden user id to the results object
-            results.hidden_ids.append(hidden_user_id)
-            if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
-                user_to_be_removed = User.query.get(hidden_user_id)
-                if user_to_be_removed in users_db:
-                    users_db.remove(user_to_be_removed)
-
-        for data in users_db:
-            items.append(
-                {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
-                 'last_name': data.last_name,
-                 'profile_picture': data.profile_picture})
-        results.items = items
-
-        return results
-
 
     @classmethod
     def search(cls, current_user, username_hint="", parameters=[]):
@@ -190,12 +134,55 @@ class User(UserMixin, db.Model):
         for data in users_db:
             items.append(
                 {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
-                'last_name': data.last_name,
-                'profile_picture': data.profile_picture})
+                 'last_name': data.last_name,
+                 'profile_picture': data.profile_picture})
         results.items = items
 
         return results
 
+    @classmethod
+    def search(cls, current_user, username_hint="", parameters=[]):
+        """
+        Search users with defined parameters
+        :param current_user The user who made the research
+        :param username_hint: A hint gave by the user to search similar usernames
+        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
+        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
+        :return: A UsersSearchResults object with an items list.
+        """
+        users_db = []
+        items = []
+
+        results = SearchResults()  # Will contain the search results
+
+        if "ONLY_BOOKMARKED" not in parameters:
+            users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
+
+        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
+        for bookmarked_user in bookmarked_users_db:
+            bookmarked_user_id = bookmarked_user.user2_id
+            results.bookmarked_ids.append(bookmarked_user_id)  # Adds the bookmarked user id to the results object
+            if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
+                users_db.append(User.query.get(bookmarked_user_id))
+
+        hidden_users_db = User.query.get(current_user.id).hidden_users.all()
+        for hidden_user in hidden_users_db:
+            hidden_user_id = hidden_user.user2_id
+            # Adds the hidden user id to the results object
+            results.hidden_ids.append(hidden_user_id)
+            if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
+                user_to_be_removed = User.query.get(hidden_user_id)
+                if user_to_be_removed in users_db:
+                    users_db.remove(user_to_be_removed)
+
+        for data in users_db:
+            items.append(
+                {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
+                 'last_name': data.last_name,
+                 'profile_picture': data.profile_picture})
+        results.items = items
+
+        return results
 
     @classmethod
     def search_with_pagination(cls, current_user, username_hint="", parameters=[], current_page=1, per_page=20):
@@ -211,13 +198,13 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, parameters)
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        page_elements = results.items[(
+                                                  current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
         pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.pagination = pagination
         results.items = None
 
         return results
-
 
     # Set up user_loader
     @login_manager.user_loader
@@ -485,7 +472,7 @@ class Game(UserMixin, db.Model):
     @classmethod
     def from_id(cls, game_id):
         """
-        Get a Game from its title. Return None if the game does not exist.
+        Get a Game from its id. Return None if the game does not exist.
         """
         req = Game.query.filter(Game.id == game_id).first()
         return req if req else None
@@ -494,7 +481,16 @@ class Game(UserMixin, db.Model):
     def max_id(cls):
         """ Return the maximum id of the Game class. Used for increment """
         return db.session.query(func.max(Game.id)).one()[0]
-    
+
+    @classmethod
+    def add_game(cls, game_id, game_data):
+        """ Add game to table """
+        db.session.add(
+            Game(id=game_id, title=game_data['title'], publication_year=game_data['publication_year'],
+                 min_players=game_data['min_players'], max_players=game_data['max_players'],
+                 min_playtime=game_data['min_playtime'], image=game_data['image']))
+        db.session.commit()
+
     @classmethod
     def search(cls, current_user_id, games_hint, typ, search_parameter):
         if search_parameter == "KNOWN":
@@ -511,19 +507,21 @@ class Game(UserMixin, db.Model):
         if typ=="year":
             games_db = search_results.filter(Game.publication_year==int(games_hint)).all()
         else:
-            games_db = search_results.filter(Game.title.like("%"+games_hint+"%")).all()
+            games_db = search_results.filter(Game.title.like("%" + games_hint + "%")).all()
 
         results = SearchResults()
         for data in games_db:
             results.items.append(
-                {'id': int(data.id), 'title': data.title, 'publication_year': data.publication_year, 'min_players': data.min_players, 'max_players': data.max_players, 'image': data.image})
+                {'id': int(data.id), 'title': data.title, 'publication_year': data.publication_year,
+                 'min_players': data.min_players, 'max_players': data.max_players, 'image': data.image})
         return results
-    
+
     @classmethod
     def search_with_pagination(cls, current_user_id, games_hint, typ, parameters_list, current_page=1, per_page=20):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        page_elements = results.items[(
+                                                  current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
         pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.pagination = pagination
         results.items = None
@@ -897,6 +895,7 @@ class SearchResults:
     """
     An utility class that stores objects search results.
     """
+
     def __init__(self):
         """
         Initializes a SearchResults object.
