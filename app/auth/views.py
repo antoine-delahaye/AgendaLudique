@@ -4,7 +4,7 @@ from flask import redirect, render_template, url_for, flash, request
 from flask_login import login_required, login_user, logout_user
 
 from app.auth import auth
-from app.auth.forms import LoginForm, RegistrationForm, ResetPasswordForm, ForgotPasswordForm
+from app.auth.models.forms import LoginForm, RegistrationForm, ResetPasswordForm, ForgotPasswordForm
 from app import db
 from app.models import User  # , Statistic
 import uuid
@@ -22,9 +22,9 @@ def login():
         if user is not None and user.verify_password(
                 form.password.data):
             login_user(user)
-            return redirect(url_for('site.catalog'))
+            return redirect(url_for('jeux.catalog'))
         else:
-            flash("warning", "Adresse électronique ou mot de passe invalide.")
+            flash("Adresse électronique ou mot de passe invalide.", "warning")
     return render_template('login.html', form=form, stylesheet='login')
 
 
@@ -34,10 +34,10 @@ def check_register_error(form):
     :param form: which contains user inputs
     """
     if not User.query.filter_by(email=form.email.data):
-        flash("danger", "Adresse mail déjà utilisée")
+        flash("Adresse mail déjà utilisée", "danger")
 
     if not User.query.filter_by(username=form.username.data) is not None:
-        flash("danger", "Nom d'utilisateur déjà utilisé")
+        flash("Nom d'utilisateur déjà utilisé", "danger")
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -60,8 +60,8 @@ def register():
                     )
         db.session.add(user)
         db.session.commit()
-        flash("Inscription réussite, vous pouvez maintenant vous connecter !")
-        mail.send_mail("Confirmation inscription", form.email.data, "mails/registerMail.html", user=user,
+        flash("Inscription réussite, vous pouvez maintenant vous connecter !", "success")
+        mail.send_mail("Confirmation inscription", form.email.data, "registerMail.html", user=user,
                        url=request.url_root)
         return redirect(url_for('auth.login'))
     else:
@@ -95,7 +95,7 @@ def generate_reset_mail(user):
     user.token_pwd = token
     db.session.commit()
 
-    mail.send_mail("Demande réinitialisation mot de passe", user.email, "mails/password_forgot_mail.html", user=user,
+    mail.send_mail("Demande réinitialisation mot de passe", user.email, "password_forgot_mail.html", user=user,
                    url=request.url_root[:-1] + url_for("auth.forgot_password") + "/" + token)
 
 
@@ -109,13 +109,13 @@ def forgot_password():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         generate_reset_mail(user)
-        flash("success", "Un mail vous a été envoyé pour réinitialiser votre mot de passe")
+        flash("Un mail vous a été envoyé pour réinitialiser votre mot de passe", "success")
         return redirect(url_for("auth.login"))
 
     return render_template("password_forgot.html", form=form, stylesheet="register")
 
 
-# TODO move it to models
+# TODO move it to utils
 
 def user_change_password(user, newpassword):
     """
@@ -137,9 +137,9 @@ def reset_password(token):
     if form.validate_on_submit():
         if user:
             user_change_password(user, form.password.data)
-            flash("success", "Votre mot de passe a bien été modifié")
+            flash("Votre mot de passe a bien été modifié", "success")
             return redirect(url_for("auth.login"))
     elif not user:
-        flash("danger", "Votre lien a expiré, veuillez en générer un nouveau")
+        flash("Votre lien a expiré, veuillez en générer un nouveau", "danger")
         return redirect(url_for("auth.forgot_password"))
     return render_template("password_reset.html", form=form, stylesheet="register")
