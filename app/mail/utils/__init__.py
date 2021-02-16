@@ -1,0 +1,1 @@
+from .mailtools import MailTool

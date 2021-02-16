@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+      xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <!--[if gte mso 9]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:AllowPNG/>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+    </xml>
+    <![endif]-->
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="format-detection" content="date=no"/>
+    <meta name="format-detection" content="address=no"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <meta name="x-apple-disable-message-reformatting"/>
+    <!--[if !mso]><!-->
+    <link href="https://fonts.googleapis.com/css?family=Muli:400,400i,700,700i" rel="stylesheet"/>
+    <!--<![endif]-->
+    <title>Email Template</title>
+    <!--[if gte mso 9]>
+    <style type="text/css" media="all">
+        sup {
+            font-size: 100% !important;
+        }
+    </style>
+    <![endif]-->
+
+
+    <link type="text/css" media="screen" href="{{ url_for('static',filename='css/mail/mail_base.css') }}">
+
+</head>
+<body class="body"
+      style="padding:0 !important; margin:0 !important; display:block !important; min-width:100% !important; width:100% !important; background:#001736; -webkit-text-size-adjust:none;">
+{% block header %}
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" bgcolor="#001736">
+    <tr>
+    <td align="center" valign="top">
+    <table width="650" border="0" cellspacing="0" cellpadding="0" class="mobile-shell">
+    <tr>
+    <td class="td container"
+        style="width:650px; min-width:650px; font-size:0pt; line-height:0pt; margin:0; font-weight:normal; padding:55px 0px;">
+    <!-- Header -->
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td class="p30-15" style="padding: 0px 30px 30px 30px;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <th class="column-top" width="145"
+                            style="font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal; vertical-align:top;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="img m-center" style="font-size:0pt; line-height:0pt; text-align:left;">
+                                        <img src="cid:favico"
+                                             width="60"
+                                             height="60" border="0" alt="logo du site Agenda Ludique"/></td>
+                                </tr>
+                            </table>
+                        </th>
+                        <th class="column-empty" width="1"
+                            style="font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal; vertical-align:top;"></th>
+                        <th class="column"
+                            style="font-size:0pt; line-height:0pt; padding:0; margin:0; font-weight:normal;">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="text-header"
+                                        style="color:#475c77; font-family:'Muli', Arial,sans-serif; font-size:12px; line-height:16px; text-align:right;">
+                                        <a href="#" target="_blank" class="link2"
+                                           style="color:#475c77; text-decoration:none;"><span class="link2"
+                                                                                              style="color:#475c77; text-decoration:none;">Ouvrir dans votre navigateur</span></a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </th>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <!-- END Header -->
+{% endblock header %}
+{% block main %}
+    {% block button %}
+        <!-- Button -->
+        <tr>
+            <td align="center">
+                <table class="center" border="0" cellspacing="0" cellpadding="0"
+                       style="text-align:center;">
+                    <tr>
+                        <td class="pink-button text-button"
+                            style="background:#ff6666; color:#c1cddc; font-family:'Muli', Arial,sans-serif; font-size:14px; line-height:18px; padding:12px 30px; text-align:center; border-radius:0px 22px 22px 22px; font-weight:bold;">
+                            <a href="{{ url }}" target="_blank" class="link-white"
+                               style="color:#ffffff; text-decoration:none;"><span
+                                    class="link-white"
+                                    style="color:#ffffff; text-decoration:none;">Aller sur le site</span></a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <!-- END Button -->
+    {% endblock button %}
+{% endblock main %}
+{% block footer %}
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td class="text-footer1 pb10"
+                style="color:#c1cddc; font-family:'Muli', Arial,sans-serif; font-size:16px; line-height:20px; text-align:center; padding-bottom:10px;">
+                Agenda Ludique
+            </td>
+        </tr>
+        <tr>
+            <td class="text-footer2"
+                style="color:#8297b3; font-family:'Muli', Arial,sans-serif; font-size:12px; line-height:26px; text-align:center;">
+                Réalisé par un groupe d'étudiants de l'IUT d'Orléans<br/>France
+            </td>
+        </tr>
+    </table>
+    </td>
+    </tr>
+    </table>
+{% endblock footer %}
+</body>
+</html>
