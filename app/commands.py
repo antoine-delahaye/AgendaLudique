@@ -1,5 +1,5 @@
+import json
 import time
-
 import click
 import yaml
 from flask import Blueprint
@@ -190,13 +190,24 @@ def fast_loaddb_games(filename):
 @admin_blueprint.cli.command('scraper')
 def scraper():
     print("!!! PENSEZ À VIDER LA BD POUR ÉVITER LES CONFLITS !!!")
-    from_page = input("Scrap de la page : ")
-    to_page = input("Jusqu'à la page : ")
 
-    rs = RewriteScraper()
+    choice = input("  1) Scraper\n  2) JSON\n")
+
+    data = None
+    if choice == "1":
+        from_page = input("Scrap de la page : ")
+        to_page = input("Jusqu'à la page : ")
+        rs = RewriteScraper()
+        data = rs.scrap(from_page, to_page)
+    elif choice == "2":
+        with open("data.json", 'r') as f:
+            data = json.load(f)
+        print("Chargement en mémoire terminé")
+    else:
+        exit(1)
+
+    print("Insertion dans la BDD en cours...")
     iDB = insertDB()
-
-    data = rs.scrap(from_page, to_page)
     iDB.insert(data)
     print("Done!")
 

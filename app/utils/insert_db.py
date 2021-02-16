@@ -7,7 +7,8 @@ from app.models import Game, Note, Genre, Classification
 class insertDB:
     def __init__(self):
         self.__engine = create_engine(
-            'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
+            # 'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
+            'mysql+pymysql://p0slx:pauflo@localhost/agenda',
             pool_size=5,  # default in SQLAlchemy
             max_overflow=10,  # default in SQLAlchemy
             pool_timeout=1,  # raise an error faster than default
@@ -23,9 +24,10 @@ class insertDB:
 
         for title, infos in data.items():
 
-            # Adding game
-            if len(title) > 128 or 'á' in infos["title"]:  # Fix très sale
+            if len(title) > 128:
                 continue
+
+            # Adding game
             session.add(Game(
                 id=i_game,
                 title=title,
@@ -40,7 +42,7 @@ class insertDB:
             session.add(Note(
                 note=round(infos["average_rating"]),
                 message=self.__default_message,
-                user_id=0,
+                user_id=1,
                 game_id=i_game)
             )
 
