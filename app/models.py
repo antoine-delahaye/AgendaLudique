@@ -499,13 +499,19 @@ class Game(UserMixin, db.Model):
     
     @classmethod
     def search(cls, current_user_id, games_hint, typ, parameters_list):
-        search_results = Game.query
-        for parameter in parameters_list:
-            # Show in the advanced search menu the enabled parameters
-            if parameter == "KNOWN":
-                search_results.join(User.get_known_games(current_user_id))
-            if parameter == "NOTED":
-                search_results.join(User.get_noted_games(current_user_id))
+        if parameters_list:
+            for parameter in parameters_list:
+                # Show in the advanced search menu the enabled parameters
+                if parameter == "KNOWN":
+                    search_results = User.get_known_games(current_user_id)
+                elif parameter == "NOTED":
+                    search_results = User.get_noted_games(current_user_id)
+                elif parameter == "WISHED":
+                    search_results = User.get_wished_games(current_user_id)
+                elif parameter == "OWNED":
+                    search_results = User.get_owned_games(current_user_id)
+        else:
+            search_results = Game.query
         
         if typ=="genre":
             # en fonction du genre (avec join)

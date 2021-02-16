@@ -18,15 +18,19 @@ def catalog():
     form = GamesSimpleSearchForm()
     page = request.args.get('page', 1, type=int)
     games_hint = request.args.get('games', '', type=str)
-    search_parameters = []
+    search_parameters = list()
     qs_search_parameters = request.args.get('searchParameters', None, type=str)
 
     if form.validate_on_submit():
         games_hint = form.games_hint.data
         if form.display_known_games.data:
             search_parameters.append("KNOWN")
-        if form.display_noted_games.data:
+        elif form.display_noted_games.data:
             search_parameters.append("NOTED")
+        elif form.display_wished_games.data:
+            search_parameters.append("WISHED")
+        elif form.display_owned_games.data:
+            search_parameters.append("OWNED")
 
     if qs_search_parameters:
         # Add the search parameters contained in the query string into the search_parameters list
@@ -36,19 +40,21 @@ def catalog():
             # Show in the advanced search menu the enabled parameters
             if parameter == "KNOWN":
                 form.display_known_games.data = True
-            if parameter == "NOTED":
+            elif parameter == "NOTED":
                 form.display_noted_games.data = True
-        games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"),
-                                            search_parameters, page, 20)
+            elif parameter == "WISHED":
+                form.display_wished_games.data = True
+            elif parameter == "OWNED":
+                form.display_owned_games.data = True
+
+        games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameters, page, 20)
     else:
-        games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"),
-                                            search_parameters, page, 20)
+        games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameters, page, 20)
 
     owned_games = User.get_owned_games(flask_login.current_user.id, True)
     wished_games = User.get_wished_games(flask_login.current_user.id, True)
 
-    return render_template('catalog.html', stylesheet='catalog', form=form, games=games, owned_games=owned_games,
-                           wished_games=wished_games)
+    return render_template('catalog.html', stylesheet='catalog', form=form, games=games, owned_games=owned_games, wished_games=wished_games)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])

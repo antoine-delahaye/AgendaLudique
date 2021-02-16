@@ -30,6 +30,8 @@ class GamesSimpleSearchForm(FlaskForm):
     })
     display_known_games = BooleanField('Afficher uniquement les jeux que vous connaissez')
     display_noted_games = BooleanField('Afficher uniquement les jeux notés')
+    display_wished_games = BooleanField('Afficher uniquement les jeux souhaités')
+    display_owned_games = BooleanField('Afficher uniquement les jeux possédés')
 
 
 class GamesSearchForm(FlaskForm):
