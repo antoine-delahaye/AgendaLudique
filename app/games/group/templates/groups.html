@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+{% block main %}
+<main class="container-fluid col-9 mb-5">
+    <h2 class="text-center mb-5">Groupes publics</h2>
+    <form class="my-5 mx-auto">
+        <div class="form-group">
+            <label class="d-none" for="search-input">Rechercher un groupe grâce à son nom</label>
+            <input class="form-control" id="search-input" type="text"
+                   placeholder="Rechercher un groupe grâce à son nom">
+        </div>
+    </form>
+    <div class="row">
+    {% for group in groups_data %}
+        {% include "group_card.html" %}
+    {% endfor %}
+    </div>
+</main>
+{% endblock %}
