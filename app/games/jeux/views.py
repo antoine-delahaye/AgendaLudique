@@ -18,12 +18,10 @@ def catalog():
     form = GamesSimpleSearchForm()
     page = request.args.get('page', 1, type=int)
     games_hint = request.args.get('games', '', type=str)
-    search_parameters = list()
-    qs_search_parameters = request.args.get('searchParameters', None, type=str)
 
     # Get search format and hint if there are one
     games_hint = form.games_hint.data if form.games_hint.data else ''
-    search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else None
+    search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else request.args.get('searchParameter', None, type=str)
 
     # We want to remove already owned and wished games from the page
     owned_games = User.get_owned_games(flask_login.current_user.id, True)
@@ -31,23 +29,19 @@ def catalog():
 
     if search_parameter == "KNOWN":
         title = "Jeux que vous connaissez"
-        form.display_known_games.data = True
     elif search_parameter == "NOTED":
         title = "Jeux que vous avez déjà notés"
-        form.display_noted_games.data = True
     elif search_parameter == "WISHED":
         title = "Jeux que vous souhaitez"
-        form.display_wished_games.data = True
         wished_games = Game.query.filter(False)
     elif search_parameter == "OWNED":
         title = "Jeux que vous possédez"
-        form.display_owned_games.data = True
         owned_games = Game.query.filter(False)
     else:
         title = "Tout les jeux"
     games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameter, page, 20)
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games)
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, search_parameter=search_parameter)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])

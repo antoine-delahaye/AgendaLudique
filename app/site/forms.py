@@ -28,11 +28,7 @@ class GamesSimpleSearchForm(FlaskForm):
         'placeholder': 'Rechercher des jeux grâce à leurs noms',
         'aria-describedby': 'search-buttons'
     })
-    display_known_games = BooleanField('Afficher uniquement les jeux que vous connaissez')
-    display_noted_games = BooleanField('Afficher uniquement les jeux notés')
-    display_wished_games = BooleanField('Afficher uniquement les jeux souhaités')
-    display_owned_games = BooleanField('Afficher uniquement les jeux possédés')
-    display_search_parameter = RadioField('Catégories de la recherche : ', choices=
+    display_search_parameter = RadioField('Catégorie de la recherche : ', choices=
         [('KNOWN',"Afficher uniquement les jeux que vous connaissez"),
             ('NOTED',"Afficher uniquement les jeux notés"),
             ('WISHED',"Afficher uniquement les jeux souhaités"),
