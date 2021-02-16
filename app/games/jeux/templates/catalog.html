@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% block main %}
     <main class="container-fluid col-9 mt-auto mb-auto">
-        <h2 class="text-center mb-5">Catalogue</h2>
+        <h2 class="text-center mb-5">{{ title }}</h2>
         <form class="my-5 mx-auto" action="{{ url_for('jeux.catalog') }}" method="POST">
             {{ form.hidden_tag() }}
             <div class="input-group">
@@ -28,6 +28,8 @@
                     <h5 id="advanced-search-title" class="card-title">Rechercher des jeux grâce à leurs noms</h5>
                     <p>{{ form.display_known_games }} {{ form.display_known_games.label }}</p>
                     <p>{{ form.display_noted_games }} {{ form.display_noted_games.label }}</p>
+                    <p>{{ form.display_wished_games }} {{ form.display_wished_games.label }}</p>
+                    <p>{{ form.display_owned_games }} {{ form.display_owned_games.label }}</p>
                 </div>
             </div>
         </form>

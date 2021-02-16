@@ -25,16 +25,27 @@ def catalog():
         games_hint = form.games_hint.data
         if form.display_known_games.data:
             search_parameters.append("KNOWN")
+            title = "Jeux que vous connaissez"
         elif form.display_noted_games.data:
             search_parameters.append("NOTED")
+            title = "Jeux que vous avez déjà notés"
         elif form.display_wished_games.data:
             search_parameters.append("WISHED")
+            title = "Jeux que vous souhaitez"
         elif form.display_owned_games.data:
             search_parameters.append("OWNED")
+            title = "Jeux que vous possédez"
+    if not title:
+        title = "Tout les jeux"
+
+    # We want to remove already owned and wished games from the page
+    owned_games = User.get_owned_games(flask_login.current_user.id, True)
+    wished_games = User.get_wished_games(flask_login.current_user.id, True)
 
     if qs_search_parameters:
         # Add the search parameters contained in the query string into the search_parameters list
         parameters_list = qs_search_parameters.split(',')
+        print(qs_search_parameters)                
         for parameter in parameters_list:
             search_parameters.append(parameter)
             # Show in the advanced search menu the enabled parameters
@@ -44,17 +55,18 @@ def catalog():
                 form.display_noted_games.data = True
             elif parameter == "WISHED":
                 form.display_wished_games.data = True
+                wished_games = Game.query.filter(False)
             elif parameter == "OWNED":
                 form.display_owned_games.data = True
+                owned_games = Game.query.filter(False)
 
         games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameters, page, 20)
     else:
         games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameters, page, 20)
 
-    owned_games = User.get_owned_games(flask_login.current_user.id, True)
-    wished_games = User.get_wished_games(flask_login.current_user.id, True)
+    
 
-    return render_template('catalog.html', stylesheet='catalog', form=form, games=games, owned_games=owned_games, wished_games=wished_games)
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
@@ -117,18 +129,6 @@ def game(game_id):
     return render_template('game.html', stylesheet=None, game=game, owned_games=owned_games)
 
 
-@jeux.route('/wishes')
-@login_required
-def wishes():
-    """
-    Render the library template on the /wish route
-    """
-    page = request.args.get('page', 1, type=int)
-    wished_games = User.get_wished_games(flask_login.current_user.id).paginate(page=page, per_page=20)
-    owned_games = User.get_owned_games(flask_login.current_user.id, True)
-    return render_template('wishes.html', stylesheet='library', wished_games=wished_games, owned_games=owned_games)
-
-
 @jeux.route('/add-wishes', methods=['GET', 'POST'])
 @jeux.route('/add-wishes/<game_id>', methods=['GET', 'POST'])
 @login_required
@@ -145,18 +145,6 @@ def remove_game_wish(game_id):
     db.session.delete(Wish.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
     db.session.commit()
     return redirect(request.referrer)
-
-
-@jeux.route('/library')
-@login_required
-def library():
-    """
-    Render the library template on the /library route
-    """
-    page = request.args.get('page', 1, type=int)
-    owned_games = User.get_owned_games(flask_login.current_user.id).paginate(page=page, per_page=20)
-    wished_games = User.get_wished_games(flask_login.current_user.id, True)
-    return render_template('library.html', stylesheet='library', owned_games=owned_games, wished_games=wished_games)
 
 
 @jeux.route('/add-collection', methods=['GET', 'POST'])

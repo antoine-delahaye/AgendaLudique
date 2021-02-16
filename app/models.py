@@ -70,8 +70,7 @@ class User(UserMixin, db.Model):
     def get_known_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                    db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id,
-                                                                    Game.id == KnowRules.game_id)]
+                db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)]
         return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)
 
 
@@ -79,7 +78,7 @@ class User(UserMixin, db.Model):
     def get_notes_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                    db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
+                db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
         return db.session.query(Game).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)
 
 
@@ -87,8 +86,7 @@ class User(UserMixin, db.Model):
     def get_owned_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                    db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id,
-                                                                Game.id == Collect.game_id)]
+                db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)]
         return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
 
 
@@ -96,7 +94,7 @@ class User(UserMixin, db.Model):
     def get_wished_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                    db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
+                db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
         return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
 
 
@@ -513,13 +511,7 @@ class Game(UserMixin, db.Model):
         else:
             search_results = Game.query
         
-        if typ=="genre":
-            # en fonction du genre (avec join)
-            games_db = None
-        elif typ=="editor":
-            # en fonction de l'éditeur (avec join)
-            games_db = None
-        elif typ=="year":
+        if typ=="year":
             games_db = search_results.filter(Game.publication_year==int(games_hint)).all()
         else:
             games_db = search_results.filter(Game.title.like("%"+games_hint+"%")).all()
