@@ -8,6 +8,14 @@
                 <i class="fas fa-unlock"></i>
             {% endif %}
         </h2>
+        <a type="button" class="btn pt-2
+          {% if is_member %}
+            btn-danger"
+            href="{{ url_for('group.quit_group', group_id=group.id) }}">Quitter
+          {% else %}
+            "href="{{ url_for('group.join_group', group_id=group.id) }}">Rejoindre
+          {% endif %}
+        </a>
         <h4>Responsable : {{ group.manager.username }}</h4>
         <h4>Membres du groupe : </h4>
         {% for member in group.participations %}
