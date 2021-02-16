@@ -7,8 +7,7 @@ from app.models import Game, Note, Genre, Classification
 class insertDB:
     def __init__(self):
         self.__engine = create_engine(
-            # 'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
-            'mysql+pymysql://p0slx:pauflo@localhost/agenda',
+            'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
             pool_size=5,  # default in SQLAlchemy
             max_overflow=10,  # default in SQLAlchemy
             pool_timeout=1,  # raise an error faster than default
