@@ -52,10 +52,24 @@
                                                 <i class="far fa-heart"></i>
                                             </a>
                                         {% endif %}
-                                        <a class="ml-2"
-                                           href="{{ url_for("jeux.add_game_collection", game_id=game.id) }}">
-                                            <i class="far fa-plus-square"></i>
+                                        <a class="nav-link dropdown-toggle text-white ml-2" href="#" id="gameDropdown"
+                                           role="button"
+                                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                           <i class="fas fa-ellipsis-v "></i>
                                         </a>
+                                        <div class="dropdown-menu" aria-labelledby="gameDropdown">
+                                            <a class="dropdown-item" href="{{ url_for("jeux.add_game_collection", game_id=game.id) }}">Ajouter à ma collection</a>
+                                            {% if game.id not in know_games %}
+                                            <a class="dropdown-item" href="{{ url_for("jeux.add_game_known", game_id=game.id) }}">Marquer comme connu</a>
+                                            {% else %}
+                                            <a class="dropdown-item" href="#">Marquer comme non connu</a>
+                                            {% endif %}
+                                            {% if game.id not in know_games %}
+                                            <a class="dropdown-item" href="{{ url_for("jeux.add_game_note", game_id=game.id) }}">Noter le jeu</a>
+                                            {% else %}
+                                            <a class="dropdown-item" href="#">Modifier la note du jeu</a>
+                                            {% endif %}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
