@@ -43,14 +43,121 @@
                 {% endif %}
             </div>
         </div>
-        <div id="favorites-games" class="profile-category">
-            <h4>Jeux favoris</h4>
+        <div id="owned-games" class="profile-category">
+            <div class="category-headline">
+                <h4>Collection</h4>
+            </div>
+            <div id="owned-games-controls" class="carousel slide">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" data-interval="false" data-wrap="false">
+                        <div class="row">
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 1
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 2
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 3
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" data-interval="false" data-wrap="false">
+                        <div class="row">
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 4
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 5
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 6
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-navigation">
+            <a class="btn" href="#owned-games-controls" role="button" data-slide="prev">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <a class="btn" href="#owned-games-controls" role="button" data-slide="next">
+                <i class="fa fa-arrow-right"></i>
+            </a>
+        </div>
         </div>
         <div id="opinions" class="profile-category">
-            <h4>Notes et avis récents</h4>
+            <div class="category-headline">
+                <h4>Notes et avis récents</h4>
+            </div>
+            <div id="opinions-controls" class="carousel slide">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" data-interval="false" data-wrap="false">
+                        <div class="row">
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 1
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 2
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 3
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item" data-interval="false" data-wrap="false">
+                        <div class="row">
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 4
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 5
+                                </div>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <div class="card">
+                                    Hello World! 6
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-navigation">
+                <a class="btn" href="#opinions-controls" role="button" data-slide="prev">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <a class="btn" href="#opinions-controls" role="button" data-slide="next">
+                    <i class="fa fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
         <div id="favorites-players" class="profile-category">
-            <h4>Joueurs favoris</h4>
+            <div class="category-headline">
+                <h4>Joueurs favoris</h4>
+            </div>
         </div>
     </main>
 {% endblock %}
