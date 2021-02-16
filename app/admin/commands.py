@@ -1,19 +1,15 @@
-import json
 import time
 import click
 import yaml
-from flask import Blueprint
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-
 from app import db
+from app.utils.scraper import RewriteScraper
+from app.utils.insert_db import insertDB
+
 from app.models import User, Game, BookmarkUser, HideUser, Note, Wish, KnowRules, Collect, Prefer, Group, Participate, \
     Genre, Classification, Session, TimeSlot, Play, Use
-from app.utils.insert_db import insertDB
-from app.utils.scraper import RewriteScraper
-
-# bp qui permet l'administration de l'application
-admin_blueprint = Blueprint('admin', __name__)
+from . import admin_blueprint
 
 engine = create_engine(
     'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
@@ -31,19 +27,6 @@ def reset_db():
         print(f'Clear table {table}')
         db.session.execute(table.delete())
     db.session.commit()
-
-
-@admin_blueprint.cli.command('sendMail')
-@click.argument('email')
-def send_mail(email):
-    """
-   envoie un mail de test à l'adresse mentionnée
-    """
-    from . import mail
-    from flask import current_app
-    with current_app.test_request_context("localhost.com"):
-        mail.send_mail("Testing mail sending", email, 'mails/testing.html', url="google.com")
-        print("mail successfully sent to " + email)
 
 
 @admin_blueprint.cli.command('loaddb_games')
@@ -190,24 +173,13 @@ def fast_loaddb_games(filename):
 @admin_blueprint.cli.command('scraper')
 def scraper():
     print("!!! PENSEZ À VIDER LA BD POUR ÉVITER LES CONFLITS !!!")
+    from_page = input("Scrap de la page : ")
+    to_page = input("Jusqu'à la page : ")
 
-    choice = input("  1) Scraper\n  2) JSON\n")
-
-    data = None
-    if choice == "1":
-        from_page = input("Scrap de la page : ")
-        to_page = input("Jusqu'à la page : ")
-        rs = RewriteScraper()
-        data = rs.scrap(from_page, to_page)
-    elif choice == "2":
-        with open("data.json", 'r') as f:
-            data = json.load(f)
-        print("Chargement en mémoire terminé")
-    else:
-        exit(1)
-
-    print("Insertion dans la BDD en cours...")
+    rs = RewriteScraper()
     iDB = insertDB()
+
+    data = rs.scrap(from_page, to_page)
     iDB.insert(data)
     print("Done!")
 

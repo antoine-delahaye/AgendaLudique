@@ -23,9 +23,10 @@ class insertDB:
 
         for title, infos in data.items():
 
-            # Adding game
-            if len(title) > 128 or 'á' in infos["title"]:  # Fix très sale
+            if len(title) > 128:
                 continue
+
+            # Adding game
             session.add(Game(
                 id=i_game,
                 title=title,
@@ -40,7 +41,7 @@ class insertDB:
             session.add(Note(
                 note=round(infos["average_rating"]),
                 message=self.__default_message,
-                user_id=0,
+                user_id=1,
                 game_id=i_game)
             )
 

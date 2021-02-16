@@ -2,7 +2,7 @@ import json
 import threading
 import time
 from concurrent.futures.thread import ThreadPoolExecutor
-
+import unidecode
 import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
@@ -80,11 +80,14 @@ class RewriteScraper:
                 json_text = json.loads(temp2)['item']  # Transform dirty string into proper JSON format
 
         covers = self.__get_cover(json_text["imageid"])
-        if covers is None:
+
+        if covers is None or unidecode.unidecode(json_text["name"].upper()) in self.__game_name_set:
             return None
 
+        self.__game_name_set.add(unidecode.unidecode(json_text["name"].upper()))
+
         return {
-            "title": json_text["name"],
+            "title": unidecode.unidecode(json_text["name"]),
             "id": int(json_text["objectid"]),
             "publication_year": int(json_text["yearpublished"]),
             "min_players": int(json_text["minplayers"]),
@@ -103,9 +106,11 @@ class RewriteScraper:
             game_info = self.__get_game_info(href)
 
             if game_info is not None:
-                game_title = game_info["title"].upper()
-                if game_title not in self.__game_name_set:
-                    self.__game_name_set.add(game_title)
+                # Remove the space before and after the string to prevent duplicate key
+                game_title = "".join(game_info["title"].rstrip().lstrip())
+                if game_title.lower() not in self.__game_name_set:
+                    game_info.pop("title")
+                    self.__game_name_set.add(game_title.lower())
                     self.__game_info_dict[game_title] = game_info
                     self.__game_info_dict[game_title]["rank"] = self.__game_number
                     self.__game_number += 1
@@ -129,15 +134,15 @@ class RewriteScraper:
         print("Récupération des informations des jeux... Ca peut prendre longtemps")
         t = threading.Thread(target=self.__progression_bar, args=(int(to_page) * 100,))
         t.start()
-        with ThreadPoolExecutor(max_workers=50) as executor:
+        with ThreadPoolExecutor(max_workers=60) as executor:
             for page in self.__list_pages:
                 executor.submit(self.__get_games_from_page, page)
 
         # To close the thread
-        self.__game_number = to_page * 100
+        self.__game_number = int(to_page) * 100
         t.join()
 
-        print("Le scraper à fini son travail, on va push sur la BDD maintenant")
+        print("\nLe scraper à fini son travail, on va push sur la BDD maintenant")
         return self.__game_info_dict
 
     def __progression_bar(self, nb):

@@ -6,11 +6,6 @@
         <h2 class="text-center mb-3">Inscription</h2>
         {% block message %}
             {{ super() }}
-            {% for field in form.errors %}
-                {% for error in form.errors[field] %}
-                    <p class="text-center alert-danger alert-dismissable rounded-lg py-1 w-50">{{ error }}</p>
-                {% endfor %}
-            {% endfor %}
         {% endblock %}
         <form class="form" action="" method="POST">
             {{ form.hidden_tag() }}
