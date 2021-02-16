@@ -49,8 +49,8 @@
                                 jeux connus</a>
                             <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameters=NOTED">Mes
                                 jeux notés</a>
-                            <a class="dropdown-item" href="{{ url_for('jeux.wishes') }}">Liste de souhaits</a>
-                            <a class="dropdown-item" href="{{ url_for('jeux.library') }}">Ma collection</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameters=WISHED">Liste de souhaits</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameters=OWNED">Ma collection</a>
                             <a class="dropdown-item" href="{{ url_for('jeux.add_games') }}">Ajouter des jeux</a>
                         </div>
                     </li>
