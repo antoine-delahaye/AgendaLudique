@@ -2,7 +2,7 @@
 {% block main %}
     <main class="container-fluid col-9 mt-auto mb-auto">
         <h2 class="text-center mb-5">Catalogue</h2>
-        <form class="my-5 mx-auto" action="{{ url_for('site.catalog') }}" method="POST">
+        <form class="my-5 mx-auto" action="{{ url_for('jeux.catalog') }}" method="POST">
             {{ form.hidden_tag() }}
             <div class="input-group">
                 {{ form.games_hint }}
@@ -32,55 +32,57 @@
             </div>
         </form>
         {% if games.pagination.items %}
-        <div class="row">
-            {% for game in games.pagination.items %}
-                {% if game.id not in owned_games %}
-                    <div class="col-xl-3 col-lg-4 col-md-6">
-                        <div class="card mb-4 shadow-sm">
-                            <img class="card-img mx-auto"
-                                 src="{{ game.image }}"
-                                 alt="Illustration">
-                            <div class="card-body">
-                                <a href="{{ url_for("site.game", game_id=game.id) }}">
-                                    <p class="text-truncate font-weight-bold">{{ game.title }}
-                                        ({{ game.publication_year }})</p>
-                                </a>
-                                <div class="d-flex flex-row align-items-center">
-                                    <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
-                                    {% if game.id in wished_games %}
-                                        <a class="ml-auto"
-                                           href="{{ url_for("site.remove_game_wish", game_id=game.id) }}">
-                                            <i class="fas fa-heart-broken"></i>
-                                        </a>
-                                    {% else %}
-                                        <a class="ml-auto"
-                                           href="{{ url_for("site.add_game_wish", game_id=game.id) }}">
-                                            <i class="far fa-heart"></i>
-                                        </a>
-                                    {% endif %}
-                                    <a class="ml-2"
-                                       href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
-                                        <i class="far fa-plus-square"></i>
+            <div class="row">
+                {% for game in games.pagination.items %}
+                    {% if game.id not in owned_games %}
+                        <div class="col-xl-3 col-lg-4 col-md-6">
+                            <div class="card mb-4 shadow-sm">
+                                <img class="card-img mx-auto"
+                                     src="{{ game.image }}"
+                                     alt="Illustration">
+                                <div class="card-body">
+                                    <a href="{{ url_for("jeux.game", game_id=game.id) }}">
+                                        <p class="text-truncate font-weight-bold">{{ game.title }}
+                                            ({{ game.publication_year }})</p>
                                     </a>
+                                    <div class="d-flex flex-row align-items-center">
+                                        <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
+                                        {% if game.id in wished_games %}
+                                            <a class="ml-auto"
+                                               href="{{ url_for("jeux.remove_game_wish", game_id=game.id) }}">
+                                                <i class="fas fa-heart-broken"></i>
+                                            </a>
+                                        {% else %}
+                                            <a class="ml-auto"
+                                               href="{{ url_for("jeux.add_game_wish", game_id=game.id) }}">
+                                                <i class="far fa-heart"></i>
+                                            </a>
+                                        {% endif %}
+                                        <a class="ml-2"
+                                           href="{{ url_for("jeux.add_game_collection", game_id=game.id) }}">
+                                            <i class="far fa-plus-square"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         {% endif %}
         <nav>
             <ul class="pagination mt-4 mb-0 mx-auto">
                 {% if games.pagination.page == 1 %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="{{ url_for("site.catalog", page=games.pagination.prev_num, searchParameters=search_parameters) }}">
+                        <a class="page-link"
+                           href="{{ url_for("jeux.catalog", page=games.pagination.prev_num, searchParameters=search_parameters) }}">
                             &laquo;
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for("site.catalog", page=games.pagination.prev_num, searchParameters=search_parameters) }}">
+                        <a class="page-link"
+                           href="{{ url_for("jeux.catalog", page=games.pagination.prev_num, searchParameters=search_parameters) }}">
                             &laquo;
                         </a>
                     </li>
@@ -89,20 +91,23 @@
                     {% if page_num %}
                         {% if games.pagination.page == page_num %}
                             <li class="page-item active">
-                                <a class="page-link" href="{{ url_for("site.catalog", page=page_num, searchParameters=search_parameters) }}">
+                                <a class="page-link"
+                                   href="{{ url_for("jeux.catalog", page=page_num, searchParameters=search_parameters) }}">
                                     {{ page_num }}
                                 </a>
                             </li>
                         {% else %}
                             <li class="page-item">
-                                <a class="page-link" href="{{ url_for("site.catalog", page=page_num, searchParameters=search_parameters) }}">
+                                <a class="page-link"
+                                   href="{{ url_for("jeux.catalog", page=page_num, searchParameters=search_parameters) }}">
                                     {{ page_num }}
                                 </a>
                             </li>
                         {% endif %}
                     {% else %}
                         <li class="page-item disabled">
-                            <a class="page-link" href="{{ url_for("site.catalog", page=games.prev_num, searchParameters=search_parameters) }}">
+                            <a class="page-link"
+                               href="{{ url_for("jeux.catalog", page=games.prev_num, searchParameters=search_parameters) }}">
                                 ...
                             </a>
                         </li>
@@ -110,13 +115,15 @@
                 {% endfor %}
                 {% if games.pagination.page == games.pagination.pages %}
                     <li class="page-item disabled">
-                        <a class="page-link" href="{{ url_for("site.catalog", page=games.pagination.next_num, searchParameters=search_parameters) }}">
+                        <a class="page-link"
+                           href="{{ url_for("jeux.catalog", page=games.pagination.next_num, searchParameters=search_parameters) }}">
                             &raquo;
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item">
-                        <a class="page-link" href="{{ url_for("site.catalog", page=games.pagination.next_num, searchParameters=search_parameters) }}">
+                        <a class="page-link"
+                           href="{{ url_for("jeux.catalog", page=games.pagination.next_num, searchParameters=search_parameters) }}">
                             &raquo;
                         </a>
                     </li>
