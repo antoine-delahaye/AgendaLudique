@@ -55,3 +55,9 @@
 .carousel-control-next {
     color: black;
 }
+
+.carousel-navigation {
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+}
