@@ -6,12 +6,7 @@
             {{ form.hidden_tag() }}
             <div class="input-group">
                 {{ form.games_hint }}
-                <select name="type">
-                    <option value="title">Nom</option>
-                    <option value="genre">Genre</option>
-                    <option value="editor">Editeur</option>
-                    <option value="year">Année</option>
-                </select>
+                {{ form.display_search_type }}
                 <div class="input-group-append" id="search-buttons">
                     <button class="btn show-advanced-search" type="button" data-toggle="collapse"
                             data-target="#advanced-search" aria-expanded="false" aria-controls="advanced-search"

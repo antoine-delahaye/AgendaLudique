@@ -27,6 +27,11 @@ def catalog():
     owned_games = User.get_owned_games(flask_login.current_user.id, True)
     wished_games = User.get_wished_games(flask_login.current_user.id, True)
 
+    # If no hint was typed change search type back to title search (avoid crash)
+    if not games_hint:
+        form.display_search_type.data = 'title'
+
+    # Change title of the page and filters in function of search_parameter
     if search_parameter == "KNOWN":
         title = "Jeux que vous connaissez"
     elif search_parameter == "NOTED":
@@ -39,7 +44,7 @@ def catalog():
         owned_games = Game.query.filter(False)
     else:
         title = "Tout les jeux"
-    games = Game.search_with_pagination(flask_login.current_user.id, games_hint, request.args.get("type"), search_parameter, page, 20)
+    games = Game.search_with_pagination(flask_login.current_user.id, games_hint, form.display_search_type.data, search_parameter, page, 20)
 
     return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, search_parameter=search_parameter)
 
