@@ -59,12 +59,12 @@
                                         </a>
                                         <div class="dropdown-menu" aria-labelledby="gameDropdown">
                                             <a class="dropdown-item" href="{{ url_for("jeux.add_game_collection", game_id=game.id) }}">Ajouter à ma collection</a>
-                                            {% if game.id not in know_games %}
+                                            {% if game.id not in known_games %}
                                             <a class="dropdown-item" href="{{ url_for("jeux.add_game_known", game_id=game.id) }}">Marquer comme connu</a>
                                             {% else %}
                                             <a class="dropdown-item" href="#">Marquer comme non connu</a>
                                             {% endif %}
-                                            {% if game.id not in know_games %}
+                                            {% if game.id not in noted_games %}
                                             <a class="dropdown-item" href="{{ url_for("jeux.add_game_note", game_id=game.id) }}">Noter le jeu</a>
                                             {% else %}
                                             <a class="dropdown-item" href="#">Modifier la note du jeu</a>
