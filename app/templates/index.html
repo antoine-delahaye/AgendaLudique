@@ -44,14 +44,14 @@
                             Jeux
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="{{ url_for('site.catalog') }}">Tous les jeux</a>
-                            <a class="dropdown-item" href="{{ url_for('site.catalog') }}?searchParameters=KNOWN">Mes
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}">Tous les jeux</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameters=KNOWN">Mes
                                 jeux connus</a>
-                            <a class="dropdown-item" href="{{ url_for('site.catalog') }}?searchParameters=NOTED">Mes
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameters=NOTED">Mes
                                 jeux notés</a>
-                            <a class="dropdown-item" href="{{ url_for('site.wishes') }}">Liste de souhaits</a>
-                            <a class="dropdown-item" href="{{ url_for('site.library') }}">Ma collection</a>
-                            <a class="dropdown-item" href="{{ url_for('site.add_games') }}">Ajouter des jeux</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.wishes') }}">Liste de souhaits</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.library') }}">Ma collection</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.add_games') }}">Ajouter des jeux</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown mr-2">
@@ -73,9 +73,9 @@
                             Groupes
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="{{ url_for('site.groups') }}">Tous les groupes</a>
-                            <a class="dropdown-item" href="{{ url_for('site.groups_public') }}">Groupes publiques</a>
-                            <a class="dropdown-item" href="{{ url_for('site.my_groups') }}">Mes groupes</a>
+                            <a class="dropdown-item" href="{{ url_for('group.groups') }}">Tous les groupes</a>
+                            <a class="dropdown-item" href="{{ url_for('group.groups_public') }}">Groupes publiques</a>
+                            <a class="dropdown-item" href="{{ url_for('group.my_groups') }}">Mes groupes</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown mr-2">
@@ -85,10 +85,10 @@
                             Mes sessions
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <a class="dropdown-item" href="{{ url_for('site.sessions') }}">Toutes mes sessions</a>
-                            <a class="dropdown-item" href="{{ url_for('site.sessions') }}">Sessions à venir</a>
-                            <a class="dropdown-item" href="{{ url_for('site.sessions') }}">Sessions terminées</a>
-                            <a class="dropdown-item" href="{{ url_for('site.sessions') }}">Sessions en cours</a>
+                            <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Toutes mes sessions</a>
+                            <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Sessions à venir</a>
+                            <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Sessions terminées</a>
+                            <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Sessions en cours</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -113,7 +113,7 @@
                             <a class="dropdown-item" href="{{ url_for('site.account') }}">Gérer mon profil</a>
                             <a class="dropdown-item" href="{{ url_for('site.parameters') }}">Paramètres</a>
                             <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Se déconnecter</a>
-                        token_pwd                </ul>
+                </ul>
             </div>
         {% endif %}
     </nav>
@@ -125,7 +125,7 @@
                 {% if message is string %}
                     <p class="text-center alert-success alert-dismissible rounded-lg py-1 w-50">{{ message }} </p>
                 {% else %}
-                    <p class="text-centoken_pwdter alert-{{ message[1] }} alert-dismissible rounded-lg py-1 w-50">{{ message[0] }}</p>
+                    <p class="text-centoken_pwdter alert-{{ message[0] }} alert-dismissible rounded-lg py-1 w-50">{{ message[1] }}</p>
                 {% endif %}
             {% endfor %}
         {% endwith %}
