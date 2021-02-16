@@ -21,18 +21,18 @@
                            href="#list-max-players" role="tab" aria-controls="max-players">
                             Nombre maximum de joueurs
                         </a>
-                        {% if game.id not in owned_games %}
-                            <a class="list-group-item list-group-item-action"
-                               href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
-                                Ajouter à la collection
-                            </a>
-                        {% else %}
-                            <a class="list-group-item list-group-item-action"
-                               href="{{ url_for("site.remove_game_collection", game_id=game.id) }}">
-                                Retirer de la collection
-                            </a>
-                        {% endif %}
                     </div>
+                    {% if game.id not in owned_games %}
+                        <button class="btn mt-3 col-12 text-white"
+                                href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
+                            Ajouter à la collection
+                        </button>
+                    {% else %}
+                        <button class="btn mt-3 col-12 text-white"
+                                href="{{ url_for("site.remove_game_collection", game_id=game.id) }}">
+                            Retirer de la collection
+                        </button>
+                    {% endif %}
                 </div>
                 <div class="col-4">
                     <div class="tab-content" id="nav-tabContent">

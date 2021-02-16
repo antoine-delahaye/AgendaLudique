@@ -63,28 +63,30 @@ class User(UserMixin, db.Model):
     def get_known_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)]
+                    db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id,
+                                                                     Game.id == KnowRules.game_id)]
         return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)
-    
+
     @classmethod
     def get_notes_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
+                    db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
         return db.session.query(Game).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)
 
     @classmethod
     def get_owned_games(cls, user_id, only_id=False):
         if only_id:
-            return [data[0] for data in 
-                db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)]
+            return [data[0] for data in
+                    db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id,
+                                                                   Game.id == Collect.game_id)]
         return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
 
     @classmethod
     def get_wished_games(cls, user_id, only_id=False):
         if only_id:
-            return [data[0] for data in 
-                db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
+            return [data[0] for data in
+                    db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
         return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
 
     @classmethod
@@ -428,7 +430,7 @@ class Game(UserMixin, db.Model):
     @classmethod
     def from_id(cls, game_id):
         """
-        Get a Game from its title. Return None if the game does not exist.
+        Get a Game from its id. Return None if the game does not exist.
         """
         req = Game.query.filter(Game.id == game_id).first()
         return req if req else None
@@ -437,6 +439,15 @@ class Game(UserMixin, db.Model):
     def max_id(cls):
         """ Return the maximum id of the Game class. Used for increment """
         return db.session.query(func.max(Game.id)).one()[0]
+
+    @classmethod
+    def add_game(cls, game_id, game_data):
+        """ Add game to table """
+        db.session.add(
+            Game(id=game_id, title=game_data['title'], publication_year=game_data['publication_year'],
+                 min_players=game_data['min_players'], max_players=game_data['max_players'],
+                 min_playtime=game_data['min_playtime'], image=game_data['image']))
+        db.session.commit()
 
 
 class Genre(db.Model):
