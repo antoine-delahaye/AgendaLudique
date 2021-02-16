@@ -24,19 +24,19 @@
                     </div>
                     {% if game.id not in owned_games %}
                         <button class="btn mt-3 col-12 text-white"
-                                href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
+                                href="{{ url_for("jeux.add_game_collection", game_id=game.id) }}">
                             Ajouter à la collection
                         </button>
                     {% else %}
                         <button class="btn mt-3 col-12 text-white"
-                                href="{{ url_for("site.remove_game_collection", game_id=game.id) }}">
+                                href="{{ url_for("jeux.remove_game_collection", game_id=game.id) }}">
                             Retirer de la collection
                         </button>
                     {% endif %}
                 </div>
                 <div class="col-4">
                     <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade" id="list-min-playtime" role="tabpanel"
+                        <div class="tab-pane fade active" id="list-min-playtime" role="tabpanel"
                              aria-labelledby="list-min-playtime-list">
                             {{ game.min_playtime }} minutes
                         </div>
@@ -44,7 +44,7 @@
                              aria-labelledby="list-year-list">
                             Sortie en {{ game.publication_year }}
                         </div>
-                        <div class="tab-pane fade show active" id="list-min-players" role="tabpanel"
+                        <div class="tab-pane fade show" id="list-min-players" role="tabpanel"
                              aria-labelledby="list-min-players-list">
                             {{ game.min_players }} joueurs
                         </div>
