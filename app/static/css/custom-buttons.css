@@ -1,0 +1,35 @@
+.thin-button {
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 1.7rem;
+}
+
+.hide-user {
+    background-color: transparent;
+    color: #dc3545;
+}
+
+.hidden-user {
+    background-color: #dc3545;
+}
+
+.hidden-user:hover {
+    background-color: #28a745;
+}
+
+.bookmark-button:hover {
+    background-color: #ffda0a;
+}
+
+.bookmarked-user {
+    background-color: #ffda0a;
+}
+
+.bookmarked-user:hover {
+    background-color: #dc3545;
+}
+
+.reduced-width {
+    padding-left: 3px;
+    padding-right: 3px;
+}
