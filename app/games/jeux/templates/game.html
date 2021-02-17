@@ -4,55 +4,36 @@
         <h2 class="text-center mb-5">{{ game.title }} ({{ game.publication_year }})</h2>
         <div class="d-flex flex-row justify-content-center align-items-center">
             <img class="img-fluid rounded-lg col-6 mr-2" src="{{ game.image }}" alt="Illustration">
-            <div class="row col-4 ml-2">
-                <div class="col-8">
-                    <div class="list-group" id="list-tab" role="tablist">
-                        <a class="list-group-item list-group-item-action active" id="list-min-playtime-list"
-                           data-toggle="list"
-                           href="#list-min-playtime" role="tab" aria-controls="min-playtime">
-                            Temps minimum d'une partie
-                        </a>
-                        <a class="list-group-item list-group-item-action" id="list-min-players-list"
-                           data-toggle="list"
-                           href="#list-min-players" role="tab" aria-controls="min-players">
-                            Nombre minimum de joueurs
-                        </a>
-                        <a class="list-group-item list-group-item-action" id="list-max-players-list" data-toggle="list"
-                           href="#list-max-players" role="tab" aria-controls="max-players">
-                            Nombre maximum de joueurs
-                        </a>
-                        {% if game.id not in owned_games %}
-                            <a class="list-group-item list-group-item-action"
-                               href="{{ url_for("site.add_game_collection", game_id=game.id) }}">
-                                Ajouter à la collection
-                            </a>
-                        {% else %}
-                            <a class="list-group-item list-group-item-action"
-                               href="{{ url_for("site.remove_game_collection", game_id=game.id) }}">
-                                Retirer de la collection
-                            </a>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade" id="list-min-playtime" role="tabpanel"
-                             aria-labelledby="list-min-playtime-list">
-                            {{ game.min_playtime }} minutes
-                        </div>
-                        <div class="tab-pane fade" id="list-year" role="tabpanel"
-                             aria-labelledby="list-year-list">
-                            Sortie en {{ game.publication_year }}
-                        </div>
-                        <div class="tab-pane fade show active" id="list-min-players" role="tabpanel"
-                             aria-labelledby="list-min-players-list">
-                            {{ game.min_players }} joueurs
-                        </div>
-                        <div class="tab-pane fade" id="list-max-players" role="tabpanel"
-                             aria-labelledby="list-max-players-list">
-                            {{ game.max_players }} joueurs
-                        </div>
-                    </div>
+            <div class="row col-6 ml-2">
+                <div>
+                    <h3 class="mb-3">Informations sur le jeu</h3>
+                    <ul class="list-group mb-3">
+                        <li class="list-group-item">Temps minimum d'une partie : {{ game.min_playtime }} minutes</li>
+                        <li class="list-group-item">Nombre minimum de joueurs : {{ game.min_players }} joueurs</li>
+                        <li class="list-group-item">Nombre maximum de joueurs : {{ game.max_players }} joueurs</li>
+                    </ul>
+                    {% if game.id not in owned_games %}
+                        <button class="btn mt-3 col-12 text-white"
+                                onclick="window.location.href='{{ url_for("jeux.add_game_collection", game_id=game.id) }}';">
+                            Ajouter à la collection
+                        </button>
+                    {% else %}
+                        <button class="btn mt-3 col-12 text-white"
+                                onclick="window.location.href='{{ url_for("jeux.remove_game_collection", game_id=game.id) }}';">
+                            Retirer de la collection
+                        </button>
+                    {% endif %}
+                    {% if game.id not in wished_games %}
+                        <button class="btn mt-3 col-12 text-white"
+                                onclick="window.location.href='{{ url_for("jeux.add_game_wish", game_id=game.id) }}';">
+                            Ajouter à la liste de souhaits
+                        </button>
+                    {% else %}
+                        <button class="btn mt-3 col-12 text-white"
+                                onclick="window.location.href='{{ url_for("jeux.remove_game_wish", game_id=game.id) }}';">
+                            Retirer de la liste de souhaits
+                        </button>
+                    {% endif %}
                 </div>
             </div>
         </div>

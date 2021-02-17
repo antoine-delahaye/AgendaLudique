@@ -2,7 +2,7 @@
 
 from flask_wtf import FlaskForm
 from markupsafe import Markup
-from wtforms import PasswordField, StringField, SubmitField, SelectField, BooleanField
+from wtforms import PasswordField, StringField, SubmitField, SelectField, BooleanField, RadioField
 from wtforms.validators import DataRequired, EqualTo
 
 
@@ -28,8 +28,14 @@ class GamesSimpleSearchForm(FlaskForm):
         'placeholder': 'Rechercher des jeux grâce à leurs noms',
         'aria-describedby': 'search-buttons'
     })
-    display_known_games = BooleanField('Afficher uniquement les jeux que vous connaissez')
-    display_noted_games = BooleanField('Afficher uniquement les jeux notés')
+    display_search_type = SelectField('Type', choices=[('title',"Nom"),('year',"Année")])
+    display_search_parameter = RadioField('Catégorie de la recherche : ', choices=
+        [(None, "Afficher tout les jeux"),
+            ('KNOWN',"Afficher uniquement les jeux que vous connaissez"),
+            ('NOTED',"Afficher uniquement les jeux notés"),
+            ('WISHED',"Afficher uniquement les jeux souhaités"),
+            ('OWNED',"Afficher uniquement les jeux possédés")
+        ])
 
 
 class GamesSearchForm(FlaskForm):
@@ -43,6 +49,24 @@ class GamesSearchForm(FlaskForm):
     min_playtime = SelectField('Durée minimale', choices=[])
     max_playtime = SelectField('Durée maximale', choices=[])
     submit = SubmitField('Rechercher')
+
+
+class AddGameForm(FlaskForm):
+    """
+    Form for add game
+    """
+    title = StringField('Titre', validators=[DataRequired()], render_kw={'placeholder': 'Titre'})
+    years = StringField('Année de sortie', validators=[DataRequired()], render_kw={'placeholder': 'Année de sortie'})
+    min_players = StringField('Joueurs minimum', validators=[DataRequired()],
+                              render_kw={'placeholder': 'Joueurs minimum'})
+    max_players = StringField('Joueurs maximum', validators=[DataRequired()],
+                              render_kw={'placeholder': 'Joueurs maximum'})
+    min_playtime = StringField('Durée minimale (en minutes)', validators=[DataRequired()],
+                               render_kw={'placeholder': 'Durée minimale'})
+    image = StringField('Illustration', validators=[DataRequired()],
+                        render_kw={'placeholder': "URL de l'illustration finissant par une extension de fichier image "
+                                                  "(comme sur l'exemple)"})
+    submit = SubmitField('Ajouter')
 
 
 class UsersSearchForm(FlaskForm):
