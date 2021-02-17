@@ -17,10 +17,8 @@ def catalog():
     """
     form = GamesSimpleSearchForm()
     page = request.args.get('page', 1, type=int)
-    games_hint = request.args.get('games', '', type=str)
 
     # Get search format and hint if there are one
-    games_hint = form.games_hint.data if form.games_hint.data else ''
     search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else request.args.get('searchParameter', None, type=str)
 
     # We want to remove already owned and wished games from the page
@@ -32,8 +30,10 @@ def catalog():
     noted_games = User.get_noted_games(flask_login.current_user.id,True) 
 
     # If no hint was typed change search type back to title search (avoid crash)
-    if not games_hint:
+    if not form.games_hint.data:
         form.display_search_type.data = 'title'
+        # Fill search bar with parameters when changing page
+        form.games_hint.data = request.args.get('games', '', type=str)
 
     # Change title of the page and filters in function of search_parameter
     if search_parameter == "KNOWN":
@@ -48,9 +48,9 @@ def catalog():
         owned_games = Game.query.filter(False)
     else:
         title = "Tous les jeux"
-    games = Game.search_with_pagination(flask_login.current_user.id, games_hint, form.display_search_type.data, search_parameter, page, 20)
+    games = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data, form.display_search_type.data, search_parameter, page, 20)
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter)
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter, games_hint=form.games_hint.data)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])

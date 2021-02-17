@@ -111,20 +111,20 @@ class User(UserMixin, db.Model):
         results = SearchResults()  # Will contain the search results
 
         if "ONLY_BOOKMARKED" not in parameters:
-            users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
+            users_db = User.query.filter(User.username.like('%' + username_hint + '%')).all()
 
-        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
+        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users
         for bookmarked_user in bookmarked_users_db:
             bookmarked_user_id = bookmarked_user.user2_id
-            results.bookmarked_ids.append(bookmarked_user_id)  # Adds the bookmarked user id to the results object
+            results.bookmarked_ids.add(bookmarked_user_id)  # Adds the bookmarked user id to the results object
             if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
                 users_db.append(User.query.get(bookmarked_user_id))
 
-        hidden_users_db = User.query.get(current_user.id).hidden_users.all()
+        hidden_users_db = User.query.get(current_user.id).hidden_users
         for hidden_user in hidden_users_db:
             hidden_user_id = hidden_user.user2_id
             # Adds the hidden user id to the results object
-            results.hidden_ids.append(hidden_user_id)
+            results.hidden_ids.add(hidden_user_id)
             if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
                 user_to_be_removed = User.query.get(hidden_user_id)
                 if user_to_be_removed in users_db:
