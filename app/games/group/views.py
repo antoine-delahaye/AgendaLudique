@@ -1,9 +1,10 @@
 # Group related ##################################################################
-from flask import render_template
+from flask import render_template, redirect, request
 from flask_login import login_required, current_user
 
 from . import group as gp
-from app.models import Group
+from app.models import Group, Participate
+from ... import db
 
 
 @gp.route('/groups')
@@ -34,7 +35,8 @@ def group(id=None):
     Render the groups template on the /group route
     """
     group = Group.query.get_or_404(id)
-    return render_template('group.html', stylesheet='group', group=group)
+    is_member = (Participate.from_both_ids(current_user.id, id) is not None)
+    return render_template('group.html', stylesheet='group', group=group, is_member=is_member)
 
 
 @gp.route('/my_groups')
@@ -46,5 +48,21 @@ def my_groups():
     groups_data = []
     for participation in current_user.participations:
         groups_data.append(participation.group)
-    return render_template('my_groups.html', stylesheet='my_groups', groups_data=groups_data,
+    return render_template('my_groups.html', stylesheet='groups', groups_data=groups_data,
                            managed_groups=list(current_user.managed_groups))
+
+
+@gp.route('/join_group/<group_id>', methods=['GET', 'POST'])
+@login_required
+def join_group(group_id):
+    db.session.add(Participate(group_id=group_id, member_id=current_user.id))
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@gp.route('/quit_group/<group_id>', methods=['GET', 'POST'])
+@login_required
+def quit_group(group_id):
+    db.session.delete(Participate.from_both_ids(current_user.id, group_id))
+    db.session.commit()
+    return redirect(request.referrer)
