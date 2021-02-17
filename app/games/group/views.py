@@ -3,7 +3,7 @@ from flask import render_template, redirect, request
 from flask_login import login_required, current_user
 
 from . import group as gp
-from app.models import Group, Participate
+from app.models import Group, Participate, User
 from ... import db
 
 
@@ -36,11 +36,13 @@ def group(id=None):
     """
     group = Group.query.get_or_404(id)
     is_member = (Participate.from_both_ids(current_user.id, id) is not None)
+    users_data = User.search_with_pagination(current_user, per_page=16)
     return render_template('group.html',
-        stylesheet='group',
+        stylesheet_list=['group','groups','users'],
         group=group,
         is_member=is_member,
-        is_resp=(current_user.id==group.manager_id))
+        is_resp=(current_user.id==group.manager_id),
+        users_data=users_data)
 
 
 @gp.route('/my_groups')

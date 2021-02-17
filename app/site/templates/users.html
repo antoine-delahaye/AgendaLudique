@@ -31,7 +31,7 @@
         {% if users_data.pagination.items %}
             <div class="users-list row">
                 {% for item in users_data.pagination.items %}
-                    {% include "user_card.html" %}
+                    {% include "cards/user_card.html" %}
                 {% endfor %}
             </div>
         {% else %}
