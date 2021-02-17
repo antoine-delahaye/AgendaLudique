@@ -450,6 +450,13 @@ class Game(UserMixin, db.Model):
         return f'<Game: {self.title}>'
 
     @classmethod
+    def all(cls):
+        """
+        :return: return every games from db
+        """
+        db.session.query(Game).all()
+
+    @classmethod
     def from_title(cls, title):
         """
         Get a Game from its title. Return None if the game does not exist.
@@ -467,8 +474,9 @@ class Game(UserMixin, db.Model):
 
     @classmethod
     def max_id(cls):
-        """ Return the maximum id of the Game class. Used for increment """
-        return db.session.query(func.max(Game.id)).one()[0]
+        """ Return the maximum id of the Game class. 0 if don't exist """
+        max = db.session.query(func.max(Game.id)).one()[0]
+        return max if max is not None else 0
 
     @classmethod
     def add_game(cls, game_id, game_data):
