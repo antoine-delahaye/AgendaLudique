@@ -6,7 +6,7 @@
     {% if managed_groups %}
         <h4 class="my-3">Groupes gérés</h4>
           <div class="row">
-          {% for group in groups_data %}
+          {% for group in  managed_groups %}
               {% include "group_card.html" %}
           {% endfor %}
           </div>
