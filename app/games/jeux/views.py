@@ -16,6 +16,7 @@ def catalog():
     Render the catalog template on the /catalog route
     """
     form = GamesSimpleSearchForm()
+    page = get_numero_page()
     page = request.args.get('page', 1, type=int)
 
     # Get search parameter if there is one
