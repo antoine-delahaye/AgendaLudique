@@ -5,11 +5,7 @@
     <main class="container-fluid col-9">
         <div id="user-presentation">
             <img class="profile-picture rounded-lg" id="userimg"
-                    {% if user.profile_picture %}
-                 src="{{ user.profile_picture }}"
-                    {% else %}
-                 src="{{ url_for("static", filename="images/blank_pp.png") }}"
-                    {% endif %}
+                 src="{{ user.get_profile_picture() }}"
                  alt="Image de profil de {{ user.username }}">
             <div id="user-informations">
                 <h2 id="username">{{ user.username }}</h2>
