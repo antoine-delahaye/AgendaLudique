@@ -6,6 +6,10 @@
         <h2 class="text-center mb-3">Bienvenue sur votre agenda ludique !</h2>
         {% if current_user.is_authenticated %}
             <button class="btn text-white text-uppercase m-2"
+                    onclick="window.location.href='{{ url_for("jeux.catalog") }}';">
+                Catalogue
+            </button>
+            <button class="btn text-white text-uppercase m-2"
                     onclick="window.location.href='{{ url_for("auth.logout") }}';">
                 Déconnexion
             </button>
