@@ -56,8 +56,10 @@ def send_users(names, base_password):
         sys.exit(1)
     cursor = connection.cursor()
 
+    i = 1
+
     for first_name in names:
-        username = first_name + str(random.randint(0, 99))
+        username = first_name + str(i)
         email = username + "@example.com"
         last_name = first_name
         password = generate_password_hash(base_password + first_name)
@@ -69,7 +71,9 @@ def send_users(names, base_password):
         except mariadb.Error as e:
             print(f'Error: {e}')
 
-        connection.commit()
+        i += 1
+
+    connection.commit()
     connection.close()
 
 
