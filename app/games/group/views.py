@@ -36,7 +36,7 @@ def group(id=None):
     """
     group = Group.query.get_or_404(id)
     is_member = (Participate.from_both_ids(current_user.id, id) is not None)
-    users_data = User.search_with_pagination(current_user, per_page=16)
+    users_data = User.search_with_pagination(current_user, "", False, False, per_page=16)
     return render_template('group.html',
         stylesheet_list=['group','groups','users'],
         group=group,
