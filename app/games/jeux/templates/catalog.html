@@ -29,7 +29,7 @@
             <div class="row">
                 {% for game in games.pagination.items %}
                     {% if game.id not in owned_games %}
-                        {% include "game_card.html" %}
+                        {% include "cards/game_card.html" %}
                     {% endif %}
                 {% endfor %}
             </div>
@@ -39,14 +39,14 @@
                 {% if games.pagination.page == 1 %}
                     <li class="page-item disabled">
                         <a class="page-link"
-                           href="{{ url_for("jeux.catalog", page=games.pagination.prev_num, searchParameter=search_parameter, games=games_hint) }}">
+                           href="{{ url_for("jeux.catalog", page=games.pagination.prev_num, searchParameter=search_parameter, type=type, games=games_hint) }}">
                             &laquo;
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item">
                         <a class="page-link"
-                           href="{{ url_for("jeux.catalog", page=games.pagination.prev_num, searchParameter=search_parameter, games=games_hint) }}">
+                           href="{{ url_for("jeux.catalog", page=games.pagination.prev_num, searchParameter=search_parameter, type=type, games=games_hint) }}">
                             &laquo;
                         </a>
                     </li>
@@ -56,14 +56,14 @@
                         {% if games.pagination.page == page_num %}
                             <li class="page-item active">
                                 <a class="page-link"
-                                   href="{{ url_for("jeux.catalog", page=page_num, searchParameter=search_parameter, games=games_hint) }}">
+                                   href="{{ url_for("jeux.catalog", page=page_num, searchParameter=search_parameter, type=type, games=games_hint) }}">
                                     {{ page_num }}
                                 </a>
                             </li>
                         {% else %}
                             <li class="page-item">
                                 <a class="page-link"
-                                   href="{{ url_for("jeux.catalog", page=page_num, searchParameter=search_parameter, games=games_hint) }}">
+                                   href="{{ url_for("jeux.catalog", page=page_num, searchParameter=search_parameter, type=type, games=games_hint) }}">
                                     {{ page_num }}
                                 </a>
                             </li>
@@ -71,7 +71,7 @@
                     {% else %}
                         <li class="page-item disabled">
                             <a class="page-link"
-                               href="{{ url_for("jeux.catalog", page=games.prev_num, searchParameter=search_parameter, games=games_hint) }}">
+                               href="{{ url_for("jeux.catalog", page=games.prev_num, searchParameter=search_parameter, type=type, games=games_hint) }}">
                                 ...
                             </a>
                         </li>
@@ -80,14 +80,14 @@
                 {% if games.pagination.page == games.pagination.pages %}
                     <li class="page-item disabled">
                         <a class="page-link"
-                           href="{{ url_for("jeux.catalog", page=games.pagination.next_num, searchParameter=search_parameter, games=games_hint) }}">
+                           href="{{ url_for("jeux.catalog", page=games.pagination.next_num, searchParameter=search_parameter, type=type, games=games_hint) }}">
                             &raquo;
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item">
                         <a class="page-link"
-                           href="{{ url_for("jeux.catalog", page=games.pagination.next_num, searchParameter=search_parameter, games=games_hint) }}">
+                           href="{{ url_for("jeux.catalog", page=games.pagination.next_num, searchParameter=search_parameter, type=type, games=games_hint) }}">
                             &raquo;
                         </a>
                     </li>

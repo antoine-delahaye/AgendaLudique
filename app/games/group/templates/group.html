@@ -16,11 +16,19 @@
             "href="{{ url_for('group.join_group', group_id=group.id) }}">Rejoindre
           {% endif %}
         </a>
-        <h4>Responsable : {{ group.manager.username }}</h4>
-        <h4>Membres du groupe : </h4>
+        <h4 class="my-3">Responsable</h4>
+        {% set item = group.manager %}
+        <div class="users-list row">
+          {% include "cards/user_card.html" %}
+        </div>
+        <h4 class="my-3">Membres du groupe</h4>
         {% for member in group.participations %}
-            {% set member = member.member %}
-            <p>{{ member.username }}</p>
+            {% set item = member.member %}
+            {% if item.id != group.manager_id %}
+              <div class="users-list row">
+                {% include "cards/user_card.html" %}
+              </div>
+            {% endif %}
         {% endfor %}
     </main>
 {% endblock %}
