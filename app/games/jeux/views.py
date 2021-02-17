@@ -152,8 +152,8 @@ def add_game_collection(game_id):
     return redirect(request.referrer)
 
 
-@jeux.route('/remove', methods=['GET', 'POST'])
-@jeux.route('/remove/<game_id>', methods=['GET', 'POST'])
+@jeux.route('/remove-collection', methods=['GET', 'POST'])
+@jeux.route('/remove-collection/<game_id>', methods=['GET', 'POST'])
 @login_required
 def remove_game_collection(game_id):
     db.session.delete(Collect.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
@@ -170,8 +170,8 @@ def add_game_known(game_id):
     return redirect(request.referrer)
 
 
-@jeux.route('/remove', methods=['GET', 'POST'])
-@jeux.route('/remove/<game_id>', methods=['GET', 'POST'])
+@jeux.route('/remove-known', methods=['GET', 'POST'])
+@jeux.route('/remove-known/<game_id>', methods=['GET', 'POST'])
 @login_required
 def remove_game_known(game_id):
     db.session.delete(KnowRules.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
@@ -188,8 +188,8 @@ def add_game_note(game_id):
     return redirect(request.referrer)
 
 
-@jeux.route('/remove', methods=['GET', 'POST'])
-@jeux.route('/remove/<game_id>', methods=['GET', 'POST'])
+@jeux.route('/remove-noted', methods=['GET', 'POST'])
+@jeux.route('/remove-noted/<game_id>', methods=['GET', 'POST'])
 @login_required
 def remove_game_note(game_id):
     db.session.delete(Note.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
