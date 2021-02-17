@@ -57,8 +57,7 @@ class User(UserMixin, db.Model):
         """
         Check if an email is already used.
         """
-        req = User.query.filter(User.email == email).first()
-        return True if req else False
+        return True if User.query.filter(User.email == email).first() else False
 
     @classmethod
     def get_known_games(cls, user_id, only_id=False):
@@ -198,10 +197,8 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, parameters)
-        page_elements = results.items[(
-                                                  current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
-        results.pagination = pagination
+        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
 
         return results
@@ -510,12 +507,11 @@ class Game(UserMixin, db.Model):
             games_db = search_results.filter(Game.publication_year==int(games_hint))
         elif typ=="genre":
             temp = set()
-            games_db = Game.query.filter(False)
             genres = Genre.query.filter(Genre.name.like("%"+games_hint+"%"))
             for genre in genres:
                 genre_links = Classification.query.filter(Classification.genre_id==genre.id)
                 for genre_link in genre_links:
-                    temp.add(genre_link.game_id) 
+                    temp.add(genre_link.game_id)
             games_db = search_results.filter(Game.id.in_(temp))
         else:
             games_db = search_results.filter(Game.title.like("%" + games_hint + "%"))
@@ -532,10 +528,8 @@ class Game(UserMixin, db.Model):
     def search_with_pagination(cls, current_user_id, games_hint, typ, parameters_list, current_page=1, per_page=20):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
-        page_elements = results.items[(
-                                                  current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
-        results.pagination = pagination
+        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results
 
@@ -589,8 +583,7 @@ class Classification(db.Model):
         Get a Classification relationship from its Game and Genre ids.
         Return None if the relationship does not exist.
         """
-        req = Classification.query.filter(Classification.game_id == game_id,
-                                          Classification.genre_id == genre_id).first()
+        req = Classification.query.filter(Classification.game_id == game_id, Classification.genre_id == genre_id).first()
         return req if req else None
 
 
