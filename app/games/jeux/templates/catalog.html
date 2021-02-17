@@ -29,7 +29,7 @@
             <div class="row">
                 {% for game in games.pagination.items %}
                     {% if game.id not in owned_games %}
-                        {% include "game_card.html" %}
+                        {% include "cards/game_card.html" %}
                     {% endif %}
                 {% endfor %}
             </div>
