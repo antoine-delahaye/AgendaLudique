@@ -160,10 +160,14 @@ def account():
     """
     Render the account template on the /account route
     """
-
     form = UpdateInformationForm()
+
+    user = current_user
+
+    if user.use_gravatar:
+        form.profile_picture.render_kw = {'disabled': ''}
+
     if form.validate_on_submit():
-        user = current_user
         if user is not None:
             user.username = form.username.data
             user.first_name = form.first_name.data
