@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512))
     use_gravatar = db.Column(db.Boolean, default=False)
-    # token_pwd = db.Column(db.String(32), unique=True)
+    token_pwd = db.Column(db.String(32), unique=True)
 
     statistics = db.relationship(
         "Statistic",
