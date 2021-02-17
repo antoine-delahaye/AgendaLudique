@@ -96,7 +96,7 @@ class User(UserMixin, db.Model):
         return req if req else None
 
     @classmethod
-    def search(cls, current_user, username_hint="", parameters=[]):
+    def search(cls, current_user, username_hint, favOnly, hidden):
         """
         Search users with defined parameters
         :param current_user The user who made the research
@@ -105,30 +105,31 @@ class User(UserMixin, db.Model):
         and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
         :return: A UsersSearchResults object with an items list.
         """
-        users_db = []
-        items = []
+        users_db = list()
+        items = list()
 
         results = SearchResults()  # Will contain the search results
 
-        if "ONLY_BOOKMARKED" not in parameters:
-            users_db = User.query.filter(User.username.like('%' + username_hint + '%')).all()
+        # Contain bookmarked users
+        bookmarked_users_db = db.session.query(BookmarkUser.user2_id).filter(BookmarkUser.user_id==current_user.id) # ids only -> lighter
+        # Contain hidden users
+        hidden_users_db = db.session.query(HideUser.user2_id).filter(HideUser.user_id==current_user.id) # ids only -> lighter
 
-        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users
-        for bookmarked_user in bookmarked_users_db:
-            bookmarked_user_id = bookmarked_user.user2_id
-            results.bookmarked_ids.add(bookmarked_user_id)  # Adds the bookmarked user id to the results object
-            if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
-                users_db.append(User.query.get(bookmarked_user_id))
-
-        hidden_users_db = User.query.get(current_user.id).hidden_users
+        if favOnly:
+            users_db = User.query.filter(User.id.in_(bookmarked_users_db), User.username.like("%"+username_hint+"%"))
+        else:
+            users_db = User.query.filter(User.username.like('%' + username_hint + '%'))
+        
+        # Allows to fill stars icon to yellow
+        for bookmarded_user in bookmarked_users_db:
+                results.bookmarked_ids.add(bookmarded_user.user2_id)
+        
+        if not hidden:
+            users_db = users_db.filter(User.id.notin_(hidden_users_db))
+        
+        # Allows to fill hidden icon to red
         for hidden_user in hidden_users_db:
-            hidden_user_id = hidden_user.user2_id
-            # Adds the hidden user id to the results object
-            results.hidden_ids.add(hidden_user_id)
-            if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
-                user_to_be_removed = User.query.get(hidden_user_id)
-                if user_to_be_removed in users_db:
-                    users_db.remove(user_to_be_removed)
+            results.hidden_ids.add(hidden_user.user2_id)
 
         for data in users_db:
             items.append(
@@ -140,7 +141,7 @@ class User(UserMixin, db.Model):
         return results
 
     @classmethod
-    def search_with_pagination(cls, current_user, username_hint="", parameters=[], current_page=1, per_page=20):
+    def search_with_pagination(cls, current_user, username_hint, favOnly, hidden, current_page=1, per_page=20):
         """
         Search users with defined parameters and return them as a UsersSearchResults object which contains a
         Pagination object.
@@ -152,7 +153,7 @@ class User(UserMixin, db.Model):
         :param per_page: The number of users shown on a search results page
         :return: A UsersSearchResults with a Pagination object.
         """
-        results = User.search(current_user, username_hint, parameters)
+        results = User.search(current_user, username_hint, favOnly, hidden)
         page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
