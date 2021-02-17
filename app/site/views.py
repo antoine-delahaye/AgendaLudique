@@ -30,7 +30,7 @@ def users():
     form = UsersSearchForm()
     page = request.args.get('page', 1, type=int)
 
-    # Get search parameters
+    # Get search parameters if there are None, set to None
     favOnly = form.display_favorites_players_only.data if form.display_favorites_players_only.data else request.args.get('favOnly', None, type=bool)
     hidden = form.display_masked_players.data if form.display_masked_players.data else request.args.get('hidden', None, type=bool)
 

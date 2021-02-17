@@ -101,13 +101,10 @@ class User(UserMixin, db.Model):
         Search users with defined parameters
         :param current_user The user who made the research
         :param username_hint: A hint gave by the user to search similar usernames
-        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
-        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
-        :return: A UsersSearchResults object with an items list.
+        :param favOnly: containing "True" to show only bookmarked users else None
+        :param favOnly: containing "True" to show hidden users else None
+        :return: A SearchResults object with an items list.
         """
-        users_db = list()
-        items = list()
-
         results = SearchResults()  # Will contain the search results
 
         # Contain bookmarked users
@@ -130,14 +127,12 @@ class User(UserMixin, db.Model):
         # Allows to fill hidden icon to red
         for hidden_user in hidden_users_db:
             results.hidden_ids.add(hidden_user.user2_id)
-
+        
         for data in users_db:
-            items.append(
+            results.items.append(
                 {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
                  'last_name': data.last_name,
                  'profile_picture': data.profile_picture})
-        results.items = items
-
         return results
 
     @classmethod
@@ -447,6 +442,16 @@ class Game(UserMixin, db.Model):
 
     @classmethod
     def search(cls, current_user_id, games_hint, typ, search_parameter):
+        """
+        Search games with defined parameters
+        :param current_user The user who made the research
+        :param games_hint: A hint gave by the user to search various games
+        :param typ: str containing the type of games_hint (search filter)
+        :param search_parameter: str containing the name of the search container
+        :return: A SearchResults object with an items list.
+        """
+        results = SearchResults() # Will contain the search results
+
         # Search games via a known parameter
         if search_parameter == "KNOWN":
             search_results = User.get_known_games(current_user_id)
@@ -463,18 +468,13 @@ class Game(UserMixin, db.Model):
         if typ=="year":
             games_db = search_results.filter(Game.publication_year==int(games_hint))
         elif typ=="genre":
-            temp = set()
-            genres = Genre.query.filter(Genre.name.like("%"+games_hint+"%"))
-            for genre in genres:
-                genre_links = Classification.query.filter(Classification.genre_id==genre.id)
-                for genre_link in genre_links:
-                    temp.add(genre_link.game_id)
-            games_db = search_results.filter(Game.id.in_(temp))
+            games_ids = db.session.query(Classification.game_id).filter(Classification.genre_id.in_(
+                db.session.query(Genre.id).filter(Genre.name.like("%"+games_hint+"%"))
+            ))
+            games_db = search_results.filter(Game.id.in_(games_ids))
         else:
             games_db = search_results.filter(Game.title.like("%" + games_hint + "%"))
 
-        # Transform search into 
-        results = SearchResults()
         for data in games_db:
             results.items.append(
                 {'id': int(data.id), 'title': data.title, 'publication_year': data.publication_year,

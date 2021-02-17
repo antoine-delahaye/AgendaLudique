@@ -18,8 +18,17 @@ def catalog():
     form = GamesSimpleSearchForm()
     page = request.args.get('page', 1, type=int)
 
-    # Get search format and hint if there are one
+    # Get search parameter if there is one
     search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else request.args.get('searchParameter', None, type=str)
+
+    # If no hint was typed change search type back to title search (avoid crash)
+    if not form.games_hint.data:
+        form.display_search_type.data = 'title'
+        # Fill search bar with parameters when changing page
+        form.games_hint.data = request.args.get('games', '', type=str)
+    
+    # Change title of the page in function of search_parameter
+    title = {"KNOWN":"Jeux que vous connaissez", "NOTED":"Jeux que vous avez déjà notés", "WISHED":"Jeux que vous souhaitez", "OWNED":"Jeux que vous possédez"}.get(search_parameter, "Tous les jeux")
 
     # We want to remove already owned and wished games from the page
     owned_games = User.get_owned_games(flask_login.current_user.id, True)
@@ -27,30 +36,17 @@ def catalog():
 
     # But wewant to know what games the user already knows or has noted
     known_games = User.get_known_games(flask_login.current_user.id, True)
-    noted_games = User.get_noted_games(flask_login.current_user.id, True)
+    noted_games = User.get_noted_games(flask_login.current_user.id, True)    
 
-    # If no hint was typed change search type back to title search (avoid crash)
-    if not form.games_hint.data:
-        form.display_search_type.data = 'title'
-        # Fill search bar with parameters when changing page
-        form.games_hint.data = request.args.get('games', '', type=str)
-
-    # Change title of the page and filters in function of search_parameter
-    if search_parameter == "KNOWN":
-        title = "Jeux que vous connaissez"
-    elif search_parameter == "NOTED":
-        title = "Jeux que vous avez déjà notés"
-    elif search_parameter == "WISHED":
-        title = "Jeux que vous souhaitez"
+    # Change filters in function of search_parameter
+    if search_parameter == "WISHED":
         wished_games = Game.query.filter(False)
     elif search_parameter == "OWNED":
-        title = "Jeux que vous possédez"
         owned_games = Game.query.filter(False)
-    else:
-        title = "Tous les jeux"
-    games = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data, form.display_search_type.data, search_parameter, page, 20)
+    
+    search_results = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data, form.display_search_type.data, search_parameter, page, 20)
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter, games_hint=form.games_hint.data)
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=search_results, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter, games_hint=form.games_hint.data)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
