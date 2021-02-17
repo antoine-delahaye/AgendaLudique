@@ -76,8 +76,7 @@ class User(UserMixin, db.Model):
         """
         Check if an email is already used.
         """
-        req = User.query.filter(User.email == email).first()
-        return True if req else False
+        return True if User.query.filter(User.email == email).first() else False
 
     @classmethod
     def get_known_games(cls, user_id, only_id=False):
@@ -116,51 +115,47 @@ class User(UserMixin, db.Model):
         return req if req else None
 
     @classmethod
-    def search(cls, current_user, username_hint="", parameters=[]):
+    def search(cls, current_user, username_hint, favOnly, hidden):
         """
         Search users with defined parameters
         :param current_user The user who made the research
         :param username_hint: A hint gave by the user to search similar usernames
-        :param parameters: include into the list "HIDDEN" to return the hidden users as well as the others users,
-        and/or "ONLY_BOOKMARKED" to return only the bookmarked users.
-        :return: A UsersSearchResults object with an items list.
+        :param favOnly: containing "True" to show only bookmarked users else None
+        :param favOnly: containing "True" to show hidden users else None
+        :return: A SearchResults object with an items list.
         """
-        users_db = []
-        items = []
-
         results = SearchResults()  # Will contain the search results
 
-        if "ONLY_BOOKMARKED" not in parameters:
-            users_db = db.session.query(User).filter(User.username.like('%' + username_hint + '%')).all()
+        # Contain bookmarked users
+        bookmarked_users_db = db.session.query(BookmarkUser.user2_id).filter(BookmarkUser.user_id==current_user.id) # ids only -> lighter
+        # Contain hidden users
+        hidden_users_db = db.session.query(HideUser.user2_id).filter(HideUser.user_id==current_user.id) # ids only -> lighter
 
-        bookmarked_users_db = User.query.get(current_user.id).bookmarked_users.all()
-        for bookmarked_user in bookmarked_users_db:
-            bookmarked_user_id = bookmarked_user.user2_id
-            results.bookmarked_ids.append(bookmarked_user_id)  # Adds the bookmarked user id to the results object
-            if "ONLY_BOOKMARKED" in parameters and bookmarked_user not in users_db:
-                users_db.append(User.query.get(bookmarked_user_id))
-
-        hidden_users_db = User.query.get(current_user.id).hidden_users.all()
+        if favOnly:
+            users_db = User.query.filter(User.id.in_(bookmarked_users_db), User.username.like("%"+username_hint+"%"))
+        else:
+            users_db = User.query.filter(User.username.like('%' + username_hint + '%'))
+        
+        # Allows to fill stars icon to yellow
+        for bookmarded_user in bookmarked_users_db:
+                results.bookmarked_ids.add(bookmarded_user.user2_id)
+        
+        if not hidden:
+            users_db = users_db.filter(User.id.notin_(hidden_users_db))
+        
+        # Allows to fill hidden icon to red
         for hidden_user in hidden_users_db:
-            hidden_user_id = hidden_user.user2_id
-            # Adds the hidden user id to the results object
-            results.hidden_ids.append(hidden_user_id)
-            if "HIDDEN" not in parameters:  # Removes all the users hidden by the user from the search results
-                user_to_be_removed = User.query.get(hidden_user_id)
-                if user_to_be_removed in users_db:
-                    users_db.remove(user_to_be_removed)
-
+            results.hidden_ids.add(hidden_user.user2_id)
+        
         for data in users_db:
-            items.append(
+            results.items.append(
                 {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
                  'last_name': data.last_name,
                  'profile_picture': data.profile_picture})
-        results.items = items
-
         return results
 
     @classmethod
-    def search_with_pagination(cls, current_user, username_hint="", parameters=[], current_page=1, per_page=20):
+    def search_with_pagination(cls, current_user, username_hint, favOnly, hidden, current_page=1, per_page=20):
         """
         Search users with defined parameters and return them as a UsersSearchResults object which contains a
         Pagination object.
@@ -172,11 +167,9 @@ class User(UserMixin, db.Model):
         :param per_page: The number of users shown on a search results page
         :return: A UsersSearchResults with a Pagination object.
         """
-        results = User.search(current_user, username_hint, parameters)
-        page_elements = results.items[(
-                                                  current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
-        results.pagination = pagination
+        results = User.search(current_user, username_hint, favOnly, hidden)
+        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
 
         return results
@@ -468,6 +461,17 @@ class Game(UserMixin, db.Model):
 
     @classmethod
     def search(cls, current_user_id, games_hint, typ, search_parameter):
+        """
+        Search games with defined parameters
+        :param current_user The user who made the research
+        :param games_hint: A hint gave by the user to search various games
+        :param typ: str containing the type of games_hint (search filter)
+        :param search_parameter: str containing the name of the search container
+        :return: A SearchResults object with an items list.
+        """
+        results = SearchResults() # Will contain the search results
+
+        # Search games via a known parameter
         if search_parameter == "KNOWN":
             search_results = User.get_known_games(current_user_id)
         elif search_parameter == "NOTED":
@@ -479,12 +483,17 @@ class Game(UserMixin, db.Model):
         else:
             search_results = Game.query
         
+        # Search games in search_results that corresponds to the type and the hint
         if typ=="year":
-            games_db = search_results.filter(Game.publication_year==int(games_hint)).all()
+            games_db = search_results.filter(Game.publication_year==int(games_hint))
+        elif typ=="genre":
+            games_ids = db.session.query(Classification.game_id).filter(Classification.genre_id.in_(
+                db.session.query(Genre.id).filter(Genre.name.like("%"+games_hint+"%"))
+            ))
+            games_db = search_results.filter(Game.id.in_(games_ids))
         else:
-            games_db = search_results.filter(Game.title.like("%" + games_hint + "%")).all()
+            games_db = search_results.filter(Game.title.like("%" + games_hint + "%"))
 
-        results = SearchResults()
         for data in games_db:
             results.items.append(
                 {'id': int(data.id), 'title': data.title, 'publication_year': data.publication_year,
@@ -495,10 +504,8 @@ class Game(UserMixin, db.Model):
     def search_with_pagination(cls, current_user_id, games_hint, typ, parameters_list, current_page=1, per_page=20):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
-        page_elements = results.items[(
-                                                  current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
-        results.pagination = pagination
+        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results
 
@@ -552,8 +559,7 @@ class Classification(db.Model):
         Get a Classification relationship from its Game and Genre ids.
         Return None if the relationship does not exist.
         """
-        req = Classification.query.filter(Classification.game_id == game_id,
-                                          Classification.genre_id == genre_id).first()
+        req = Classification.query.filter(Classification.game_id == game_id, Classification.genre_id == genre_id).first()
         return req if req else None
 
 
@@ -881,6 +887,6 @@ class SearchResults:
         :param bookmarked_ids: A list which contains the bookmarked objtects ids, list() if not used.
         """
         self.items = list()
-        self.pagination = list()
-        self.hidden_ids = list()
-        self.bookmarked_ids = list()
+        self.pagination = None
+        self.hidden_ids = set()
+        self.bookmarked_ids = set()
