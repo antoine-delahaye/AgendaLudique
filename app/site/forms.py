@@ -61,7 +61,7 @@ class AddGameForm(FlaskForm):
                               render_kw={'placeholder': 'Joueurs minimum'})
     max_players = StringField('Joueurs maximum', validators=[DataRequired()],
                               render_kw={'placeholder': 'Joueurs maximum'})
-    min_playtime = StringField('Durée minimale', validators=[DataRequired()],
+    min_playtime = StringField('Durée minimale (en minutes)', validators=[DataRequired()],
                                render_kw={'placeholder': 'Durée minimale'})
     image = StringField('Illustration', validators=[DataRequired()],
                         render_kw={'placeholder': "URL de l'illustration finissant par une extension de fichier image "
