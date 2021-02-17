@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512))
     use_gravatar = db.Column(db.Boolean, default=False)
-    token_pwd = db.Column(db.String(32), unique=True)
+    # token_pwd = db.Column(db.String(32), unique=True)
 
     statistics = db.relationship(
         "Statistic",
@@ -58,7 +58,9 @@ class User(UserMixin, db.Model):
         """
         if self.use_gravatar:
             return self.get_gravatar()
-        return self.profile_picture
+        elif self.profile_picture is not None:
+            return self.profile_picture
+        return "/static/images/blank_pp.png"
 
     def get_gravatar(self):
         """
@@ -145,12 +147,9 @@ class User(UserMixin, db.Model):
         # Allows to fill hidden icon to red
         for hidden_user in hidden_users_db:
             results.hidden_ids.add(hidden_user.user2_id)
-        
-        for data in users_db:
-            results.items.append(
-                {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
-                 'last_name': data.last_name,
-                 'profile_picture': data.profile_picture})
+
+        results.items = users_db
+
         return results
 
     @classmethod
@@ -167,8 +166,8 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, favOnly, hidden)
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
+        page_elements = results.items.slice((current_page - 1) * per_page, current_page * per_page)  # the users that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, results.items.count(), page_elements)
         results.items = None
 
         return results
