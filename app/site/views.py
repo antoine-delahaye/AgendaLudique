@@ -3,7 +3,6 @@
 import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required, current_user
-from sqlalchemy import text
 
 from app import db
 from app.models import User, Game, Group, HideUser, BookmarkUser, Collect, Wish, HideGame
@@ -29,34 +28,22 @@ def users():
     """
     form = UsersSearchForm()
     page = request.args.get('page', 1, type=int)
-    username_hint = request.args.get('username', '', type=str)
-    search_parameters = []
-    qs_search_parameters = request.args.get('searchParameters', None, type=str)
 
-    if form.validate_on_submit():
-        username_hint = form.username_hint.data
+    # Get search parameters if there are None, set to None
+    favOnly = form.display_favorites_players_only.data if form.display_favorites_players_only.data else request.args.get('favOnly', None, type=bool)
+    hidden = form.display_masked_players.data if form.display_masked_players.data else request.args.get('hidden', None, type=bool)
 
-        if form.display_masked_players.data:
-            search_parameters.append("HIDDEN")
+    # Fill search bar with parameters when changing page
+    if not form.username_hint.data:
+        form.username_hint.data = request.args.get('username', '', type=str)
 
-        if form.display_favorites_players_only.data:
-            search_parameters.append("ONLY_BOOKMARKED")
+    # Check the box if the parameters are True
+    form.display_favorites_players_only.data = favOnly
+    form.display_masked_players.data = hidden
 
-    if qs_search_parameters:
-        # Add the search parameters contained in the query string into the search_parameters list
-        parameters_list = qs_search_parameters.split(',')
-        for parameter in parameters_list:
-            search_parameters.append(parameter)
-            # Show in the advanced search menu the enabled parameters
-            if parameter == "ONLY_BOOKMARKED":
-                form.display_favorites_players_only.data = True
-            if parameter == "HIDDEN":
-                form.display_masked_players.data = True
+    search_results = User.search_with_pagination(current_user, form.username_hint.data, favOnly, hidden, page, 20)
 
-    search_results = User.search_with_pagination(current_user, username_hint, search_parameters, page, 20)
-
-    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id,
-                           users_data=search_results, search_parameters=search_parameters)
+    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id, users_data=search_results, favOnly=favOnly, hidden=hidden, username_hint=form.username_hint.data)
 
 
 @site.route('/user')
@@ -162,14 +149,20 @@ def account():
     Render the account template on the /account route
     """
     form = UpdateInformationForm()
+
+    user = current_user
+
+    if user.use_gravatar:
+        form.profile_picture.render_kw = {'disabled': ''}
+
     if form.validate_on_submit():
-        user = User.query.filter_by(email=flask_login.current_user.email).first()
         if user is not None:
             user.username = form.username.data
             user.first_name = form.first_name.data
             user.last_name = form.last_name.data
             user.password = form.password.data
-            user.profile_picture = form.profile_picture.data
+            user.use_gravatar = form.use_gravatar.data
+            user.profile_picture = user.profile_picture
             db.session.commit()
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)

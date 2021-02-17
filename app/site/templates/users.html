@@ -31,7 +31,7 @@
         {% if users_data.pagination.items %}
             <div class="users-list row">
                 {% for item in users_data.pagination.items %}
-                    {% include "user_card.html" %}
+                    {% include "cards/user_card.html" %}
                 {% endfor %}
             </div>
         {% else %}
@@ -44,14 +44,14 @@
                 {% if users_data.pagination.page == 1 %}
                     <li class="page-item disabled">
                         <a class="page-link"
-                           href="{{ url_for("site.users", page=users_data.pagination.prev_num, searchParameters=search_parameters) }}">
+                           href="{{ url_for("site.users", page=users_data.pagination.prev_num, favOnly=favOnly, hidden=hidden, username=username_hint) }}">
                             &laquo;
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item">
                         <a class="page-link"
-                           href="{{ url_for("site.users", page=users_data.pagination.prev_num, searchParameters=search_parameters) }}">
+                           href="{{ url_for("site.users", page=users_data.pagination.prev_num, favOnly=favOnly, hidden=hidden, username=username_hint) }}">
                             &laquo;
                         </a>
                     </li>
@@ -61,14 +61,14 @@
                         {% if users_data.pagination.page == page_num %}
                             <li class="page-item active">
                                 <a class="page-link"
-                                   href="{{ url_for("site.users", page=page_num, searchParameters=search_parameters) }}">
+                                   href="{{ url_for("site.users", page=page_num, favOnly=favOnly, hidden=hidden, username=username_hint) }}">
                                     {{ page_num }}
                                 </a>
                             </li>
                         {% else %}
                             <li class="page-item">
                                 <a class="page-link"
-                                   href="{{ url_for("site.users", page=page_num, searchParameters=search_parameters) }}">
+                                   href="{{ url_for("site.users", page=page_num, favOnly=favOnly, hidden=hidden, username=username_hint) }}">
                                     {{ page_num }}
                                 </a>
                             </li>
@@ -76,7 +76,7 @@
                     {% else %}
                         <li class="page-item disabled">
                             <a class="page-link"
-                               href="{{ url_for("site.users", page=users_data.pagination.prev_num, searchParameters=search_parameters) }}">
+                               href="{{ url_for("site.users", page=users_data.pagination.prev_num, favOnly=favOnly, hidden=hidden, username=username_hint) }}">
                                 ...
                             </a>
                         </li>
@@ -85,14 +85,14 @@
                 {% if users_data.pagination.page == users_data.pagination.pages %}
                     <li class="page-item disabled">
                         <a class="page-link"
-                           href="{{ url_for("site.users", page=users_data.pagination.next_num, searchParameters=search_parameters) }}">
+                           href="{{ url_for("site.users", page=users_data.pagination.next_num, favOnly=favOnly, hidden=hidden, username=username_hint) }}">
                             &raquo;
                         </a>
                     </li>
                 {% else %}
                     <li class="page-item">
                         <a class="page-link"
-                           href="{{ url_for("site.users", page=users_data.pagination.next_num, searchParameters=search_parameters) }}">
+                           href="{{ url_for("site.users", page=users_data.pagination.next_num, favOnly=favOnly, hidden=hidden, username=username_hint) }}">
                             &raquo;
                         </a>
                     </li>

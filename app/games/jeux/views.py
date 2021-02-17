@@ -17,40 +17,40 @@ def catalog():
     """
     form = GamesSimpleSearchForm()
     page = request.args.get('page', 1, type=int)
-    games_hint = request.args.get('games', '', type=str)
 
-    # Get search format and hint if there are one
-    games_hint = form.games_hint.data if form.games_hint.data else ''
+    # Get search parameter if there is one
     search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else request.args.get('searchParameter', None, type=str)
+
+    # Save the search filter
+    form.display_search_type.data = request.args.get('type', form.display_search_type.data, type=str)
+    # Fill search bar with parameters when changing page
+    form.games_hint.data = request.args.get('games', form.games_hint.data if form.games_hint.data else '', type=str)
+    # If no hint was typed change search type back to title search (avoid crash)
+    if not form.games_hint.data:
+        form.display_search_type.data = 'title'
+    
+    # Change title of the page in function of search_parameter
+    title = {"KNOWN":"Jeux que vous connaissez", "NOTED":"Jeux que vous avez déjà notés", "WISHED":"Jeux que vous souhaitez", "OWNED":"Jeux que vous possédez"}.get(search_parameter, "Tous les jeux")
 
     # We want to remove already owned and wished games from the page
     owned_games = User.get_owned_games(flask_login.current_user.id, True)
     wished_games = User.get_wished_games(flask_login.current_user.id, True)
 
     # But wewant to know what games the user already knows or has noted
-    known_games = User.get_known_games(flask_login.current_user.id,True) 
-    noted_games = User.get_noted_games(flask_login.current_user.id,True) 
+    known_games = User.get_known_games(flask_login.current_user.id, True)
+    noted_games = User.get_noted_games(flask_login.current_user.id, True)    
 
-    # If no hint was typed change search type back to title search (avoid crash)
-    if not games_hint:
-        form.display_search_type.data = 'title'
-
-    # Change title of the page and filters in function of search_parameter
-    if search_parameter == "KNOWN":
-        title = "Jeux que vous connaissez"
-    elif search_parameter == "NOTED":
-        title = "Jeux que vous avez déjà notés"
-    elif search_parameter == "WISHED":
-        title = "Jeux que vous souhaitez"
+    # Change filters in function of search_parameter
+    if search_parameter == "WISHED":
         wished_games = Game.query.filter(False)
     elif search_parameter == "OWNED":
-        title = "Jeux que vous possédez"
         owned_games = Game.query.filter(False)
-    else:
-        title = "Tout les jeux"
-    games = Game.search_with_pagination(flask_login.current_user.id, games_hint, form.display_search_type.data, search_parameter, page, 20)
+    
+    search_results = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data, form.display_search_type.data, search_parameter, page, 20)
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter)
+    print(form.display_search_type.data)
+
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=search_results, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter, type=form.display_search_type.data, games_hint=form.games_hint.data)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
@@ -89,9 +89,10 @@ def add_games():
         return render_template('add-games.html', games_search_form=games_search_form, stylesheet='add-games',
                                researched_game=researched_game, add_game_form=add_game_form)
     if add_game_form.validate_on_submit():
-        game_id = Game.max_id() + 1
+        game_id = Game.max_id()
         if game_id is None:
             game_id = 0
+        game_id += 1
         Game.add_game(game_id,
                       {'title': add_game_form.title.data, 'publication_year': add_game_form.years.data,
                        'min_players': int(add_game_form.min_players.data),
@@ -122,7 +123,8 @@ def game(game_id):
     Render the game template on the /game route
     """
     return render_template('game.html', stylesheet=None, game=Game.from_id(game_id),
-                           owned_games=User.get_owned_games(flask_login.current_user.id, True))
+                           owned_games=User.get_owned_games(flask_login.current_user.id, True),
+                           wished_games=User.get_wished_games(flask_login.current_user.id, True))
 
 
 @jeux.route('/add-wishes', methods=['GET', 'POST'])

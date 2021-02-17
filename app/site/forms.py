@@ -1,7 +1,6 @@
 # app/site/forms.py
 
 from flask_wtf import FlaskForm
-from markupsafe import Markup
 from wtforms import PasswordField, StringField, SubmitField, SelectField, BooleanField, RadioField
 from wtforms.validators import DataRequired, EqualTo
 
@@ -17,6 +16,7 @@ class UpdateInformationForm(FlaskForm):
                              render_kw={'placeholder': 'Mot de passe'})
     confirm_password = PasswordField('Confirmer le mot de passe', validators=[DataRequired()],
                                      render_kw={'placeholder': 'Confirmer le mot de passe'})
+    use_gravatar = BooleanField('Utiliser Gravatar')
     profile_picture = StringField('Photo de profile', validators=[DataRequired()],
                                   render_kw={'placeholder': 'URL de la photo de profile'})
     submit = SubmitField('Mettre à jour')
@@ -28,7 +28,7 @@ class GamesSimpleSearchForm(FlaskForm):
         'placeholder': 'Rechercher des jeux grâce à leurs noms',
         'aria-describedby': 'search-buttons'
     })
-    display_search_type = SelectField('Type', choices=[('title',"Nom"),('year',"Année")])
+    display_search_type = SelectField('Type', choices=[('title',"Nom"),('genre',"Genre"),('year',"Année")])
     display_search_parameter = RadioField('Catégorie de la recherche : ', choices=
         [(None, "Afficher tout les jeux"),
             ('KNOWN',"Afficher uniquement les jeux que vous connaissez"),
@@ -61,7 +61,7 @@ class AddGameForm(FlaskForm):
                               render_kw={'placeholder': 'Joueurs minimum'})
     max_players = StringField('Joueurs maximum', validators=[DataRequired()],
                               render_kw={'placeholder': 'Joueurs maximum'})
-    min_playtime = StringField('Durée minimale', validators=[DataRequired()],
+    min_playtime = StringField('Durée minimale (en minutes)', validators=[DataRequired()],
                                render_kw={'placeholder': 'Durée minimale'})
     image = StringField('Illustration', validators=[DataRequired()],
                         render_kw={'placeholder': "URL de l'illustration finissant par une extension de fichier image "
