@@ -21,11 +21,13 @@ def catalog():
     # Get search parameter if there is one
     search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else request.args.get('searchParameter', None, type=str)
 
+    # Save the search filter
+    form.display_search_type.data = request.args.get('type', form.display_search_type.data, type=str)
+    # Fill search bar with parameters when changing page
+    form.games_hint.data = request.args.get('games', form.games_hint.data if form.games_hint.data else '', type=str)
     # If no hint was typed change search type back to title search (avoid crash)
     if not form.games_hint.data:
         form.display_search_type.data = 'title'
-        # Fill search bar with parameters when changing page
-        form.games_hint.data = request.args.get('games', '', type=str)
     
     # Change title of the page in function of search_parameter
     title = {"KNOWN":"Jeux que vous connaissez", "NOTED":"Jeux que vous avez déjà notés", "WISHED":"Jeux que vous souhaitez", "OWNED":"Jeux que vous possédez"}.get(search_parameter, "Tous les jeux")
@@ -46,7 +48,9 @@ def catalog():
     
     search_results = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data, form.display_search_type.data, search_parameter, page, 20)
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=search_results, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter, games_hint=form.games_hint.data)
+    print(form.display_search_type.data)
+
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=search_results, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter, type=form.display_search_type.data, games_hint=form.games_hint.data)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
