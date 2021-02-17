@@ -51,8 +51,7 @@ class User(UserMixin, db.Model):
         """
         return check_password_hash(self.password_hash, password)
 
-    @property
-    def profile_picture(self):
+    def get_profile_picture(self):
         """
         Get the user's profile picture URL.
         :return: The user's profile picture URL.

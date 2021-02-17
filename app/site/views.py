@@ -54,7 +54,7 @@ def user(id=None):
     Render the user template on the /user route
     """
     user = User.query.get_or_404(id)
-    data = User.search(current_user, user.username, ["HIDDEN"])    # Retrieve the data from the database, including the hidden users.
+    data = User.search(current_user, user.username, False, True)    # Retrieve the data from the database, including the hidden users.
     return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id, users_data=data)
 
 
@@ -162,7 +162,7 @@ def account():
             user.last_name = form.last_name.data
             user.password = form.password.data
             user.use_gravatar = form.use_gravatar.data
-            user.profile_picture = user.profile_picture
+            user.profile_picture = user.get_profile_picture()
             db.session.commit()
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)

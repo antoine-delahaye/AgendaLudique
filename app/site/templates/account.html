@@ -40,13 +40,6 @@
             </div>
             {{ form.submit(class="btn btn-block text-uppercase mb-3") }}
         </form>
-        <script>
-            <!-- TODO Use the account.js file instead. -->
-            function enableOrDisableProfilePictureField() {
-                let field = document.getElementById("profile_picture");
-                let checkbox = document.getElementById("use_gravatar");
-                field.disabled = checkbox.checked ? true : false;
-            }
-        </script>
+        <script src="{{ url_for("site.static", filename="js/account.js") }}"></script>
     </main>
 {% endblock %}
