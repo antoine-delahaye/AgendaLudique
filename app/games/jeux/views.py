@@ -26,8 +26,8 @@ def catalog():
     wished_games = User.get_wished_games(flask_login.current_user.id, True)
 
     # But wewant to know what games the user already knows or has noted
-    known_games = User.get_known_games(flask_login.current_user.id,True) 
-    noted_games = User.get_noted_games(flask_login.current_user.id,True) 
+    known_games = User.get_known_games(flask_login.current_user.id, True)
+    noted_games = User.get_noted_games(flask_login.current_user.id, True)
 
     # If no hint was typed change search type back to title search (avoid crash)
     if not form.games_hint.data:
@@ -89,9 +89,10 @@ def add_games():
         return render_template('add-games.html', games_search_form=games_search_form, stylesheet='add-games',
                                researched_game=researched_game, add_game_form=add_game_form)
     if add_game_form.validate_on_submit():
-        game_id = Game.max_id() + 1
+        game_id = Game.max_id()
         if game_id is None:
             game_id = 0
+        game_id += 1
         Game.add_game(game_id,
                       {'title': add_game_form.title.data, 'publication_year': add_game_form.years.data,
                        'min_players': int(add_game_form.min_players.data),
@@ -122,7 +123,8 @@ def game(game_id):
     Render the game template on the /game route
     """
     return render_template('game.html', stylesheet=None, game=Game.from_id(game_id),
-                           owned_games=User.get_owned_games(flask_login.current_user.id, True))
+                           owned_games=User.get_owned_games(flask_login.current_user.id, True),
+                           wished_games=User.get_wished_games(flask_login.current_user.id, True))
 
 
 @jeux.route('/add-wishes', methods=['GET', 'POST'])

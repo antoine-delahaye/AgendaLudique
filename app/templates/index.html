@@ -13,8 +13,14 @@
           crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
     <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/index.css") }}">
-    {% if stylesheet!=None %}
-        <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/"+stylesheet+".css") }}">
+    {% if stylesheet is defined %}
+        <link rel="stylesheet" type="text/css"
+              href="{{ url_for("static", filename="css/"+stylesheet+".css") }}">
+    {% endif %}
+    {% if stylesheet_list is defined %} <!-- would have been better to never have stylesheet but anyways -->
+        {% for ss in stylesheet_list %}
+            href="{{ url_for("static", filename="css/"+ss+".css") }}">
+        {% endfor %}
     {% endif %}
     {% if request.cookies.get('color-theme')=='On' %}
         <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/dark.css") }}">
@@ -49,8 +55,10 @@
                                 jeux connus</a>
                             <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=NOTED">Mes
                                 jeux notés</a>
-                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=WISHED">Liste de souhaits</a>
-                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=OWNED">Ma collection</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=WISHED">Liste
+                                de souhaits</a>
+                            <a class="dropdown-item" href="{{ url_for('jeux.catalog') }}?searchParameter=OWNED">Ma
+                                collection</a>
                             <a class="dropdown-item" href="{{ url_for('jeux.add_games') }}">Ajouter des jeux</a>
                         </div>
                     </li>
