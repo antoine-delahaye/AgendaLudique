@@ -28,7 +28,7 @@ class GamesSimpleSearchForm(FlaskForm):
         'placeholder': 'Rechercher des jeux grâce à leurs noms',
         'aria-describedby': 'search-buttons'
     })
-    display_search_type = SelectField('Type', choices=[('title',"Nom"),('year',"Année")])
+    display_search_type = SelectField('Type', choices=[('title',"Nom"),('genre',"Genre"),('year',"Année")])
     display_search_parameter = RadioField('Catégorie de la recherche : ', choices=
         [(None, "Afficher tout les jeux"),
             ('KNOWN',"Afficher uniquement les jeux que vous connaissez"),

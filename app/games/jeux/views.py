@@ -2,7 +2,7 @@
 import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 
-from app.models import User, Game, Wish, Collect
+from app.models import User, Game, Wish, Collect, KnowRules, Note
 from app.site.forms import GamesSimpleSearchForm, UpdateInformationForm, GamesSearchForm, AddGameForm
 from flask_login import login_required, current_user
 from . import jeux
@@ -17,19 +17,23 @@ def catalog():
     """
     form = GamesSimpleSearchForm()
     page = request.args.get('page', 1, type=int)
-    games_hint = request.args.get('games', '', type=str)
 
     # Get search format and hint if there are one
-    games_hint = form.games_hint.data if form.games_hint.data else ''
     search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else request.args.get('searchParameter', None, type=str)
 
     # We want to remove already owned and wished games from the page
     owned_games = User.get_owned_games(flask_login.current_user.id, True)
     wished_games = User.get_wished_games(flask_login.current_user.id, True)
 
+    # But wewant to know what games the user already knows or has noted
+    known_games = User.get_known_games(flask_login.current_user.id,True) 
+    noted_games = User.get_noted_games(flask_login.current_user.id,True) 
+
     # If no hint was typed change search type back to title search (avoid crash)
-    if not games_hint:
+    if not form.games_hint.data:
         form.display_search_type.data = 'title'
+        # Fill search bar with parameters when changing page
+        form.games_hint.data = request.args.get('games', '', type=str)
 
     # Change title of the page and filters in function of search_parameter
     if search_parameter == "KNOWN":
@@ -43,10 +47,10 @@ def catalog():
         title = "Jeux que vous possédez"
         owned_games = Game.query.filter(False)
     else:
-        title = "Tout les jeux"
-    games = Game.search_with_pagination(flask_login.current_user.id, games_hint, form.display_search_type.data, search_parameter, page, 20)
+        title = "Tous les jeux"
+    games = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data, form.display_search_type.data, search_parameter, page, 20)
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, search_parameter=search_parameter)
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=games, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter, games_hint=form.games_hint.data)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
@@ -153,5 +157,41 @@ def add_game_collection(game_id):
 @login_required
 def remove_game_collection(game_id):
     db.session.delete(Collect.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@jeux.route('/add-known', methods=['GET', 'POST'])
+@jeux.route('/add-known/<game_id>', methods=['GET', 'POST'])
+@login_required
+def add_game_known(game_id):
+    db.session.add(KnowRules(user_id=flask_login.current_user.id, game_id=game_id))
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@jeux.route('/remove', methods=['GET', 'POST'])
+@jeux.route('/remove/<game_id>', methods=['GET', 'POST'])
+@login_required
+def remove_game_known(game_id):
+    db.session.delete(KnowRules.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@jeux.route('/add-note', methods=['GET', 'POST'])
+@jeux.route('/add-note/<game_id>', methods=['GET', 'POST'])
+@login_required
+def add_game_note(game_id):
+    db.session.add(Note(user_id=flask_login.current_user.id, game_id=game_id))
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@jeux.route('/remove', methods=['GET', 'POST'])
+@jeux.route('/remove/<game_id>', methods=['GET', 'POST'])
+@login_required
+def remove_game_note(game_id):
+    db.session.delete(Note.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
     db.session.commit()
     return redirect(request.referrer)

@@ -29,13 +29,14 @@ def users():
     """
     form = UsersSearchForm()
     page = request.args.get('page', 1, type=int)
-    username_hint = request.args.get('username', '', type=str)
-    search_parameters = []
+    search_parameters = list()
     qs_search_parameters = request.args.get('searchParameters', None, type=str)
 
+    if not form.username_hint.data:
+        # Fill search bar with parameters when changing page
+        form.username_hint.data = request.args.get('username', '', type=str)
+    
     if form.validate_on_submit():
-        username_hint = form.username_hint.data
-
         if form.display_masked_players.data:
             search_parameters.append("HIDDEN")
 
@@ -53,10 +54,9 @@ def users():
             if parameter == "HIDDEN":
                 form.display_masked_players.data = True
 
-    search_results = User.search_with_pagination(current_user, username_hint, search_parameters, page, 20)
+    search_results = User.search_with_pagination(current_user, form.username_hint.data, search_parameters, page, 20)
 
-    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id,
-                           users_data=search_results, search_parameters=search_parameters)
+    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id, users_data=search_results, search_parameters=search_parameters, username_hint=form.username_hint.data)
 
 
 @site.route('/user')
