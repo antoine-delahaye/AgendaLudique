@@ -3,7 +3,6 @@
 import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required, current_user
-from sqlalchemy import text
 
 from app import db
 from app.models import User, Game, Group, HideUser, BookmarkUser, Collect, Wish, HideGame
@@ -162,14 +161,20 @@ def account():
     Render the account template on the /account route
     """
     form = UpdateInformationForm()
+
+    user = current_user
+
+    if user.use_gravatar:
+        form.profile_picture.render_kw = {'disabled': ''}
+
     if form.validate_on_submit():
-        user = User.query.filter_by(email=flask_login.current_user.email).first()
         if user is not None:
             user.username = form.username.data
             user.first_name = form.first_name.data
             user.last_name = form.last_name.data
             user.password = form.password.data
-            user.profile_picture = form.profile_picture.data
+            user.use_gravatar = form.use_gravatar.data
+            user.profile_picture = user.profile_picture
             db.session.commit()
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)

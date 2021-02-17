@@ -1,7 +1,6 @@
 # app/site/forms.py
 
 from flask_wtf import FlaskForm
-from markupsafe import Markup
 from wtforms import PasswordField, StringField, SubmitField, SelectField, BooleanField, RadioField
 from wtforms.validators import DataRequired, EqualTo
 
@@ -17,6 +16,7 @@ class UpdateInformationForm(FlaskForm):
                              render_kw={'placeholder': 'Mot de passe'})
     confirm_password = PasswordField('Confirmer le mot de passe', validators=[DataRequired()],
                                      render_kw={'placeholder': 'Confirmer le mot de passe'})
+    use_gravatar = BooleanField('Utiliser Gravatar')
     profile_picture = StringField('Photo de profile', validators=[DataRequired()],
                                   render_kw={'placeholder': 'URL de la photo de profile'})
     submit = SubmitField('Mettre à jour')

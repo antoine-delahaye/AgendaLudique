@@ -1,4 +1,5 @@
 # app/utils.py
+import hashlib
 
 from flask_login import UserMixin
 from flask_sqlalchemy import Pagination
@@ -22,7 +23,8 @@ class User(UserMixin, db.Model):
     last_name = db.Column(db.String(32), index=True)
     password_hash = db.Column(db.String(128))
     profile_picture = db.Column(db.String(512))
-    # token_pwd = db.Column(db.String(32), unique=True)
+    use_gravatar = db.Column(db.Boolean, default=False)
+    token_pwd = db.Column(db.String(32), unique=True)
 
     statistics = db.relationship(
         "Statistic",
@@ -48,6 +50,23 @@ class User(UserMixin, db.Model):
         Check if hashed password matches actual password
         """
         return check_password_hash(self.password_hash, password)
+
+    @property
+    def profile_picture(self):
+        """
+        Get the user's profile picture URL.
+        :return: The user's profile picture URL.
+        """
+        if self.use_gravatar:
+            return self.get_gravatar()
+        return self.profile_picture
+
+    def get_gravatar(self):
+        """
+        Get the user's profile picture from Gravatar.
+        :return: The URL of the user's profile picture on Gravatar.
+        """
+        return "https://www.gravatar.com/avatar/" + hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
 
     def __repr__(self):
         return f'<User: {self.username}>'
