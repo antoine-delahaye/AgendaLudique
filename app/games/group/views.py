@@ -36,7 +36,11 @@ def group(id=None):
     """
     group = Group.query.get_or_404(id)
     is_member = (Participate.from_both_ids(current_user.id, id) is not None)
-    return render_template('group.html', stylesheet='group', group=group, is_member=is_member)
+    return render_template('group.html',
+        stylesheet='group',
+        group=group,
+        is_member=is_member,
+        is_resp=(current_user.id==group.manager_id))
 
 
 @gp.route('/my_groups')
@@ -63,6 +67,14 @@ def join_group(group_id):
 @gp.route('/quit_group/<group_id>', methods=['GET', 'POST'])
 @login_required
 def quit_group(group_id):
+    group = Group.query.get_or_404(group_id)
     db.session.delete(Participate.from_both_ids(current_user.id, group_id))
+
+    participations = group.participations.all()
+    if participations == 0: # if the group in now empty
+        db.session.delete(group)
+    elif current_user.id == group.manager_id: # if the group doesnt have a manager anymore
+        group.manager_id = participations[0].member_id # nominate a new manager
+
     db.session.commit()
     return redirect(request.referrer)
