@@ -17,3 +17,8 @@ main form {
 main nav ul {
     width: min-content;
 }
+
+
+.wished:hover:before{
+	content: "\f7a9";
+}
