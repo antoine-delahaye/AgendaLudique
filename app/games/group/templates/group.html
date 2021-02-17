@@ -20,7 +20,9 @@
         <h4>Membres du groupe : </h4>
         {% for member in group.participations %}
             {% set member = member.member %}
-            <p>{{ member.username }}</p>
+            {% if member.id != group.manager_id %}
+              <p>{{ member.username }}</p>
+            {% endif %}
         {% endfor %}
     </main>
 {% endblock %}
