@@ -6,8 +6,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
+
+import config
 from app.mail.utils.mailtools import MailTool
-from config import app_config
+from instance.config import config
 
 # SQLAlchemy variable initialization
 db = SQLAlchemy()
@@ -46,8 +48,7 @@ def config_app(config_name):
     global app
 
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(app_config[config_name])
-    app.config.from_pyfile('config.py')
+    app.config.from_object(config[config_name])
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config['BOOTSTRAP_SERVER_LOCAL'] = True
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -60,16 +61,6 @@ def config_mail(app):
     :param app: app to be served
     """
     global mail
-    mail_config = {
-        'MAIL_SERVER': 'smtp.gmail.com',
-        'MAIL_PORT': 465,
-        'MAIL_USERNAME': 'noreply.agendaludique@gmail.com',
-        'MAIL_DEFAULT_SENDER': 'Agenda Ludique',
-        'MAIL_PASSWORD': 'uteokhqmpqwyjgdj',
-        'MAIL_USE_TLS': False,
-        'MAIL_USE_SSL': True
-    }
-    app.config.update(mail_config)
     mail = MailTool(app)
 
 
