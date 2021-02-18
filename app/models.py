@@ -201,8 +201,9 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, favOnly, hidden)
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
+        page_elements = results.items.slice((current_page - 1) * per_page,
+                                            current_page * per_page)  # the users that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, results.items.count(), page_elements)
         results.items = None
 
         return results
