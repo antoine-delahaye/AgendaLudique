@@ -11,5 +11,5 @@ def update_user_with_form(form,user):
     user.last_name = form.last_name.data
     user.password = form.password.data
     user.use_gravatar = form.use_gravatar.data
-    user.profile_picture = user.get_profile_picture()
+    user.set_profile_picture(form.profile_picture.data, form.use_gravatar.data)
     db.session.commit()

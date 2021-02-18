@@ -4,7 +4,7 @@
         <img class="img-fluid rounded-lg shadow-lg mx-auto d-block mb-4"
              src="{{ current_user.get_profile_picture() }}" alt="Image de profil">
         <h2 class="text-center mb-3">Éditer les informations</h2>
-        <form class="form" action="" method="POST">
+        <form class="form" action="{{ url_for('site.account') }}" method="POST">
             {{ form.hidden_tag() }}
             <div class="form-row">
                 <div class="form-group col-lg-6">
