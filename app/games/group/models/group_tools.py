@@ -33,6 +33,7 @@ def join_private_group_form(form):
         db.session.add(Participate(group_id=group.id, member_id=current_user.id))
         db.session.commit()
         return redirect(url_for("group.group",id=group.id))
+    return redirect(request.referrer)
 
 
 def join_public_group_form(group_id):

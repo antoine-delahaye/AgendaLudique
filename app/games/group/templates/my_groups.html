@@ -2,6 +2,12 @@
 {% block main %}
 <main class="container-fluid col-9 mb-5">
   <h2 class="text-center mb-5">Mes groupes</h2>
+  <form class="form mb-5" action="" method="POST">
+      <div class="form-row align-items-center justify-content-center">
+          {{ form.code(class="form-control col-2 mr-2") }}
+          {{ form.submit(class="btn btn-block text-uppercase col-2 ml-2") }}
+      </div>
+  </form>
   {% if managed_groups or groups_data %}
     {% if managed_groups %}
         <h4 class="my-3">Groupes gérés</h4>
