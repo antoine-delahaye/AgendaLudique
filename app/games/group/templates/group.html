@@ -18,7 +18,7 @@
             onclick="return confirm('Etes-vous sûr de vouloir quitter le groupe ? ')"
             href="{{ url_for('group.quit_group', group_id=group.id) }}">Quitter
           {% else %}
-            "href="{{ url_for('group.join_group', group_id=group.id) }}">Rejoindre
+            "href="{{ url_for('group.join_public_group', group_id=group.id) }}">Rejoindre
           {% endif %}
         </a>
         <h4 class="my-3">Responsable</h4>
