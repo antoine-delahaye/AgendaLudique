@@ -9,6 +9,9 @@
                 <i class="fas fa-unlock"></i>
             {% endif %}
         </h2>
+        {% if is_resp %}
+          <p>Mot de passe : {{group.password}}</p>
+        {% endif %}
         <a type="button" class="btn pt-2
           {% if is_member %}
             btn-danger"
