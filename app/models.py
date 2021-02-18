@@ -62,6 +62,22 @@ class User(UserMixin, db.Model):
             return self.profile_picture
         return "/static/images/blank_pp.png"
 
+    def set_profile_picture(self, new_picture_url, use_gravatar=False):
+        """
+        Set the user's profile picture URL, or Gravatar's one if enabled.
+        :param new_picture_url: A picture URL.
+        :param use_gravatar: If the user wants to use his Gravatar profile picture.
+        """
+        print("Use Gravatar" + str(use_gravatar))
+        print("URL: " + new_picture_url)
+        if use_gravatar:
+            self.profile_picture = self.get_gravatar()
+        else:
+            if new_picture_url == "None":
+                self.profile_picture = None
+            else:
+                self.profile_picture = new_picture_url
+
     def get_gravatar(self):
         """
         Get the user's profile picture from Gravatar.
@@ -533,7 +549,7 @@ class Game(UserMixin, db.Model):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
         page_elements = results.items[(
-                                              current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+                                                  current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results
