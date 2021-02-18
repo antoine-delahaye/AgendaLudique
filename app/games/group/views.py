@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from . import group as gp
 from app.models import Group, Participate, User
 from .models.group_tools import get_all_participation
-from ... import db
+from app import db
 
 
 @gp.route('/groups')
