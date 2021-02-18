@@ -58,7 +58,25 @@ class User(UserMixin, db.Model):
         """
         if self.use_gravatar:
             return self.get_gravatar()
-        return self.profile_picture
+        elif self.profile_picture is not None:
+            return self.profile_picture
+        return "/static/images/blank_pp.png"
+
+    def set_profile_picture(self, new_picture_url, use_gravatar=False):
+        """
+        Set the user's profile picture URL, or Gravatar's one if enabled.
+        :param new_picture_url: A picture URL.
+        :param use_gravatar: If the user wants to use his Gravatar profile picture.
+        """
+        print("Use Gravatar" + str(use_gravatar))
+        print("URL: " + new_picture_url)
+        if use_gravatar:
+            self.profile_picture = self.get_gravatar()
+        else:
+            if new_picture_url == "None":
+                self.profile_picture = None
+            else:
+                self.profile_picture = new_picture_url
 
     def get_gravatar(self):
         """
@@ -116,6 +134,22 @@ class User(UserMixin, db.Model):
         return req if req else None
 
     @classmethod
+    def from_email(cls, email):
+        """
+        Get an user from its email. Return None if the user does not exist.
+        """
+        req = User.query.filter(User.email == email).first()
+        return req if req else None
+
+    @classmethod
+    def from_token(cls, token):
+        """
+        Get an user from its email. Return None if the user does not exist.
+        """
+        req = User.query.filter(User.token_pwd == token).first()
+        return req if req else None
+
+    @classmethod
     def search(cls, current_user, username_hint, favOnly, hidden):
         """
         Search users with defined parameters
@@ -151,11 +185,8 @@ class User(UserMixin, db.Model):
         for hidden_user in hidden_users_db:
             results.hidden_ids.add(hidden_user.user2_id)
 
-        for data in users_db:
-            results.items.append(
-                {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
-                 'last_name': data.last_name,
-                 'profile_picture': data.profile_picture})
+        results.items = users_db
+
         return results
 
     @classmethod
@@ -172,8 +203,7 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, favOnly, hidden)
-        page_elements = results.items[(
-                                              current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
 
@@ -458,6 +488,13 @@ class Game(UserMixin, db.Model):
         return f'<Game: {self.title}>'
 
     @classmethod
+    def all(cls):
+        """
+        :return: return every games from db
+        """
+        db.session.query(Game).all()
+
+    @classmethod
     def from_title(cls, title):
         """
         Get a Game from its title. Return None if the game does not exist.
@@ -475,8 +512,9 @@ class Game(UserMixin, db.Model):
 
     @classmethod
     def max_id(cls):
-        """ Return the maximum id of the Game class. Used for increment """
-        return db.session.query(func.max(Game.id)).one()[0]
+        """ Return the maximum id of the Game class. 0 if don't exist """
+        max = db.session.query(func.max(Game.id)).one()[0]
+        return max if max is not None else 0
 
     @classmethod
     def add_game(cls, game_id, game_data):
@@ -533,7 +571,7 @@ class Game(UserMixin, db.Model):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
         page_elements = results.items[(
-                                              current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+                                                  current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results
@@ -620,6 +658,14 @@ class Group(db.Model):
         Get a Group from its name. Return None if the group does not exist.
         """
         req = Group.query.filter(Group.name == name).first()
+        return req if req else None
+
+    @classmethod
+    def from_id(cls, id):
+        """
+        Get a Group from its id. Return None if the group does not exist.
+        """
+        req = Group.query.filter(Group.id == id).first()
         return req if req else None
 
 
