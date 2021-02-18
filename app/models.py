@@ -68,8 +68,6 @@ class User(UserMixin, db.Model):
         :param new_picture_url: A picture URL.
         :param use_gravatar: If the user wants to use his Gravatar profile picture.
         """
-        print("Use Gravatar" + str(use_gravatar))
-        print("URL: " + new_picture_url)
         if use_gravatar:
             self.profile_picture = self.get_gravatar()
         else:
