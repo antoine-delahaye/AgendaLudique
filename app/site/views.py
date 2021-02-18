@@ -150,19 +150,18 @@ def account():
     """
     form = UpdateInformationForm()
 
-    user = current_user
-
-    if user.use_gravatar:
+    if current_user.use_gravatar:
         form.profile_picture.render_kw = {'disabled': ''}
 
-    if form.validate_on_submit():
+    if request.method == 'POST':
+        user = current_user
         if user is not None:
             user.username = form.username.data
             user.first_name = form.first_name.data
             user.last_name = form.last_name.data
             user.password = form.password.data
             user.use_gravatar = form.use_gravatar.data
-            user.profile_picture = user.get_profile_picture()
+            user.set_profile_picture(form.profile_picture.data, form.use_gravatar.data)
             db.session.commit()
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)
@@ -184,5 +183,4 @@ def set_parameters():
     param = make_response(redirect(url_for('site.parameters')))
     param.set_cookie('color-theme', color_theme)
     return param
-
 
