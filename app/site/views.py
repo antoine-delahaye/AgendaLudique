@@ -125,9 +125,6 @@ def add_bookmarked_user(user_id=None):
     return redirect(url_for('site.users'))
 
 
-######## TODO
-# Les lignes 88-97 et 130-139 sont  les mêmes ? est-ce normal ou une fonction en cours
-# ps user_id ne sert à rien, jamais tu t'en sers
 @site.route('/bookmarked-users/remove', methods=['GET'])
 @login_required
 def remove_bookmarked_user(user_id=None):
@@ -162,10 +159,9 @@ def account():
     if user.use_gravatar:
         form.profile_picture.render_kw.update({'disabled': ''})  # better than redefining it ;)
 
-    if form.validate_on_submit():
+    if request.method == 'POST':
         if user is not None:
             update_user_with_form(form, user)
-
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)
 
