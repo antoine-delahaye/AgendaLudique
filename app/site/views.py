@@ -1,7 +1,8 @@
 # app/site/views.py
 
-from flask import render_template, redirect, url_for, request, make_response
+from flask import render_template, redirect, url_for, request, make_response, flash
 from flask_login import login_required, current_user
+from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.models import User, HideUser, BookmarkUser
@@ -125,9 +126,6 @@ def add_bookmarked_user(user_id=None):
     return redirect(url_for('site.users'))
 
 
-######## TODO
-# Les lignes 88-97 et 130-139 sont  les mêmes ? est-ce normal ou une fonction en cours
-# ps user_id ne sert à rien, jamais tu t'en sers
 @site.route('/bookmarked-users/remove', methods=['GET'])
 @login_required
 def remove_bookmarked_user(user_id=None):
@@ -162,10 +160,13 @@ def account():
     if user.use_gravatar:
         form.profile_picture.render_kw.update({'disabled': ''})  # better than redefining it ;)
 
-    if form.validate_on_submit():
+    if request.method == 'POST':
         if user is not None:
-            update_user_with_form(form, user)
-
+            try:
+                update_user_with_form(form, user)
+                flash("Votre profil a bien été mis à jour.", "success")
+            except IntegrityError:
+                flash("Ce nom d'utilisateur est déjà pris.", "danger")
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)
 
@@ -176,7 +177,7 @@ def parameters():
     """
     Render the parameters template on the /parameters route
     """
-    return render_template('parameters.html', stylesheet=None)
+    return render_template('parameters.html')
 
 
 @site.route('/set_parameters', methods=['POST'])

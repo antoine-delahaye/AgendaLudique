@@ -6,10 +6,9 @@ from app.models import User, Game, Wish, Collect, KnowRules, Note
 from app.site.models.forms import GamesSimpleSearchForm, UpdateInformationForm, GamesSearchForm, AddGameForm
 from flask_login import login_required, current_user
 from . import jeux
-from .models.jeux_tools import get_numero_page, get_search_parameter, get_search_type, get_search_game, TITLES, \
-    DEFAULT_TITLE, get_known_noted_games
+from .models.games_form_tools import populate_games_form, beautify_games_form, add_default_values_game_form
+from .models.jeux_tools import get_numero_page, TITLES, DEFAULT_TITLE, get_catalog_payload
 from app import db
-from ..group.models.group_tools import populate_games_form, beautify_games_form, add_default_values_game_form
 
 
 @jeux.route('/catalog', methods=['GET', 'POST'])
@@ -20,37 +19,13 @@ def catalog():
     """
     form = GamesSimpleSearchForm()
     page = get_numero_page()
-
-    search_parameter = get_search_parameter(form.display_search_parameter.data)
-
-    # Save the search filter
-    form.display_search_type.data = get_search_type(form.display_search_type.data)
-    # Fill search bar with parameters when changing page
-    form.games_hint.data = get_search_game(form.games_hint.data)
-
-    # If no hint was typed change search type back to title search (avoid crash)
-    if not form.games_hint.data:
-        form.display_search_type.data = 'title'
+    payload = get_catalog_payload(form, current_user, page)
 
     # Change title of the page in function of search_parameter
-    title = TITLES.get(search_parameter, DEFAULT_TITLE)
-
-    # We want to remove already owned and wished games from the page
-    owned_games = User.get_owned_games(current_user.id, True)
-    wished_games = User.get_wished_games(current_user.id, True)
-
-    # But wewant to know what games the user already knows or has noted
-    known_games, noted_games = get_known_noted_games(current_user, search_parameter)
-
-    search_results = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data,
-                                                 form.display_search_type.data, search_parameter, page, 20)
-
+    title = TITLES.get(payload.get("search_parameter"), DEFAULT_TITLE)
     # print(form.display_search_type.data)
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=search_results,
-                           owned_games=owned_games, wished_games=wished_games, known_games=known_games,
-                           noted_games=noted_games, search_parameter=search_parameter,
-                           type=form.display_search_type.data, games_hint=form.games_hint.data)
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, **payload)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
@@ -104,7 +79,9 @@ def game(game_id):
     """
     return render_template('game.html', game=Game.from_id(game_id),
                            owned_games=User.get_owned_games(flask_login.current_user.id, True),
-                           wished_games=User.get_wished_games(flask_login.current_user.id, True))
+                           wished_games=User.get_wished_games(flask_login.current_user.id, True),
+                           average_grade=Note.average_grade(game_id),
+                           messages=Note.get_messages(game_id, 5))
 
 
 @jeux.route('/add-wishes', methods=['GET', 'POST'])
@@ -177,5 +154,15 @@ def add_game_note(game_id):
 @login_required
 def remove_game_note(game_id):
     db.session.delete(Note.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@jeux.route('/update-noted', methods=['GET', 'POST'])
+@jeux.route('/update-noted/<game_id>', methods=['GET', 'POST'])
+@login_required
+def update_game_note(game_id):
+    remove_game_note(game_id)
+    add_game_note(game_id)
     db.session.commit()
     return redirect(request.referrer)

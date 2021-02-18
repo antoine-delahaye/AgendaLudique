@@ -58,9 +58,23 @@ class User(UserMixin, db.Model):
         """
         if self.use_gravatar:
             return self.get_gravatar()
-        elif self.profile_picture is not None:
+        elif self.profile_picture != "" and self.profile_picture is not None:
             return self.profile_picture
         return "/static/images/blank_pp.png"
+
+    def set_profile_picture(self, new_picture_url, use_gravatar=False):
+        """
+        Set the user's profile picture URL, or Gravatar's one if enabled.
+        :param new_picture_url: A picture URL.
+        :param use_gravatar: If the user wants to use his Gravatar profile picture.
+        """
+        if use_gravatar:
+            self.profile_picture = self.get_gravatar()
+        else:
+            if new_picture_url is None or new_picture_url == "None":
+                self.profile_picture = None
+            else:
+                self.profile_picture = new_picture_url
 
     def get_gravatar(self):
         """
@@ -430,6 +444,29 @@ class Note(db.Model):
         req = Note.query.filter(Note.user_id == user_id, Note.game_id == game_id).first()
         return req if req else None
 
+    @classmethod
+    def average_grade(cls, game_id):
+        """
+        Get an average grade from a game id
+        """
+        req = Note.query.filter(Note.game_id == game_id).all()
+        avg_grade = 0
+        count = 0
+        for grade in req:
+            if grade.note is not None:
+                avg_grade += grade.note
+                count += 1
+        return avg_grade / count
+
+    @classmethod
+    def get_messages(cls, game_id, amount=None):
+        if amount is None:
+            req = Note.query.filter(Note.game_id == game_id).all()
+            return req if req else None
+        else:
+            req = Note.query.filter(Note.game_id == game_id).limit(amount).all()
+            return req if req else None
+
 
 class Game(UserMixin, db.Model):
     """
@@ -533,7 +570,7 @@ class Game(UserMixin, db.Model):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
         page_elements = results.items[(
-                                              current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+                                                  current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results
