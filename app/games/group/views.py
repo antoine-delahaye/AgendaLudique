@@ -1,5 +1,5 @@
 # Group related ##################################################################
-from flask import render_template, request, abort
+from flask import render_template, request, abort, redirect, url_for
 from flask_login import login_required, current_user
 
 from . import group as gp
@@ -7,6 +7,12 @@ from app.models import Group, Participate, User
 from .models.group_tools import get_all_participation, join_private_group_form, join_public_group_form, quit_group_form
 from .models.forms import JoinPrivateGroupForm
 from app import db
+
+
+def handle_join_private(form):
+    if join_private_group_form(form):
+        return redirect(request.referrer)
+    return redirect(url_for("group.group", id=group.id))
 
 
 @gp.route('/groups', methods=['GET', 'POST'])
@@ -17,8 +23,8 @@ def groups():
     """
     form = JoinPrivateGroupForm()
     if request.method == "POST":
-        return join_private_group_form(form)
-
+        if join_private_group_form(form):
+            return handle_join_private(form)
     groups_data = Group.query.all()
     return render_template('groups.html', stylesheet='groups', groups_data=groups_data, form=form)
 
@@ -31,7 +37,8 @@ def groups_public():
     """
     form = JoinPrivateGroupForm()
     if request.method == "POST":
-        return join_private_group_form(form)
+        if join_private_group_form(form):
+            return handle_join_private(form)
 
     groups_data = Group.query.filter(Group.is_private == False).all()
     return render_template('groups.html', stylesheet='groups', groups_data=groups_data, form=form)
@@ -48,9 +55,10 @@ def group(id=None):
     if group.is_private:
         form = JoinPrivateGroupForm()
         if request.method == "POST":
-            return join_private_group_form(form)
+            if join_private_group_form(form):
+                return handle_join_private(form)
     else:
-        form=None
+        form = None
 
     is_member = (Participate.from_both_ids(current_user.id, id) is not None)
     users_data = User.search_with_pagination(current_user, "", False, False, per_page=15)
@@ -71,8 +79,10 @@ def my_groups():
     Render the groups template on the /my_groups route
     """
     form = JoinPrivateGroupForm()
+    form.validate_on_submit()
     if request.method == "POST":
-        return join_private_group_form(form)
+        if join_private_group_form(form):
+            return handle_join_private(form)
     return render_template('my_groups.html',
                            stylesheet='groups',
                            groups_data=get_all_participation(current_user),
