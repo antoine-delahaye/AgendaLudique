@@ -548,7 +548,8 @@ class Game(UserMixin, db.Model):
     def search_with_pagination(cls, current_user_id, games_hint, typ, parameters_list, current_page=1, per_page=20):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+        page_elements = results.items[(
+                                                  current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results
