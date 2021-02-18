@@ -181,3 +181,14 @@ def remove_game_note(game_id):
     db.session.delete(Note.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
     db.session.commit()
     return redirect(request.referrer)
+
+
+@jeux.route('/update-noted', methods=['GET', 'POST'])
+@jeux.route('/update-noted/<game_id>', methods=['GET', 'POST'])
+@login_required
+def update_game_note(game_id):
+    remove_game_note(game_id)
+    add_game_note(game_id)
+    db.session.commit()
+    return redirect(request.referrer)
+
