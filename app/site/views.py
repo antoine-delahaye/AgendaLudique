@@ -1,13 +1,13 @@
 # app/site/views.py
 
-import flask_login
 from flask import render_template, redirect, url_for, request, make_response
 from flask_login import login_required, current_user
 
 from app import db
-from app.models import User, Game, Group, HideUser, BookmarkUser, Collect, Wish, HideGame
+from app.models import User, HideUser, BookmarkUser
 from app.site import site
-from app.site.forms import UpdateInformationForm, GamesSimpleSearchForm, GamesSearchForm, UsersSearchForm, AddGameForm
+from app.site.models.forms import UpdateInformationForm, UsersSearchForm
+from app.site.models.site_tools import update_user_with_form
 
 
 @site.route('/')
@@ -16,7 +16,6 @@ def home():
     Render the homepage template on the / route
     """
     return render_template('home.html', stylesheet='home')
-
 
 
 # Account/Profil related #########################################################
@@ -30,8 +29,10 @@ def users():
     page = request.args.get('page', 1, type=int)
 
     # Get search parameters if there are None, set to None
-    favOnly = form.display_favorites_players_only.data if form.display_favorites_players_only.data else request.args.get('favOnly', None, type=bool)
-    hidden = form.display_masked_players.data if form.display_masked_players.data else request.args.get('hidden', None, type=bool)
+    favOnly = form.display_favorites_players_only.data if form.display_favorites_players_only.data else request.args.get(
+        'favOnly', None, type=bool)
+    hidden = form.display_masked_players.data if form.display_masked_players.data else request.args.get('hidden', None,
+                                                                                                        type=bool)
 
     # Fill search bar with parameters when changing page
     if not form.username_hint.data:
@@ -43,7 +44,9 @@ def users():
 
     search_results = User.search_with_pagination(current_user, form.username_hint.data, favOnly, hidden, page, 20)
 
-    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id, users_data=search_results, favOnly=favOnly, hidden=hidden, username_hint=form.username_hint.data)
+    return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id,
+                           users_data=search_results, favOnly=favOnly, hidden=hidden,
+                           username_hint=form.username_hint.data)
 
 
 @site.route('/user')
@@ -54,7 +57,8 @@ def user(id=None):
     Render the user template on the /user route
     """
     user = User.query.get_or_404(id)
-    data = User.search(current_user, user.username, False, True)    # Retrieve the data from the database, including the hidden users.
+    data = User.search(current_user, user.username, False,
+                       True)  # Retrieve the data from the database, including the hidden users.
     return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id, users_data=data)
 
 
@@ -121,6 +125,9 @@ def add_bookmarked_user(user_id=None):
     return redirect(url_for('site.users'))
 
 
+######## TODO
+# Les lignes 88-97 et 130-139 sont  les mêmes ? est-ce normal ou une fonction en cours
+# ps user_id ne sert à rien, jamais tu t'en sers
 @site.route('/bookmarked-users/remove', methods=['GET'])
 @login_required
 def remove_bookmarked_user(user_id=None):
@@ -153,17 +160,12 @@ def account():
     user = current_user
 
     if user.use_gravatar:
-        form.profile_picture.render_kw = {'disabled': ''}
+        form.profile_picture.render_kw.update({'disabled': ''})  # better than redefining it ;)
 
     if form.validate_on_submit():
         if user is not None:
-            user.username = form.username.data
-            user.first_name = form.first_name.data
-            user.last_name = form.last_name.data
-            user.password = form.password.data
-            user.use_gravatar = form.use_gravatar.data
-            user.profile_picture = user.get_profile_picture()
-            db.session.commit()
+            update_user_with_form(form, user)
+
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)
 
@@ -184,5 +186,3 @@ def set_parameters():
     param = make_response(redirect(url_for('site.parameters')))
     param.set_cookie('color-theme', color_theme)
     return param
-
-

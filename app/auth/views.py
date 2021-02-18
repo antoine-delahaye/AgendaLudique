@@ -1,13 +1,14 @@
 # app/auth/views.py
 
-from flask import redirect, render_template, url_for, flash, request
+from flask import redirect, render_template, url_for, flash, abort
 from flask_login import login_required, login_user, logout_user
 
 from app.auth import auth
+from app.auth.models.auth_tools import send_register_mail, check_register_error, generate_reset_mail, \
+    user_change_password
 from app.auth.models.forms import LoginForm, RegistrationForm, ResetPasswordForm, ForgotPasswordForm
 from app import db
 from app.models import User  # , Statistic
-import uuid
 
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -28,25 +29,12 @@ def login():
     return render_template('login.html', form=form, stylesheet='login')
 
 
-def check_register_error(form):
-    """
-    flashes all users errors during registration
-    :param form: which contains user inputs
-    """
-    if not User.query.filter_by(email=form.email.data):
-        flash("Adresse mail déjà utilisée", "danger")
-
-    if not User.query.filter_by(username=form.username.data) is not None:
-        flash("Nom d'utilisateur déjà utilisé", "danger")
-
-
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     """
     Handle requests to the /register route
     Add an user to the database through the registration form
     """
-    from .. import mail
 
     form = RegistrationForm()
     if form.validate_on_submit():
@@ -61,8 +49,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash("Inscription réussite, vous pouvez maintenant vous connecter !", "success")
-        mail.send_mail("Confirmation inscription", form.email.data, "registerMail.html", user=user,
-                       url=request.url_root)
+        send_register_mail(user)
         return redirect(url_for('auth.login'))
     else:
         check_register_error(form)
@@ -78,25 +65,6 @@ def logout():
     """
     logout_user()
     return redirect(url_for('site.home'))
-
-
-# TODO à déplacer dans un model
-def generate_reset_mail(user):
-    """
-    sends user reset password mail + generate his token
-    :param user: User have to reset his password
-    :return: None
-    """
-    from .. import mail
-
-    if not user:  # user with email not found
-        return
-    token = uuid.uuid4().hex
-    user.token_pwd = token
-    db.session.commit()
-
-    mail.send_mail("Demande réinitialisation mot de passe", user.email, "password_forgot_mail.html", user=user,
-                   url=request.url_root[:-1] + url_for("auth.forgot_password") + "/" + token)
 
 
 @auth.route('/forgot_password', methods=['GET', 'POST'])
@@ -115,31 +83,19 @@ def forgot_password():
     return render_template("password_forgot.html", form=form, stylesheet="register")
 
 
-# TODO move it to utils
-
-def user_change_password(user, newpassword):
-    """
-    :param user: user to  change password
-    :param newpassword: new pwd
-    :return: none
-    """
-    user.password = newpassword
-    db.session.commit()
-
-
 @auth.route('/forgot_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     """
     Where the user changes his password
     """
     form = ResetPasswordForm()
-    user = User.query.filter_by(token_pwd=token).first_or_404()
+    user = User.from_token(token)
+    if not user:
+        flash("Votre lien a expiré, veuillez en générer un nouveau", "danger")
+        return redirect(url_for("auth.forgot_password"))
     if form.validate_on_submit():
         if user:
             user_change_password(user, form.password.data)
             flash("Votre mot de passe a bien été modifié", "success")
             return redirect(url_for("auth.login"))
-    elif not user:
-        flash("Votre lien a expiré, veuillez en générer un nouveau", "danger")
-        return redirect(url_for("auth.forgot_password"))
     return render_template("password_reset.html", form=form, stylesheet="register")

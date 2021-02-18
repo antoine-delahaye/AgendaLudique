@@ -1,12 +1,15 @@
 # Games adding/editing related ###################################################
 import flask_login
-from flask import render_template, redirect, url_for, request, make_response
+from flask import render_template, redirect, url_for, request
 
 from app.models import User, Game, Wish, Collect, KnowRules, Note
-from app.site.forms import GamesSimpleSearchForm, UpdateInformationForm, GamesSearchForm, AddGameForm
+from app.site.models.forms import GamesSimpleSearchForm, UpdateInformationForm, GamesSearchForm, AddGameForm
 from flask_login import login_required, current_user
 from . import jeux
-from ... import db
+from .models.jeux_tools import get_numero_page, get_search_parameter, get_search_type, get_search_game, TITLES, \
+    DEFAULT_TITLE, get_known_noted_games
+from app import db
+from ..group.models.group_tools import populate_games_form, beautify_games_form, add_default_values_game_form
 
 
 @jeux.route('/catalog', methods=['GET', 'POST'])
@@ -16,41 +19,38 @@ def catalog():
     Render the catalog template on the /catalog route
     """
     form = GamesSimpleSearchForm()
-    page = request.args.get('page', 1, type=int)
+    page = get_numero_page()
 
-    # Get search parameter if there is one
-    search_parameter = form.display_search_parameter.data if form.display_search_parameter.data else request.args.get('searchParameter', None, type=str)
+    search_parameter = get_search_parameter(form.display_search_parameter.data)
 
     # Save the search filter
-    form.display_search_type.data = request.args.get('type', form.display_search_type.data, type=str)
+    form.display_search_type.data = get_search_type(form.display_search_type.data)
     # Fill search bar with parameters when changing page
-    form.games_hint.data = request.args.get('games', form.games_hint.data if form.games_hint.data else '', type=str)
+    form.games_hint.data = get_search_game(form.games_hint.data)
+
     # If no hint was typed change search type back to title search (avoid crash)
     if not form.games_hint.data:
         form.display_search_type.data = 'title'
-    
+
     # Change title of the page in function of search_parameter
-    title = {"KNOWN":"Jeux que vous connaissez", "NOTED":"Jeux que vous avez déjà notés", "WISHED":"Jeux que vous souhaitez", "OWNED":"Jeux que vous possédez"}.get(search_parameter, "Tous les jeux")
+    title = TITLES.get(search_parameter, DEFAULT_TITLE)
 
     # We want to remove already owned and wished games from the page
-    owned_games = User.get_owned_games(flask_login.current_user.id, True)
-    wished_games = User.get_wished_games(flask_login.current_user.id, True)
+    owned_games = User.get_owned_games(current_user.id, True)
+    wished_games = User.get_wished_games(current_user.id, True)
 
     # But wewant to know what games the user already knows or has noted
-    known_games = User.get_known_games(flask_login.current_user.id, True)
-    noted_games = User.get_noted_games(flask_login.current_user.id, True)    
+    known_games, noted_games = get_known_noted_games(current_user, search_parameter)
 
-    # Change filters in function of search_parameter
-    if search_parameter == "WISHED":
-        wished_games = Game.query.filter(False)
-    elif search_parameter == "OWNED":
-        owned_games = Game.query.filter(False)
-    
-    search_results = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data, form.display_search_type.data, search_parameter, page, 20)
+    search_results = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data,
+                                                 form.display_search_type.data, search_parameter, page, 20)
 
-    print(form.display_search_type.data)
+    # print(form.display_search_type.data)
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=search_results, owned_games=owned_games, wished_games=wished_games, known_games=known_games, noted_games=noted_games, search_parameter=search_parameter, type=form.display_search_type.data, games_hint=form.games_hint.data)
+    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=search_results,
+                           owned_games=owned_games, wished_games=wished_games, known_games=known_games,
+                           noted_games=noted_games, search_parameter=search_parameter,
+                           type=form.display_search_type.data, games_hint=form.games_hint.data)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
@@ -59,47 +59,27 @@ def add_games():
     """
     Render the add-games template on the /add-games route
     """
-    games_search_form = GamesSearchForm()
-    for data in db.session.query(Game).all():
-        games_search_form.title.choices.append(data.title)
-        if data.publication_year not in games_search_form.years.choices:
-            games_search_form.years.choices.append(data.publication_year)
-        if data.min_players not in games_search_form.min_players.choices:
-            games_search_form.min_players.choices.append(data.min_players)
-        if data.max_players not in games_search_form.max_players.choices:
-            games_search_form.max_players.choices.append(data.max_players)
-        if data.min_playtime not in games_search_form.min_playtime.choices and data.min_playtime not in games_search_form.max_playtime.choices:
-            games_search_form.min_playtime.choices.append(data.min_playtime)
-            games_search_form.max_playtime.choices.append(data.min_playtime)
-    games_search_form.years.choices.sort()
-    games_search_form.min_players.choices.sort()
-    games_search_form.max_players.choices.sort()
-    games_search_form.min_playtime.choices.sort()
-    games_search_form.max_playtime.choices.sort()
-    games_search_form.title.choices.insert(0, 'Aucun')
-    games_search_form.years.choices.insert(0, 'Aucune')
-    games_search_form.min_players.choices.insert(0, 'Aucun')
-    games_search_form.max_players.choices.insert(0, 'Aucun')
-    games_search_form.min_playtime.choices.insert(0, 'Aucune')
-    games_search_form.max_playtime.choices.insert(0, 'Aucune')
+    search_form = GamesSearchForm()
+
+    populate_games_form(search_form)
+    beautify_games_form(search_form)
+    add_default_values_game_form()
+
     add_game_form = AddGameForm()
-    if games_search_form.validate_on_submit():
-        researched_game = Game.query.filter_by(title=games_search_form.title.data).first()
-        print(researched_game)
-        return render_template('add-games.html', games_search_form=games_search_form, stylesheet='add-games',
+    if search_form.validate_on_submit():
+        researched_game = Game.from_title(search_form.title.data)
+        # print(researched_game)
+        return render_template('add-games.html', form=search_form, stylesheet='add-games',
                                researched_game=researched_game, add_game_form=add_game_form)
     if add_game_form.validate_on_submit():
-        game_id = Game.max_id()
-        if game_id is None:
-            game_id = 0
-        game_id += 1
+        game_id = Game.max_id() + 1
         Game.add_game(game_id,
                       {'title': add_game_form.title.data, 'publication_year': add_game_form.years.data,
                        'min_players': int(add_game_form.min_players.data),
                        'max_players': int(add_game_form.max_players.data),
                        'min_playtime': int(add_game_form.min_playtime.data), 'image': add_game_form.image.data})
         return redirect(url_for('jeux.game', game_id=game_id))
-    return render_template('add-games.html', stylesheet='add-games', games_search_form=games_search_form,
+    return render_template('add-games.html', stylesheet='add-games', form=search_form,
                            add_game_form=add_game_form)
 
 
@@ -122,7 +102,7 @@ def game(game_id):
     """
     Render the game template on the /game route
     """
-    return render_template('game.html', stylesheet=None, game=Game.from_id(game_id),
+    return render_template('game.html', game=Game.from_id(game_id),
                            owned_games=User.get_owned_games(flask_login.current_user.id, True),
                            wished_games=User.get_wished_games(flask_login.current_user.id, True))
 
@@ -154,8 +134,8 @@ def add_game_collection(game_id):
     return redirect(request.referrer)
 
 
-@jeux.route('/remove', methods=['GET', 'POST'])
-@jeux.route('/remove/<game_id>', methods=['GET', 'POST'])
+@jeux.route('/remove-collection', methods=['GET', 'POST'])
+@jeux.route('/remove-collection/<game_id>', methods=['GET', 'POST'])
 @login_required
 def remove_game_collection(game_id):
     db.session.delete(Collect.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
@@ -172,8 +152,8 @@ def add_game_known(game_id):
     return redirect(request.referrer)
 
 
-@jeux.route('/remove', methods=['GET', 'POST'])
-@jeux.route('/remove/<game_id>', methods=['GET', 'POST'])
+@jeux.route('/remove-known', methods=['GET', 'POST'])
+@jeux.route('/remove-known/<game_id>', methods=['GET', 'POST'])
 @login_required
 def remove_game_known(game_id):
     db.session.delete(KnowRules.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
@@ -185,13 +165,15 @@ def remove_game_known(game_id):
 @jeux.route('/add-note/<game_id>', methods=['GET', 'POST'])
 @login_required
 def add_game_note(game_id):
-    db.session.add(Note(user_id=flask_login.current_user.id, game_id=game_id))
+    note = request.form.get("note", False)
+    message = request.form.get("message-text", False)
+    db.session.add(Note(user_id=flask_login.current_user.id, game_id=game_id, note=note, message=message))
     db.session.commit()
     return redirect(request.referrer)
 
 
-@jeux.route('/remove', methods=['GET', 'POST'])
-@jeux.route('/remove/<game_id>', methods=['GET', 'POST'])
+@jeux.route('/remove-noted', methods=['GET', 'POST'])
+@jeux.route('/remove-noted/<game_id>', methods=['GET', 'POST'])
 @login_required
 def remove_game_note(game_id):
     db.session.delete(Note.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
