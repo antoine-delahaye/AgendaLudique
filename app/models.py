@@ -58,7 +58,7 @@ class User(UserMixin, db.Model):
         """
         if self.use_gravatar:
             return self.get_gravatar()
-        elif self.profile_picture is not None:
+        elif self.profile_picture != "" and self.profile_picture is not None:
             return self.profile_picture
         return "/static/images/blank_pp.png"
 
@@ -71,7 +71,7 @@ class User(UserMixin, db.Model):
         if use_gravatar:
             self.profile_picture = self.get_gravatar()
         else:
-            if new_picture_url == "None":
+            if new_picture_url is None or new_picture_url == "None":
                 self.profile_picture = None
             else:
                 self.profile_picture = new_picture_url
@@ -201,8 +201,9 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, favOnly, hidden)
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
+        page_elements = results.items.slice((current_page - 1) * per_page,
+                                            current_page * per_page)  # the users that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, results.items.count(), page_elements)
         results.items = None
 
         return results
