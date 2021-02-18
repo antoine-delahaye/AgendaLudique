@@ -81,28 +81,30 @@ class User(UserMixin, db.Model):
     def get_known_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)]
+                    db.session.query(Game.id).join(KnowRules).filter(KnowRules.user_id == user_id,
+                                                                     Game.id == KnowRules.game_id)]
         return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)
 
     @classmethod
     def get_noted_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
+                    db.session.query(Game.id).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)]
         return db.session.query(Game).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)
 
     @classmethod
     def get_owned_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)]
+                    db.session.query(Game.id).join(Collect).filter(Collect.user_id == user_id,
+                                                                   Game.id == Collect.game_id)]
         return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
 
     @classmethod
     def get_wished_games(cls, user_id, only_id=False):
         if only_id:
             return [data[0] for data in
-                db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
+                    db.session.query(Game.id).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)]
         return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
 
     @classmethod
@@ -126,26 +128,29 @@ class User(UserMixin, db.Model):
         results = SearchResults()  # Will contain the search results
 
         # Contain bookmarked users
-        bookmarked_users_db = db.session.query(BookmarkUser.user2_id).filter(BookmarkUser.user_id==current_user.id) # ids only -> lighter
+        bookmarked_users_db = db.session.query(BookmarkUser.user2_id).filter(
+            BookmarkUser.user_id == current_user.id)  # ids only -> lighter
         # Contain hidden users
-        hidden_users_db = db.session.query(HideUser.user2_id).filter(HideUser.user_id==current_user.id) # ids only -> lighter
+        hidden_users_db = db.session.query(HideUser.user2_id).filter(
+            HideUser.user_id == current_user.id)  # ids only -> lighter
 
         if favOnly:
-            users_db = User.query.filter(User.id.in_(bookmarked_users_db), User.username.like("%"+username_hint+"%"))
+            users_db = User.query.filter(User.id.in_(bookmarked_users_db),
+                                         User.username.like("%" + username_hint + "%"))
         else:
             users_db = User.query.filter(User.username.like('%' + username_hint + '%'))
-        
+
         # Allows to fill stars icon to yellow
         for bookmarded_user in bookmarked_users_db:
-                results.bookmarked_ids.add(bookmarded_user.user2_id)
-        
+            results.bookmarked_ids.add(bookmarded_user.user2_id)
+
         if not hidden:
             users_db = users_db.filter(User.id.notin_(hidden_users_db))
-        
+
         # Allows to fill hidden icon to red
         for hidden_user in hidden_users_db:
             results.hidden_ids.add(hidden_user.user2_id)
-        
+
         for data in users_db:
             results.items.append(
                 {'id': int(data.id), 'username': data.username, 'first_name': data.first_name,
@@ -167,7 +172,8 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, favOnly, hidden)
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        page_elements = results.items[(
+                                              current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
 
@@ -409,6 +415,29 @@ class Note(db.Model):
         req = Note.query.filter(Note.user_id == user_id, Note.game_id == game_id).first()
         return req if req else None
 
+    @classmethod
+    def average_grade(cls, game_id):
+        """
+        Get an average grade from a game id
+        """
+        req = Note.query.filter(Note.game_id == game_id).all()
+        avg_grade = 0
+        count = 0
+        for grade in req:
+            if grade.note is not None:
+                avg_grade += grade.note
+                count += 1
+        return avg_grade / count
+
+    @classmethod
+    def get_messages(cls, game_id, amount=None):
+        if amount is None:
+            req = Note.query.filter(Note.game_id == game_id).all()
+            return req if req else None
+        else:
+            req = Note.query.filter(Note.game_id == game_id).limit(amount).all()
+            return req if req else None
+
 
 class Game(UserMixin, db.Model):
     """
@@ -468,7 +497,7 @@ class Game(UserMixin, db.Model):
         :param search_parameter: str containing the name of the search container
         :return: A SearchResults object with an items list.
         """
-        results = SearchResults() # Will contain the search results
+        results = SearchResults()  # Will contain the search results
 
         # Search games via a known parameter
         if search_parameter == "KNOWN":
@@ -481,13 +510,13 @@ class Game(UserMixin, db.Model):
             search_results = User.get_owned_games(current_user_id)
         else:
             search_results = Game.query
-        
+
         # Search games in search_results that corresponds to the type and the hint
-        if typ=="year":
-            games_db = search_results.filter(Game.publication_year==int(games_hint))
-        elif typ=="genre":
+        if typ == "year":
+            games_db = search_results.filter(Game.publication_year == int(games_hint))
+        elif typ == "genre":
             games_ids = db.session.query(Classification.game_id).filter(Classification.genre_id.in_(
-                db.session.query(Genre.id).filter(Genre.name.like("%"+games_hint+"%"))
+                db.session.query(Genre.id).filter(Genre.name.like("%" + games_hint + "%"))
             ))
             games_db = search_results.filter(Game.id.in_(games_ids))
         else:
@@ -503,7 +532,8 @@ class Game(UserMixin, db.Model):
     def search_with_pagination(cls, current_user_id, games_hint, typ, parameters_list, current_page=1, per_page=20):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+        page_elements = results.items[(
+                                              current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results
@@ -558,7 +588,8 @@ class Classification(db.Model):
         Get a Classification relationship from its Game and Genre ids.
         Return None if the relationship does not exist.
         """
-        req = Classification.query.filter(Classification.game_id == game_id, Classification.genre_id == genre_id).first()
+        req = Classification.query.filter(Classification.game_id == game_id,
+                                          Classification.genre_id == genre_id).first()
         return req if req else None
 
 
