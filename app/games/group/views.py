@@ -64,7 +64,7 @@ def group(id=None):
                            form=form)
 
 
-@gp.route('/my_groups')
+@gp.route('/my_groups', methods=['GET', 'POST'])
 @login_required
 def my_groups():
     """
