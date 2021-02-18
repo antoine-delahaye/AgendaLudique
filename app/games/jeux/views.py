@@ -20,6 +20,7 @@ def catalog():
     """
     form = GamesSimpleSearchForm()
     page = get_numero_page()
+    ratings = {}
 
     search_parameter = get_search_parameter(form.display_search_parameter.data)
 
@@ -41,7 +42,8 @@ def catalog():
 
     # But wewant to know what games the user already knows or has noted
     known_games, noted_games = get_known_noted_games(current_user, search_parameter)
-
+    for id in noted_games:
+        ratings[id] = Note.from_both_ids(current_user.id, id)
     search_results = Game.search_with_pagination(flask_login.current_user.id, form.games_hint.data,
                                                  form.display_search_type.data, search_parameter, page, 20)
 
@@ -50,7 +52,7 @@ def catalog():
     return render_template('catalog.html', stylesheet='catalog', title=title, form=form, games=search_results,
                            owned_games=owned_games, wished_games=wished_games, known_games=known_games,
                            noted_games=noted_games, search_parameter=search_parameter,
-                           type=form.display_search_type.data, games_hint=form.games_hint.data)
+                           type=form.display_search_type.data, games_hint=form.games_hint.data, ratings=ratings)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
@@ -179,3 +181,14 @@ def remove_game_note(game_id):
     db.session.delete(Note.query.filter_by(user_id=flask_login.current_user.id, game_id=game_id).first())
     db.session.commit()
     return redirect(request.referrer)
+
+
+@jeux.route('/update-noted', methods=['GET', 'POST'])
+@jeux.route('/update-noted/<game_id>', methods=['GET', 'POST'])
+@login_required
+def update_game_note(game_id):
+    remove_game_note(game_id)
+    add_game_note(game_id)
+    db.session.commit()
+    return redirect(request.referrer)
+
