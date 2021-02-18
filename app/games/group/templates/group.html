@@ -1,34 +1,62 @@
 {% extends "index.html" %}
 {% block main %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/custom-buttons.css") }}">
     <main class="container-fluid col-9 mb-5">
-        <h2 class="text-center mb-5">{{ group.name }}
+        <h2 class="text-center mb-5">
+          {{ group.name }}
             {% if group.is_private %}
                 <i class="fas fa-lock"></i>
             {% else %}
                 <i class="fas fa-unlock"></i>
             {% endif %}
         </h2>
-        <a type="button" class="btn pt-2
-          {% if is_member %}
-            btn-danger"
-            href="{{ url_for('group.quit_group', group_id=group.id) }}">Quitter
+
+        {% block message %}
+            {{ super() }}
+        {% endblock %}
+
+        {% if is_resp %}
+          <p>Mot de passe : {{group.password}}</p>
+        {% endif %}
+
+        {% if is_member %}
+          <a type="button" class="btn btn-danger pt-2"
+             href="{{ url_for('group.quit_group', group_id=group.id) }}"
+             onclick="return confirm('Etes-vous sûr de vouloir quitter le groupe ? ')">
+          Quitter
+          </a>
+        {% else %}
+          {% if group.is_private %}
+            <form class="form mb-4" action="" method="POST">
+                <div class="form-row align-items-center">
+                    {{ form.code(class="form-control col-2 mr-2") }}
+                    {{ form.submit(class="btn col-2 ml-2") }}
+                </div>
+            </form>
           {% else %}
-            "href="{{ url_for('group.join_group', group_id=group.id) }}">Rejoindre
+            <a type="button" class="btn pt-2" href="{{ url_for('group.join_public_group', group_id=group.id) }}">Rejoindre</a>
           {% endif %}
-        </a>
+        {% endif %}
+
         <h4 class="my-3">Responsable</h4>
         {% set item = group.manager %}
         <div class="users-list row">
           {% include "cards/user_card.html" %}
         </div>
-        <h4 class="my-3">Membres du groupe</h4>
-        {% for member in group.participations %}
-            {% set item = member.member %}
-            {% if item.id != group.manager_id %}
-              <div class="users-list row">
-                {% include "cards/user_card.html" %}
-              </div>
-            {% endif %}
-        {% endfor %}
+
+        <h4 class="my-3">Membres du groupe ({{ group.participations.count() - 1 }})</h4>
+        {% if not is_member and group.is_private %}
+          <p>Vous ne pouvez pas voir les membres de ce groupe si vous n'en n'êtes pas membre.</p>
+        {% else %}
+          <div class="users-list row">
+          {% for member in group.participations %}
+              {% set item = member.member %}
+              {% if item.id != group.manager_id %}
+                  {% include "cards/user_card.html" %}
+              {% endif %}
+          {% endfor %}
+          </div>
+        {% endif %}
+
     </main>
 {% endblock %}

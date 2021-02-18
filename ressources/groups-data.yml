@@ -1,6 +1,6 @@
 - name: "Gloomhaven fans"
   is_private: False
-  password: "G34BBW"
+  password: ""
   manager: nf_1
   members: [nf_1, nf_2, nf_3, nf_7]
 - name: "7 Wonders Duel fans"
@@ -10,7 +10,7 @@
   members: [nf_8]
 - name: "COVID friendly"
   is_private: False
-  password: "FAZ904"
+  password: ""
   manager: nf_3
   members: [nf_2, nf_3, nf_5, nf_6]
 - name: "Omega potes"

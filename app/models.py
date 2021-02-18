@@ -667,6 +667,14 @@ class Group(db.Model):
         req = Group.query.filter(Group.id == id).first()
         return req if req else None
 
+    @classmethod
+    def from_code(cls, code):
+        """
+        Get a Group from its code. Return None if the group does not exist.
+        """
+        req = Group.query.filter(Group.password == code).first()
+        return req if req else None
+
 
 class Participate(db.Model):
     """
