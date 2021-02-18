@@ -208,10 +208,12 @@ class User(UserMixin, db.Model):
 
         return results
 
-    # Set up user_loader
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+
+# KEEP IT OUTSIDE CLASS ;( ;( ;( 3 hours of work for this ****
+# Set up user_loader
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class BookmarkUser(db.Model):
@@ -570,7 +572,7 @@ class Game(UserMixin, db.Model):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
         page_elements = results.items[(
-                                                  current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+                                              current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results

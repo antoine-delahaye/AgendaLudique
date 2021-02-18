@@ -6,8 +6,12 @@ from app.models import Game, Note, Genre, Classification
 
 class insertDB:
     def __init__(self):
+        from app import config_app
+        with config_app() as app:
+            url_db = app.config["SQLALCHEMY_DATABASE_URI"]
+
         self.__engine = create_engine(
-            'mysql+pymysql://al_admin:al_admin@agenda-ludique.ddns.net/agendaludique',
+            url_db,
             pool_size=5,  # default in SQLAlchemy
             max_overflow=10,  # default in SQLAlchemy
             pool_timeout=1,  # raise an error faster than default
