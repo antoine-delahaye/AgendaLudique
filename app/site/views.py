@@ -177,7 +177,7 @@ def parameters():
     """
     Render the parameters template on the /parameters route
     """
-    return render_template('parameters.html', stylesheet=None)
+    return render_template('parameters.html')
 
 
 @site.route('/set_parameters', methods=['POST'])

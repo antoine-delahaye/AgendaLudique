@@ -106,7 +106,9 @@ def game(game_id):
     """
     return render_template('game.html', game=Game.from_id(game_id),
                            owned_games=User.get_owned_games(flask_login.current_user.id, True),
-                           wished_games=User.get_wished_games(flask_login.current_user.id, True))
+                           wished_games=User.get_wished_games(flask_login.current_user.id, True),
+                           average_grade=Note.average_grade(game_id),
+                           messages=Note.get_messages(game_id, 5))
 
 
 @jeux.route('/add-wishes', methods=['GET', 'POST'])

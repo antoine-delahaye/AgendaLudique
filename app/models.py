@@ -201,9 +201,8 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, favOnly, hidden)
-        page_elements = results.items.slice((current_page - 1) * per_page,
-                                            current_page * per_page)  # the users that will be displayed on the page
-        results.pagination = Pagination(None, current_page, per_page, results.items.count(), page_elements)
+        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
 
         return results
@@ -443,6 +442,29 @@ class Note(db.Model):
         """
         req = Note.query.filter(Note.user_id == user_id, Note.game_id == game_id).first()
         return req if req else None
+
+    @classmethod
+    def average_grade(cls, game_id):
+        """
+        Get an average grade from a game id
+        """
+        req = Note.query.filter(Note.game_id == game_id).all()
+        avg_grade = 0
+        count = 0
+        for grade in req:
+            if grade.note is not None:
+                avg_grade += grade.note
+                count += 1
+        return avg_grade / count
+
+    @classmethod
+    def get_messages(cls, game_id, amount=None):
+        if amount is None:
+            req = Note.query.filter(Note.game_id == game_id).all()
+            return req if req else None
+        else:
+            req = Note.query.filter(Note.game_id == game_id).limit(amount).all()
+            return req if req else None
 
 
 class Game(UserMixin, db.Model):
