@@ -58,7 +58,7 @@ class User(UserMixin, db.Model):
         """
         if self.use_gravatar:
             return self.get_gravatar()
-        elif self.profile_picture is not None:
+        elif self.profile_picture != "" and self.profile_picture is not None:
             return self.profile_picture
         return "/static/images/blank_pp.png"
 
@@ -71,7 +71,7 @@ class User(UserMixin, db.Model):
         if use_gravatar:
             self.profile_picture = self.get_gravatar()
         else:
-            if new_picture_url == "None":
+            if new_picture_url is None or new_picture_url == "None":
                 self.profile_picture = None
             else:
                 self.profile_picture = new_picture_url
