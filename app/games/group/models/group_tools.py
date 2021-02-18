@@ -18,6 +18,16 @@ def get_all_participation(user):
     return groups_data
 
 
+def check_group(group):
+    if group is None:
+        flash('Ce code ne correspond à aucun groupe.', 'danger')
+        return False
+    elif Participate.from_both_ids(current_user.id, group.id) is not None:
+        flash('Vous êtes déjà dans le groupe ' + group.name, 'warning')
+        return False
+    return True
+
+
 def join_private_group_form(form):
     """
     create a new Participate relationship
@@ -25,15 +35,11 @@ def join_private_group_form(form):
     """
     code = form.code.data
     group = Group.from_code(code)
-    if group is None:
-        flash('Ce code ne correspond à aucun groupe.', 'danger')
-    elif Participate.from_both_ids(current_user.id, group.id) is not None:
-        flash('Vous êtes déjà dans le groupe ' + group.name, 'warning')
-    else:
+    if check_group(group):
         db.session.add(Participate(group_id=group.id, member_id=current_user.id))
         db.session.commit()
-        return redirect(url_for("group.group",id=group.id))
-    return redirect(request.referrer)
+        return False
+    return True
 
 
 def join_public_group_form(group_id):
@@ -49,7 +55,7 @@ def join_public_group_form(group_id):
     else:
         db.session.add(Participate(group_id=group_id, member_id=current_user.id))
         db.session.commit()
-        return redirect(url_for("group.group",id=group.id))
+        return redirect(url_for("group.group", id=group.id))
 
 
 def quit_group_form(group_id):
