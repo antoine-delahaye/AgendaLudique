@@ -14,6 +14,13 @@
     background-color: #f3f3f8;
 }
 
+.no-items {
+    text-align: center;
+    padding: 2%;
+    border-radius: 0.3rem;
+    background-color: #f3f3f8;
+}
+
 @media only screen and (max-width: 960px) {
     #user-presentation {
         justify-content: center;

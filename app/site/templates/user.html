@@ -47,53 +47,49 @@
                 <div class="category-headline">
                     <h3><i class="fas fa-dice"></i> Collection</h3>
                 </div>
-                <div id="owned-games-controls" class="carousel slide">
-                    <div class="carousel-inner">
-                        {% set ig = namespace(value=1) %}
-                        {% for games_batch in games_collection|batch(4) %}
-                            {% if ig.value == 1 %}
-                                <div class="carousel-item active" data-interval="false" data-wrap="false">
-                            {% else %}
-                                <div class="carousel-item" data-interval="false" data-wrap="false">
-                            {% endif %}
-                        <div class="row">
-                            {% for game in games_batch %}
-                                {% include "cards/game_card.html" %}
-                            {% endfor %}
-                        </div>
-                        </div>
-                            {% set ig.value = ig.value + 1 %}
-                        {% endfor %}
-                        </div>
-                        <div class="carousel-item" data-interval="false" data-wrap="false">
+                {% if games_collection.count() == 0 %}
+                    <div class="no-items">
+                        {% if user.id == current_user_id %}
+                            <h4 class="center">Vous ne possédez aucun jeu.</h4>
+                        {% else %}
+                            <h4 class="center"><span class="font-weight-bold">{{ user.username }}</span> ne possède
+                                aucun jeu.</h4>
+                        {% endif %}
+                        <p>Découvrez quel sera votre prochain jeu préféré avec l'Agenda Ludique !</p>
+                        <a class="btn pt-2"
+                           href="{{ url_for('jeux.catalog') }}"
+                           role="button"><i class="fas fa-chess-rook"></i> Découvrir plus de jeux</a>
+                    </div>
+                {% else %}
+                    <div id="owned-games-controls" class="carousel slide">
+                        <div class="carousel-inner">
+                            {% set ig = namespace(value=1) %}
+                            {% for games_batch in games_collection|batch(4) %}
+                                {% if ig.value == 1 %}
+                                    <div class="carousel-item active" data-interval="false" data-wrap="false">
+                                {% else %}
+                                    <div class="carousel-item" data-interval="false" data-wrap="false">
+                                {% endif %}
                             <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <div class="card">
-                                        Hello World! 4
-                                    </div>
-                                </div>
-                                <div class="mb-3 col-md-4">
-                                    <div class="card">
-                                        Hello World! 5
-                                    </div>
-                                </div>
-                                <div class="mb-3 col-md-4">
-                                    <div class="card">
-                                        Hello World! 6
-                                    </div>
-                                </div>
+                                {% for game in games_batch %}
+                                    {% include "cards/game_card.html" %}
+                                {% endfor %}
+                            </div>
+                            </div>
+                                {% set ig.value = ig.value + 1 %}
+                            {% endfor %}
                             </div>
                         </div>
+                        <div class="carousel-navigation">
+                            <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="prev">
+                                <i class="fa fa-arrow-left"></i>
+                            </a>
+                            <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="next">
+                                <i class="fa fa-arrow-right"></i>
+                            </a>
+                        </div>
                     </div>
-                    <div class="carousel-navigation">
-                        <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="prev">
-                            <i class="fa fa-arrow-left"></i>
-                        </a>
-                        <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="next">
-                            <i class="fa fa-arrow-right"></i>
-                        </a>
-                    </div>
-                </div>
+                {% endif %}
             </div>
             <div id="opinions" class="profile-category">
                 <div class="category-headline">
@@ -154,7 +150,21 @@
                 <div class="category-headline">
                     <h3><i class="fas fa-users"></i> Joueurs favoris</h3>
                 </div>
-                <div id="favorites-players-controls" class="carousel slide">
+                {% if bookmarked_users.count() == 0 %}
+                    <div class="no-items">
+                        {% if user.id == current_user_id %}
+                            <h4 class="center">Vous ne possédez aucun joueur favori.</h4>
+                        {% else %}
+                            <h4 class="center"><span class="font-weight-bold">{{ user.username }}</span> ne possède
+                                aucun joueur favori.</h4>
+                        {% endif %}
+                        <p>Rencontrez d'autres joueurs grâce à notre annuaire des joueurs.</p>
+                        <a class="btn pt-2"
+                           href="{{ url_for('site.users') }}"
+                           role="button"><i class="fas fa-laugh-wink"></i> Consulter la liste des joueurs</a>
+                    </div>
+                {% else %}
+                    <div id="favorites-players-controls" class="carousel slide">
                     <div class="carousel-inner">
                         {% set iu = namespace(value=1) %}
                         {% for users_batch in bookmarked_users|batch(4) %}
@@ -181,6 +191,7 @@
                             </a>
                         </div>
                     </div>
+                {% endif %}
                 </div>
         </section>
     </main>
