@@ -7,7 +7,9 @@ from app.models import Game, Note, Genre, Classification
 class insertDB:
     def __init__(self):
         from app import config_app
-        with config_app() as app:
+        from instance.config import config
+        import os
+        with config_app(config.get(os.environ.get("FLASK_ENV"), 'default')) as app:
             url_db = app.config["SQLALCHEMY_DATABASE_URI"]
 
         self.__engine = create_engine(

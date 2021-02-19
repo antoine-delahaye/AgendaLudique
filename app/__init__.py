@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
+import os
 
 import config
 from app.mail.utils.mailtools import MailTool
@@ -47,9 +48,9 @@ def config_app(config_name):
     :return: app to be served
     """
     global app
-
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(config[config_name])
+    app.config.from_object(config[os.environ.get("FLASK_ENV")])
+    print(app.config["SQLALCHEMY_DATABASE_URI"])
     return app
 
 
