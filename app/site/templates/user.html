@@ -2,6 +2,7 @@
 {% block main %}
     <!-- TODO remove this when multiple stylesheets will be supported in views -->
     <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/custom-buttons.css") }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/catalog.css") }}">
     <main>
         <section class="profile-head">
             <div id="user-presentation">
@@ -48,24 +49,21 @@
                 </div>
                 <div id="owned-games-controls" class="carousel slide">
                     <div class="carousel-inner">
-                        <div class="carousel-item active" data-interval="false" data-wrap="false">
-                            <div class="row">
-                                <div class="mb-3 col-md-4">
-                                    <div class="card">
-                                        Hello World! 1
-                                    </div>
-                                </div>
-                                <div class="mb-3 col-md-4">
-                                    <div class="card">
-                                        Hello World! 2
-                                    </div>
-                                </div>
-                                <div class="mb-3 col-md-4">
-                                    <div class="card">
-                                        Hello World! 3
-                                    </div>
-                                </div>
-                            </div>
+                        {% set ig = namespace(value=1) %}
+                        {% for games_batch in games_collection|batch(4) %}
+                            {% if ig.value == 1 %}
+                                <div class="carousel-item active" data-interval="false" data-wrap="false">
+                            {% else %}
+                                <div class="carousel-item" data-interval="false" data-wrap="false">
+                            {% endif %}
+                        <div class="row">
+                            {% for game in games_batch %}
+                                {% include "cards/game_card.html" %}
+                            {% endfor %}
+                        </div>
+                        </div>
+                            {% set ig.value = ig.value + 1 %}
+                        {% endfor %}
                         </div>
                         <div class="carousel-item" data-interval="false" data-wrap="false">
                             <div class="row">
@@ -87,16 +85,15 @@
                             </div>
                         </div>
                     </div>
+                    <div class="carousel-navigation">
+                        <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="prev">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                        <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="next">
+                            <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="carousel-navigation">
-                    <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="prev">
-                        <i class="fa fa-arrow-left"></i>
-                    </a>
-                    <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="next">
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
             </div>
             <div id="opinions" class="profile-category">
                 <div class="category-headline">
@@ -159,9 +156,9 @@
                 </div>
                 <div id="favorites-players-controls" class="carousel slide">
                     <div class="carousel-inner">
-                        {% set i = namespace(value=1) %}
+                        {% set iu = namespace(value=1) %}
                         {% for users_batch in bookmarked_users|batch(4) %}
-                            {% if i.value == 1 %}
+                            {% if iu.value == 1 %}
                                 <div class="carousel-item active" data-interval="false" data-wrap="false">
                             {% else %}
                                 <div class="carousel-item" data-interval="false" data-wrap="false">
@@ -172,7 +169,7 @@
                             {% endfor %}
                         </div>
                         </div>
-                            {% set i.value = i.value + 1 %}
+                            {% set iu.value = iu.value + 1 %}
                         {% endfor %}
                         </div>
                         <div class="carousel-navigation">
@@ -184,6 +181,7 @@
                             </a>
                         </div>
                     </div>
+                </div>
         </section>
     </main>
 {% endblock %}
