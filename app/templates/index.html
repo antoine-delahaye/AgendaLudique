@@ -19,7 +19,7 @@
     {% endif %}
     {% if stylesheet_list is defined %} <!-- would have been better to never have stylesheet but anyways -->
         {% for ss in stylesheet_list %}
-            <link href="{{ url_for("static", filename="css/"+ss+".css") }}">
+            <link rel="stylesheet" href="{{ url_for("static", filename="css/"+ss+".css") }}">
         {% endfor %}
     {% endif %}
     {% if request.cookies.get('color-theme')=='On' %}
@@ -104,16 +104,10 @@
                            role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{ current_user.username }}
-                            {% if current_user.profile_picture == None %}
-                                <img class="rounded-lg ml-1"
-                                     src="{{ url_for("static", filename="images/blank_pp.png") }}"
-                                     alt="Image de profil"
-                                     width="32" height="32">
-                            {% else %}
-                                <img class="rounded-lg ml-1" src="{{ current_user.profile_picture }}"
-                                     alt="Image de profil"
-                                     width="32" height="32">
-                            {% endif %}
+                            <img class="rounded-lg ml-1"
+                                 src="{{ current_user.get_profile_picture() }}"
+                                 alt="Image de profil"
+                                 width="32" height="32">
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{{ url_for('site.user') }}/{{ current_user.id }}">Mon
@@ -121,6 +115,8 @@
                             <a class="dropdown-item" href="{{ url_for('site.account') }}">Gérer mon profil</a>
                             <a class="dropdown-item" href="{{ url_for('site.parameters') }}">Paramètres</a>
                             <a class="dropdown-item" href="{{ url_for('auth.logout') }}">Se déconnecter</a>
+                        </div>
+                    </li>
                 </ul>
             </div>
         {% endif %}

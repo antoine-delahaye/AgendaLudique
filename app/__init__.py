@@ -6,10 +6,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
+import os
+
+import config
 from app.mail.utils.mailtools import MailTool
-from config import app_config
+from instance.config import config
 
 # SQLAlchemy variable initialization
+
 db = SQLAlchemy()
 
 # LoginManager variable initialization
@@ -44,13 +48,9 @@ def config_app(config_name):
     :return: app to be served
     """
     global app
-
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(app_config[config_name])
-    app.config.from_pyfile('config.py')
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.config['BOOTSTRAP_SERVER_LOCAL'] = True
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config.from_object(config[os.environ.get("FLASK_ENV")])
+    print(app.config["SQLALCHEMY_DATABASE_URI"])
     return app
 
 
@@ -60,16 +60,6 @@ def config_mail(app):
     :param app: app to be served
     """
     global mail
-    mail_config = {
-        'MAIL_SERVER': 'smtp.gmail.com',
-        'MAIL_PORT': 465,
-        'MAIL_USERNAME': 'noreply.agendaludique@gmail.com',
-        'MAIL_DEFAULT_SENDER': 'Agenda Ludique',
-        'MAIL_PASSWORD': 'uteokhqmpqwyjgdj',
-        'MAIL_USE_TLS': False,
-        'MAIL_USE_SSL': True
-    }
-    app.config.update(mail_config)
     mail = MailTool(app)
 
 
@@ -85,6 +75,7 @@ def config_blueprint(app):
     from app.mail import mail as mail_blueprint
     from app.games.group import group as group_blueprint
     from app.games.session import session as session_blueprint
+    from tests import test_blueprint
 
     app.register_blueprint(site_blueprint, url_prefix="/")
     app.register_blueprint(auth_blueprint, url_prefix="/auth")
@@ -92,6 +83,8 @@ def config_blueprint(app):
     app.register_blueprint(mail_blueprint, url_prefix="/mail")
     app.register_blueprint(group_blueprint, url_prefix="/group")
     app.register_blueprint(session_blueprint, url_prefix="/session")
+    app.register_blueprint(test_blueprint)
+
     for bp in bp_list:
         app.register_blueprint(bp)
 

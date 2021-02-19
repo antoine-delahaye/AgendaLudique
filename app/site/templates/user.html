@@ -5,11 +5,7 @@
     <main class="container-fluid col-9">
         <div id="user-presentation">
             <img class="profile-picture rounded-lg" id="userimg"
-                    {% if user.profile_picture %}
-                 src="{{ user.profile_picture }}"
-                    {% else %}
-                 src="{{ url_for("static", filename="images/blank_pp.png") }}"
-                    {% endif %}
+                 src="{{ user.get_profile_picture() }}"
                  alt="Image de profil de {{ user.username }}">
             <div id="user-informations">
                 <h2 id="username">{{ user.username }}</h2>
@@ -89,14 +85,14 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="carousel-navigation">
-            <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="prev">
-                <i class="fa fa-arrow-left"></i>
-            </a>
-            <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="next">
-                <i class="fa fa-arrow-right"></i>
-            </a>
+            <div class="carousel-navigation">
+                <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="prev">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <a class="btn pt-2" href="#owned-games-controls" role="button" data-slide="next">
+                    <i class="fa fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
         </div>
         <div id="opinions" class="profile-category">
