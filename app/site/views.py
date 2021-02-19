@@ -58,9 +58,11 @@ def user(id=None):
     Render the user template on the /user route
     """
     user = User.query.get_or_404(id)
-    data = User.search(current_user, user.username, False,
-                       True)  # Retrieve the data from the database, including the hidden users.
-    return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id, users_data=data)
+    bookmarked_users = user.get_bookmarked_users()
+    current_user_data = User.search(current_user, "", False, True)  # Retrieve the data for the current user
+
+    return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id,
+                           users_data=current_user_data, bookmarked_users=bookmarked_users)
 
 
 @site.route('/hidden-users/add', methods=['GET'])

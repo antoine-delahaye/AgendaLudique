@@ -93,6 +93,14 @@ class User(UserMixin, db.Model):
         """
         return True if User.query.filter(User.email == email).first() else False
 
+    def get_bookmarked_users(self):
+        """
+        Get the bookmarked users of the current user.
+        :return: the bookmarked users.
+        """
+        bookmarked_users = db.session.query(BookmarkUser.user2_id).filter(BookmarkUser.user_id == self.id)
+        return User.query.filter(User.id.in_(bookmarked_users))
+
     @classmethod
     def get_known_games(cls, user_id, only_id=False):
         if only_id:
@@ -975,3 +983,4 @@ class SearchResults:
         self.pagination = None
         self.hidden_ids = set()
         self.bookmarked_ids = set()
+
