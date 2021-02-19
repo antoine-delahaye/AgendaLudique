@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  app:
+    image: agenda-ludique
+    depends_on:
+      - db
+  db:
+    image: linuxserver/mariadb:alpine
+    environment:
+      - MYSQL_ROOT_PASSWORD=agenda-ludique
+      - TZ=Europe/Paris
+      - MYSQL_USER=al_admin
+      - MYSQL_PASSWORD=al_admin
+      - MYSQL_DATABASE=agendaludique
+    ports:
+      - 56734:3306
+  ws:
+    image: nginx:1.13-alpine
+    depends_on:
+      - app
+    ports:
+      - 56735:80
