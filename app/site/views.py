@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from app.models import User, HideUser, BookmarkUser
+from app.models import User, HideUser, BookmarkUser, Game
 from app.site import site
 from app.site.models.forms import UpdateInformationForm, UsersSearchForm
 from app.site.models.site_tools import update_user_with_form
@@ -58,11 +58,19 @@ def user(id=None):
     Render the user template on the /user route
     """
     user = User.query.get_or_404(id)
+
+    # Bookmarked users
     bookmarked_users = user.get_bookmarked_users()
     current_user_data = User.search(current_user, "", False, True)  # Retrieve the data for the current user
 
+    # Games collection
+    user_games_collection = User.get_owned_games(user.id)
+    # Will work later when the search engine will be updated
+    current_user_wished_games = Game.search(current_user, "", "title", "wished").items
+
     return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id,
-                           users_data=current_user_data, bookmarked_users=bookmarked_users)
+                           users_data=current_user_data, bookmarked_users=bookmarked_users,
+                           games_collection=user_games_collection, wished_games=current_user_wished_games)
 
 
 @site.route('/hidden-users/add', methods=['GET'])

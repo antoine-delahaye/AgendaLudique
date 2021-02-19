@@ -82,6 +82,8 @@ def game(game_id):
     return render_template('game.html', game=Game.from_id(game_id),
                            owned_games=User.get_owned_games(flask_login.current_user.id, True),
                            wished_games=User.get_wished_games(flask_login.current_user.id, True),
+                           noted_games=User.get_noted_games(flask_login.current_user.id, True),
+                           rating=Note.from_both_ids(current_user.id,game_id),
                            average_grade=Note.average_grade(game_id),
                            messages=Note.get_messages(game_id, 5))
 

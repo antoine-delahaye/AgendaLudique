@@ -81,7 +81,8 @@ class User(UserMixin, db.Model):
         Get the user's profile picture from Gravatar.
         :return: The URL of the user's profile picture on Gravatar.
         """
-        return "https://www.gravatar.com/avatar/" + hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
+        return "https://www.gravatar.com/avatar/" + \
+               hashlib.md5(self.email.lower().encode('utf-8')).hexdigest() + "?size=200"
 
     def __repr__(self):
         return f'<User: {self.username}>'
