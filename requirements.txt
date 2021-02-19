@@ -1,4 +1,3 @@
-wheel
 alembic>=1.4.3
 beautifulsoup4>=4.9.3
 blinker>=1.4
