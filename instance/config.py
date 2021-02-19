@@ -26,7 +26,7 @@ class ProductionConfig(Config):
     SSL_REDIRECT = False
 
 
-class LocalConfig(Config):
+class LocalConfig(DevelopmentConfig):
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://al_admin:al_admin@localhost/agendaludique'
 
 
