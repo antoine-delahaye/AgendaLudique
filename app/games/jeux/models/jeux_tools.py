@@ -26,19 +26,20 @@ def get_catalog_payload(form, user, page):
         form.display_search_type.data = 'title'
 
     # We want to remove already owned and wished games from the page
-    payload["owned_games"] = User.get_owned_games(user.id, True)
-    payload["wished_games"] = User.get_wished_games(user.id, True)
+    
     
     payload["games_hint"] = form.games_hint.data
     payload['type'] = form.display_search_type.data
 
-    # But we want to know what games the user already knows or has noted
+    # We want to know which games the user already knows, wishes, owns or has noted
     noted_games = User.get_noted_games(user.id, True)
-    payload["noted_games"] = noted_games
-    payload["known_games"] = User.get_known_games(user.id, True)
-    payload["ratings"] = {}
-    for id in noted_games:
-        payload.get("ratings")[id] = Note.from_both_ids(user.id, id)
+    payload["known_games"] = id_query_to_set(User.get_known_games(user.id, True))
+    payload["noted_games"] = id_query_to_set(noted_games)
+    payload["wished_games"] = id_query_to_set(User.get_wished_games(user.id, True))
+    payload["owned_games"] = id_query_to_set(User.get_owned_games(user.id, True))
+
+    payload["ratings"] = User.get_noted_games(user.id, True)
+
     payload["games"] = Game.search_with_pagination(user.id, form.games_hint.data,
                                                    form.display_search_type.data, search_parameter, page, 20)
 
@@ -80,3 +81,9 @@ def get_search_game(game_hint):
     if game_hint is None:
         game_hint = ""
     return request.args.get('games', game_hint, type=str)
+
+def id_query_to_set(query):
+    ids = set()
+    for game in query:
+        ids.add(game.game_id)
+    return ids
