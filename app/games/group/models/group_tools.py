@@ -80,3 +80,16 @@ def quit_group_form(group_id):
 
     db.session.commit()
     return True
+
+
+def add_group_form(form):
+    """
+    Create a new Group table
+    """
+    is_private = True
+    password = "aaaa"
+    group = Group(
+        name=form.data.name,
+        is_private=is_private,
+        password=password,
+        manager_id=current_user.id)

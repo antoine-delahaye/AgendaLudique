@@ -106,3 +106,10 @@ def quit_group(group_id):
     if quit_group_form(group_id):
         return redirect(request.referrer)
     return redirect(url_for('group.groups'))
+
+
+@gp.route('/add_group', methods=['GET', 'POST'])
+@login_required
+def add_group():
+    flash("work in progress","warning")
+    return redirect(url_for('group.groups'))
