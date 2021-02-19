@@ -95,10 +95,14 @@ def my_groups():
 def join_public_group(group_id=None):
     if id is None:
         abort(412)
-    return join_public_group_form(group_id)
+    elif join_public_group_form(group_id):
+        return redirect(url_for("group.group", id=group_id))
+    return redirect(url_for('group.groups'))
 
 
 @gp.route('/quit_group/<group_id>', methods=['GET', 'POST'])
 @login_required
 def quit_group(group_id):
-    return quit_group_form(group_id)
+    if quit_group_form(group_id):
+        return redirect(request.referrer)
+    return redirect(url_for('group.groups'))

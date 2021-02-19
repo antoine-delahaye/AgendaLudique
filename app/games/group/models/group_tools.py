@@ -18,7 +18,7 @@ def get_all_participation(user):
     return groups_data
 
 
-def check_group(group):
+def check_private_group(group):
     if group is None:
         flash('Ce code ne correspond à aucun groupe.', 'danger')
         return False
@@ -35,7 +35,7 @@ def join_private_group_form(form):
     """
     code = form.code.data
     group = Group.from_code(code)
-    if check_group(group):
+    if check_private_group(group):
         db.session.add(Participate(group_id=group.id, member_id=current_user.id))
         db.session.commit()
         return False
@@ -49,20 +49,27 @@ def join_public_group_form(group_id):
     group = Group.from_id(group_id)
     if group is None:
         abort(404)
+        return False
     elif group.is_private:
         flash('Vous ne pouvez pas rejoindre un groupe privé sans un code.', 'danger')
-        return redirect(url_for('group.groups'))
-    else:
-        db.session.add(Participate(group_id=group_id, member_id=current_user.id))
-        db.session.commit()
-        return redirect(url_for("group.group", id=group.id))
+        return False
+    db.session.add(Participate(group_id=group_id, member_id=current_user.id))
+    db.session.commit()
+    return True
 
 
 def quit_group_form(group_id):
     group = Group.from_id(group_id)
     if group is None:
         abort(404)
-    db.session.delete(Participate.from_both_ids(current_user.id, group_id))
+        return False
+
+    participation = Participate.from_both_ids(current_user.id, group_id)
+    if participation is None:
+        flash("Vous ne pouvez pas quitter un groupe dont vous n'êtes pas membre.",'warning')
+        return False
+    else:
+        db.session.delete(participation)
 
     participations = group.participations.all()
 
@@ -72,4 +79,4 @@ def quit_group_form(group_id):
         group.manager_id = participations[0].member_id  # nominate a new manager
 
     db.session.commit()
-    return redirect(request.referrer)
+    return True
