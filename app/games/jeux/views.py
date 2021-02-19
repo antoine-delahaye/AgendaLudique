@@ -9,6 +9,7 @@ from . import jeux
 from .models.games_form_tools import populate_games_form, beautify_games_form, add_default_values_game_form
 from .models.jeux_tools import get_numero_page, TITLES, DEFAULT_TITLE, get_catalog_payload
 from app import db
+import time as t
 
 
 @jeux.route('/catalog', methods=['GET', 'POST'])
@@ -17,13 +18,14 @@ def catalog():
     """
     Render the catalog template on the /catalog route
     """
+    start = t.time()
     form = GamesSimpleSearchForm()
     page = get_numero_page()
     payload = get_catalog_payload(form, current_user, page)
 
     # Change title of the page in function of search_parameter
     title = TITLES.get(payload.get("search_parameter"), DEFAULT_TITLE)
-    # print(form.display_search_type.data)
+    print("--- %s total ---" % (t.time() - start))
 
     return render_template('catalog.html', stylesheet='catalog', title=title, form=form, **payload)
 
