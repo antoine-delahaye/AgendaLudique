@@ -84,3 +84,7 @@
         text-align: center;
     }
 }
+
+#gameDropdown {
+    display: none;
+}
