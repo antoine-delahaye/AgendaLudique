@@ -25,7 +25,7 @@ class UpdateInformationForm(FlaskForm):
 class GamesSimpleSearchForm(FlaskForm):
     games_hint = StringField("Nom du jeu", id='search-input', render_kw={
         'class': 'form-control',
-        'placeholder': 'Rechercher des jeux grâce à leurs noms',
+        'placeholder': 'Rechercher des jeux en fonction du ...',
         'aria-describedby': 'search-buttons'
     })
     display_search_type = SelectField('Type', choices=[('title',"Nom"),('genre',"Genre"),('year',"Année")])
