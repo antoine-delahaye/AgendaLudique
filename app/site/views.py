@@ -1,7 +1,8 @@
 # app/site/views.py
 
-from flask import render_template, redirect, url_for, request, make_response
+from flask import render_template, redirect, url_for, request, make_response, flash
 from flask_login import login_required, current_user
+from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.models import User, HideUser, BookmarkUser
@@ -57,9 +58,11 @@ def user(id=None):
     Render the user template on the /user route
     """
     user = User.query.get_or_404(id)
-    data = User.search(current_user, user.username, False,
-                       True)  # Retrieve the data from the database, including the hidden users.
-    return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id, users_data=data)
+    bookmarked_users = user.get_bookmarked_users()
+    current_user_data = User.search(current_user, "", False, True)  # Retrieve the data for the current user
+
+    return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id,
+                           users_data=current_user_data, bookmarked_users=bookmarked_users)
 
 
 @site.route('/hidden-users/add', methods=['GET'])
@@ -161,7 +164,11 @@ def account():
 
     if request.method == 'POST':
         if user is not None:
-            update_user_with_form(form, user)
+            try:
+                update_user_with_form(form, user)
+                flash("Votre profil a bien été mis à jour.", "success")
+            except IntegrityError:
+                flash("Ce nom d'utilisateur est déjà pris.", "danger")
         return redirect(url_for('site.account'))
     return render_template('account.html', stylesheet='account', form=form)
 

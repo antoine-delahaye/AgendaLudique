@@ -58,7 +58,7 @@ class User(UserMixin, db.Model):
         """
         if self.use_gravatar:
             return self.get_gravatar()
-        elif self.profile_picture is not None:
+        elif self.profile_picture != "" and self.profile_picture is not None:
             return self.profile_picture
         return "/static/images/blank_pp.png"
 
@@ -68,12 +68,10 @@ class User(UserMixin, db.Model):
         :param new_picture_url: A picture URL.
         :param use_gravatar: If the user wants to use his Gravatar profile picture.
         """
-        print("Use Gravatar" + str(use_gravatar))
-        print("URL: " + new_picture_url)
         if use_gravatar:
             self.profile_picture = self.get_gravatar()
         else:
-            if new_picture_url == "None":
+            if new_picture_url is None or new_picture_url == "None":
                 self.profile_picture = None
             else:
                 self.profile_picture = new_picture_url
@@ -94,6 +92,14 @@ class User(UserMixin, db.Model):
         Check if an email is already used.
         """
         return True if User.query.filter(User.email == email).first() else False
+
+    def get_bookmarked_users(self):
+        """
+        Get the bookmarked users of the current user.
+        :return: the bookmarked users.
+        """
+        bookmarked_users = db.session.query(BookmarkUser.user2_id).filter(BookmarkUser.user_id == self.id)
+        return User.query.filter(User.id.in_(bookmarked_users))
 
     @classmethod
     def get_known_games(cls, user_id, only_id=False):
@@ -203,16 +209,19 @@ class User(UserMixin, db.Model):
         :return: A UsersSearchResults with a Pagination object.
         """
         results = User.search(current_user, username_hint, favOnly, hidden)
-        page_elements = results.items[(current_page - 1) * per_page:current_page * per_page]  # the users that will be displayed on the page
-        results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
+        page_elements = results.items.slice((current_page - 1) * per_page,
+                                            current_page * per_page)  # the users that will be displayed on the page
+        results.pagination = Pagination(None, current_page, per_page, results.items.count(), page_elements)
         results.items = None
 
         return results
 
-    # Set up user_loader
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+
+# KEEP IT OUTSIDE CLASS ;( ;( ;( 3 hours of work for this ****
+# Set up user_loader
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class BookmarkUser(db.Model):
@@ -571,7 +580,7 @@ class Game(UserMixin, db.Model):
         results = Game.search(current_user_id, games_hint, typ, parameters_list)
 
         page_elements = results.items[(
-                                                  current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
+                                              current_page - 1) * per_page:current_page * per_page]  # the games that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, len(results.items), page_elements)
         results.items = None
         return results
@@ -666,6 +675,14 @@ class Group(db.Model):
         Get a Group from its id. Return None if the group does not exist.
         """
         req = Group.query.filter(Group.id == id).first()
+        return req if req else None
+
+    @classmethod
+    def from_code(cls, code):
+        """
+        Get a Group from its code. Return None if the group does not exist.
+        """
+        req = Group.query.filter(Group.password == code).first()
         return req if req else None
 
 
@@ -966,3 +983,4 @@ class SearchResults:
         self.pagination = None
         self.hidden_ids = set()
         self.bookmarked_ids = set()
+

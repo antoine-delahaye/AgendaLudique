@@ -1,6 +1,6 @@
 # app/auth/views.py
 
-from flask import redirect, render_template, url_for, flash, abort
+from flask import redirect, render_template, url_for, flash, abort, request, jsonify
 from flask_login import login_required, login_user, logout_user
 
 from app.auth import auth
@@ -11,7 +11,7 @@ from app import db
 from app.models import User  # , Statistic
 
 
-@auth.route('/login', methods=['GET', 'POST'])
+@auth.route('/log', methods=['GET', 'POST'])
 def login():
     """
     Handle requests to the /login route
@@ -23,7 +23,10 @@ def login():
         if user is not None and user.verify_password(
                 form.password.data):
             login_user(user)
-            return redirect(url_for('jeux.catalog'))
+            next = request.args.get("next")
+            if next is not None:
+                return redirect(next)
+            return redirect(url_for("jeux.catalog"))
         else:
             flash("Adresse électronique ou mot de passe invalide.", "warning")
     return render_template('login.html', form=form, stylesheet='login')

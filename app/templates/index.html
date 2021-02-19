@@ -19,7 +19,7 @@
     {% endif %}
     {% if stylesheet_list is defined %} <!-- would have been better to never have stylesheet but anyways -->
         {% for ss in stylesheet_list %}
-            <link href="{{ url_for("static", filename="css/"+ss+".css") }}">
+            <link rel="stylesheet" href="{{ url_for("static", filename="css/"+ss+".css") }}">
         {% endfor %}
     {% endif %}
     {% if request.cookies.get('color-theme')=='On' %}
@@ -143,7 +143,7 @@
     {% endblock message %}
 {% endblock main %}
 <footer class="py-3 text-white mt-5">
-    <p class="text-center mb-0">&copy; 2020 Agenda Ludique - Université d'Orléans</p>
+    <p class="text-center mb-0">&copy; 2021 Agenda Ludique - Université d'Orléans</p>
 </footer>
 <!-- Bootstrap -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

@@ -13,17 +13,17 @@
                 <div class="input-group-append" id="search-buttons">
                     <button class="btn show-advanced-search" type="button" data-toggle="collapse"
                             data-target="#advanced-search" aria-expanded="false" aria-controls="advanced-search"
-                            title="Rechercher des jeux grâce à leurs noms">
+                            title="Recherche avancée">
                         <i class="fa fa-sliders" aria-hidden="true"></i>
                     </button>
-                    <button type="submit" class="btn btn-primary" title="Recherche">
+                    <button type="submit" class="btn btn-primary" title="Rechercher">
                         <i class="fa fa-search" aria-hidden="true"></i>
                     </button>
                 </div>
             </div>
             <div class="collapse" id="advanced-search">
                 <div class="card card-body">
-                    <h5 id="advanced-search-title" class="card-title">Rechercher des jeux en fonction de...</h5>
+                    <h5 id="advanced-search-title" class="card-title">Recherche avancée</h5>
                     {{ form.display_search_parameter.label }} {{ form.display_search_parameter }}
                 </div>
             </div>
@@ -31,8 +31,12 @@
         {% if games.pagination.items %}
             <div class="row">
                 {% for game in games.pagination.items %}
-                    {% if game.id not in owned_games %}
+                    {% if search_parameter == "OWNED" or search_parameter == "WISHED" %}
                         {% include "cards/game_card.html" %}
+                    {% else %}
+                        {% if game.id not in owned_games and game.id not in wished_games %}
+                            {% include "cards/game_card.html" %}
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
             </div>

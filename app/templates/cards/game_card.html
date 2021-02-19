@@ -9,7 +9,7 @@
                     ({{ game.publication_year }})</p>
             </a>
             <div class="d-flex flex-row align-items-center">
-                <p class="mb-0">De {{game.id}} {{ game.min_players }} à {{ game.max_players }} joueurs</p>
+                <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
                 {% if game.id in wished_games %}
                     <a class="ml-auto"
                        href="{{ url_for("jeux.remove_game_wish", game_id=game.id) }}">
