@@ -1,5 +1,5 @@
 <div class="col-xl-3 col-lg-4 col-md-6">
-    <div class="card mb-4 shadow-sm">
+    <div class="game-card card mb-4 shadow-sm">
         <img class="card-img mx-auto"
              src="{{ game.image }}"
              alt="Illustration">
@@ -9,7 +9,7 @@
                     ({{ game.publication_year }})</p>
             </a>
             <div class="d-flex flex-row align-items-center">
-                <p class="mb-0">De {{game.id}} {{ game.min_players }} à {{ game.max_players }} joueurs</p>
+                <p class="mb-0">De {{ game.min_players }} à {{ game.max_players }} joueurs</p>
                 {% if game.id in wished_games %}
                     <a class="ml-auto"
                        href="{{ url_for("jeux.remove_game_wish", game_id=game.id) }}">
@@ -91,7 +91,10 @@
                             <textarea type="text" class="form-control" id="message-text" name="message-text"> {{ ratings[game.id].message }}</textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Sauvegarder</button>
-                        <a class="btn btn-primary" href="{{ url_for("jeux.remove_game_note", game_id=game.id) }}">Effacer la note</a>
+                        <button class="btn ml-3 col-3 text-white"
+                                onclick="window.location.href='{{ url_for("jeux.remove_game_note", game_id=game.id) }}';">
+                            Effacer la note
+                        </button>
                     </form>
                 </div>
             </div>
