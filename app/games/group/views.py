@@ -4,8 +4,8 @@ from flask_login import login_required, current_user
 
 from . import group as gp
 from app.models import Group, Participate, User
-from .models.group_tools import get_all_participation, join_private_group_form, join_public_group_form, quit_group_form
-from .models.forms import JoinPrivateGroupForm
+from .models.group_tools import get_all_participation, join_private_group_form, join_public_group_form, quit_group_form, add_group_form
+from .models.forms import JoinPrivateGroupForm, AddGroupForm
 from app import db
 
 
@@ -111,5 +111,11 @@ def quit_group(group_id):
 @gp.route('/add_group', methods=['GET', 'POST'])
 @login_required
 def add_group():
-    flash("work in progress","warning")
-    return redirect(url_for('group.groups'))
+    form = AddGroupForm()
+    if request.method == 'POST':
+        group_id = add_group_form(form)
+        if group_id:
+            return redirect(url_for('group.group', id=group_id))
+        return redirect(request.referrer)
+
+    return render_template('add_group.html', form=form)

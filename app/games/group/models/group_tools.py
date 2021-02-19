@@ -60,6 +60,7 @@ def join_public_group_form(group_id):
 
 def quit_group_form(group_id):
     group = Group.from_id(group_id)
+    res = True
     if group is None:
         abort(404)
         return False
@@ -73,23 +74,41 @@ def quit_group_form(group_id):
 
     participations = group.participations.all()
 
-    if participations == 0:  # if the group in now empty
+    if len(participations) == 0:  # if the group in now empty
         db.session.delete(group)
+        res = False
+        flash("Le groupe a été supprimé","warning")
     elif current_user.id == group.manager_id:  # if the group doesnt have a manager anymore
         group.manager_id = participations[0].member_id  # nominate a new manager
 
     db.session.commit()
-    return True
+    return res
 
 
 def add_group_form(form):
     """
     Create a new Group table
+    :param form:
+    :return: if the group can be added, return the id of the group, else return False
     """
-    is_private = True
-    password = "aaaa"
-    group = Group(
-        name=form.data.name,
+    name = form.name.data
+    if Group.from_name(name) is not None:
+        flash("Ce groupe existe déjà","danger")
+        return False
+
+    is_private = (form.is_private.data == 'private')
+
+    password = form.password.data
+    if password is "" and is_private==True:
+        flash("Vous devez mettre un mot de passe pour un groupe privé","danger")
+        return False
+    
+    db.session.add(Group(
+        name=name,
         is_private=is_private,
         password=password,
-        manager_id=current_user.id)
+        manager_id=current_user.id))
+    group_id = Group.from_name(name).id
+    db.session.add(Participate(group_id=group_id, member_id=current_user.id))
+    db.session.commit()
+    return group_id
