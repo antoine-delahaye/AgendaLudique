@@ -2,22 +2,21 @@ main form {
     width: 45rem;
 }
 
-.card img {
+.game-card img {
     height: 15rem !important;
 }
 
-.card i {
+.game-card i {
     color: #000000;
 }
 
-.card i:hover {
+.game-card i:hover {
     color: #0277BC;
 }
 
 main nav ul {
     width: min-content;
 }
-
 
 .wished:hover:before{
 	content: "\f7a9";
