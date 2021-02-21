@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine
 
 LABEL maintainer "Antoine Delahaye"
 LABEL description "Nginx + uWSGI + Flask based on Alpine Linux and managed by Antoine Delahaye"
@@ -20,14 +20,12 @@ RUN apk add --no-cache \
     rm -r /root/.cache
 
 COPY nginx.conf /etc/nginx/
-
 COPY agenda-ludique.conf /etc/nginx/conf.d/
-
 COPY uwsgi.ini /etc/uwsgi/
-
 COPY supervisord.conf /etc/supervisord.conf
 
 WORKDIR /docker-al
 ADD . /docker-al
 
-CMD ["/usr/bin/supervisord"]
+RUN chmod u+x entrypoint.sh
+ENTRYPOINT ["entrypoint.sh"]
