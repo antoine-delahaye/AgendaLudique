@@ -59,6 +59,11 @@ def join_public_group_form(group_id):
 
 
 def quit_group_form(group_id):
+    """
+    Kick the current_user from a group.
+    Chose an other manager if they were the manager.
+    Delete the group is now empty.
+    """
     group = Group.from_id(group_id)
     res = True
     if group is None:
@@ -85,6 +90,26 @@ def quit_group_form(group_id):
     return res
 
 
+def kick_group_form(group_id, member_id):
+    """
+    Kick a user from a group
+    """
+    group = Group.from_id(group_id)
+    if group is None:
+        abort(404)
+
+    if current_user.id == group.manager_id:
+        participation = Participate.from_both_ids(member_id, group_id)
+        if participation is None:
+            flash("Vous ne pouvez pas kick quelqu'un qui n'est pas dans ce groupe","warning")
+        else:
+            db.session.delete(participation)
+    else:
+        flash("Vous ne pouvez pas kick quelqu'un d'un groupe dont vous n'êtes pas le chef","warning")
+
+    db.session.commit()
+
+
 def add_group_form(form):
     """
     Create a new Group table
@@ -102,7 +127,7 @@ def add_group_form(form):
     if password is "" and is_private==True:
         flash("Vous devez mettre un mot de passe pour un groupe privé","danger")
         return False
-    
+
     db.session.add(Group(
         name=name,
         is_private=is_private,
