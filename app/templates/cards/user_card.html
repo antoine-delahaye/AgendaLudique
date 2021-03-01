@@ -46,7 +46,7 @@
 
                 {% if (group is defined) and (group.manager_id == current_user_id) and (item.id != current_user_id) %}
                     <a class="btn thin-button ban-user reduced-width btn-danger"
-                    href="#"
+                    href="{{ url_for('group.kick_group', group_id=group.id, member_id=item.id ) }}"
                     role="button" onclick="return confirm('Êtes-vous sûr de vouloir retirer {{item.username}} du groupe ? ')"
                     title="Retirer {{item.username}} du groupe"><i class="fa fa-ban"></i></a>
                 {% endif %}
