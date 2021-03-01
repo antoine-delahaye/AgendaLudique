@@ -16,6 +16,7 @@
                     <h5><a href="{{ url_for('site.user') }}/{{ item.id }}"
                            title="{{ item.username }}">{{ item.username }}</a></h5>
                 {% endif %}
+
                 {% if item.id == current_user_id %}
                     <a class="btn thin-button disabled"
                        href="{{ url_for('site.add_bookmarked_user', user=item.id) }}"
@@ -41,6 +42,13 @@
                     <a class="btn thin-button hide-user reduced-width btn-outline-danger"
                        href="{{ url_for('site.add_hidden_user', user=item.id) }}" role="button"
                        title="Masquer cet utilisateur"><i class="far fa-eye-slash"></i></a>
+                {% endif %}
+
+                {% if (group is defined) and (group.manager_id == current_user_id) and (item.id != current_user_id) %}
+                    <a class="btn thin-button ban-user reduced-width btn-danger"
+                    href="#"
+                    role="button" onclick="return confirm('Êtes-vous sûr de vouloir retirer {{item.username}} du groupe ? ')"
+                    title="Retirer {{item.username}} du groupe"><i class="fa fa-ban"></i></a>
                 {% endif %}
             </div>
         </div>
