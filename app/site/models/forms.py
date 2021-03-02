@@ -81,6 +81,6 @@ class UsersSearchForm(FlaskForm):
     display_favorites_players_only = BooleanField('Afficher uniquement les joueurs favoris')
     display_masked_players = BooleanField('Afficher les joueurs masqués')
     sort_order = SelectField('Ordre de tri : ', choices=[
-        ('alphabetic', 'Alphabétique'),
+        ('alphabetical', 'Alphabétique'),
         ('mostRecent', 'Plus récents en premier')
     ], render_kw={'class': 'custom-select inline-select'})
