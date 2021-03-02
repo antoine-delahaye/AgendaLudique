@@ -25,6 +25,10 @@
                     <h5 id="advanced-search-title" class="card-title">Recherche avancée</h5>
                     <p>{{ form.display_favorites_players_only }} {{ form.display_favorites_players_only.label }}</p>
                     <p>{{ form.display_masked_players }} {{ form.display_masked_players.label }}</p>
+                    <p>{{ form.sort_order.label }} {{ form.sort_order }}</p>
+                    <button type="submit" class="btn thin-button" title="Recherche">
+                        <i class="fa fa-search" aria-hidden="true"></i> Lancer la recherche avancée
+                    </button>
                 </div>
             </div>
         </form>

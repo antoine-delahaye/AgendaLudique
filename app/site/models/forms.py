@@ -73,10 +73,14 @@ class UsersSearchForm(FlaskForm):
     """
     Form to search users
     """
-    username_hint = StringField("Nom de l'utilisateur", id='search-input', render_kw={
+    username_hint = StringField('Nom de l\'utilisateur', id='search-input', render_kw={
         'class': 'form-control',
         'placeholder': 'Rechercher un utilisateur grâce à son nom',
         'aria-describedby': 'search-buttons'
     })
     display_favorites_players_only = BooleanField('Afficher uniquement les joueurs favoris')
     display_masked_players = BooleanField('Afficher les joueurs masqués')
+    sort_order = SelectField('Ordre de tri : ', choices=[
+        ('alphabetic', 'Alphabétique'),
+        ('mostRecent', 'Plus récents en premier')
+    ], render_kw={'class': 'custom-select inline-select'})
