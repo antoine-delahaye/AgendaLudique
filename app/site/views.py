@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 
 from app import db
-from app.models import User, HideUser, BookmarkUser, Game
+from app.models import User, HideUser, BookmarkUser, Game, ResultsSortType
 from app.site import site
 from app.site.models.forms import UpdateInformationForm, UsersSearchForm
 from app.site.models.site_tools import update_user_with_form
@@ -30,24 +30,29 @@ def users():
     page = request.args.get('page', 1, type=int)
 
     # Get search parameters if there are None, set to None
-    favOnly = form.display_favorites_players_only.data if form.display_favorites_players_only.data else request.args.get(
+    fav_only = form.display_favorites_players_only.data if form.display_favorites_players_only.data else request.args.get(
         'favOnly', None, type=bool)
     hidden = form.display_masked_players.data if form.display_masked_players.data else request.args.get('hidden', None,
                                                                                                         type=bool)
+
+    # Get the sort order. If not defined, the users will be sorted alphabetically.
+    sort_order = form.sort_order.data if form.sort_order.data else request.args.get(
+        'sortOrder', ResultsSortType.ALPHABETICAL, type=str)
 
     # Fill search bar with parameters when changing page
     if not form.username_hint.data:
         form.username_hint.data = request.args.get('username', '', type=str)
 
     # Check the box if the parameters are True
-    form.display_favorites_players_only.data = favOnly
+    form.display_favorites_players_only.data = fav_only
     form.display_masked_players.data = hidden
 
-    search_results = User.search_with_pagination(current_user, form.username_hint.data, favOnly, hidden, page, 20)
+    search_results = User.search_with_pagination(current_user, form.username_hint.data, fav_only, hidden, page, 20,
+                                                 sort_type=sort_order)
 
     return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id,
-                           users_data=search_results, favOnly=favOnly, hidden=hidden,
-                           username_hint=form.username_hint.data)
+                           users_data=search_results, favOnly=fav_only, hidden=hidden,
+                           username_hint=form.username_hint.data, sort_order=sort_order)
 
 
 @site.route('/user')

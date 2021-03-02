@@ -33,3 +33,8 @@
     padding-left: 3px;
     padding-right: 3px;
 }
+
+.inline-select {
+    display: inline;
+    width: min-content;
+}

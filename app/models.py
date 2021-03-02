@@ -151,13 +151,14 @@ class User(UserMixin, db.Model):
         return req if req else None
 
     @classmethod
-    def search(cls, current_user, username_hint, favOnly, hidden):
+    def search(cls, current_user, username_hint, fav_only, hidden, sort_type='alphabetical'):
         """
         Search users with defined parameters
         :param current_user The user who made the research
         :param username_hint: A hint gave by the user to search similar usernames
-        :param favOnly: containing "True" to show only bookmarked users else None
+        :param fav_only: containing "True" to show only bookmarked users else None
         :param hidden: containing "True" to show hidden users else None
+        :param sort_type: The sort type to use, using the ResultsSortType class constants
         :return: A SearchResults object with an items list.
         """
         results = SearchResults()  # Will contain the search results
@@ -169,15 +170,15 @@ class User(UserMixin, db.Model):
         hidden_users_db = db.session.query(HideUser.user2_id).filter(
             HideUser.user_id == current_user.id)  # ids only -> lighter
 
-        if favOnly:
+        if fav_only:
             users_db = User.query.filter(User.id.in_(bookmarked_users_db),
                                          User.username.like("%" + username_hint + "%"))
         else:
             users_db = User.query.filter(User.username.like('%' + username_hint + '%'))
 
         # Allows to fill stars icon to yellow
-        for bookmarded_user in bookmarked_users_db:
-            results.bookmarked_ids.add(bookmarded_user.user2_id)
+        for bookmarked_user in bookmarked_users_db:
+            results.bookmarked_ids.add(bookmarked_user.user2_id)
 
         if not hidden:
             users_db = users_db.filter(User.id.notin_(hidden_users_db))
@@ -186,23 +187,31 @@ class User(UserMixin, db.Model):
         for hidden_user in hidden_users_db:
             results.hidden_ids.add(hidden_user.user2_id)
 
+        # Sorts the results
+        if sort_type == ResultsSortType.MOST_RECENT_FIRST:
+            users_db = users_db.order_by(User.id.desc())
+        else:
+            users_db = users_db.order_by(User.username)  # Sorted alphabetically by default
+
         results.items = users_db
 
         return results
 
     @classmethod
-    def search_with_pagination(cls, current_user, username_hint, favOnly, hidden, current_page=1, per_page=20):
+    def search_with_pagination(cls, current_user, username_hint, fav_only, hidden, current_page=1, per_page=20,
+                               sort_type='alphabetical'):
         """
         Search users with defined parameters and return them as a SearchResults object which contains a Pagination object.
         :param current_user The user who made the research
         :param username_hint: A hint gave by the user to search similar usernames
-        :param favOnly: containing "True" to show only bookmarked users else None
+        :param fav_only: containing "True" to show only bookmarked users else None
         :param hidden: containing "True" to show hidden users else None
         :param current_page: The current page number
         :param per_page: The number of users shown on a search results page
+        :param sort_type: The sort type to use, using the ResultsSortType class constants
         :return: A SearchResults with a Pagination object.
         """
-        results = User.search(current_user, username_hint, favOnly, hidden)
+        results = User.search(current_user, username_hint, fav_only, hidden, sort_type)
         page_elements = results.items.slice((current_page - 1) * per_page,
                                             current_page * per_page)  # the users that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, results.items.count(), page_elements)
@@ -1002,3 +1011,16 @@ class SearchResults:
         self.hidden_ids = set()
         self.bookmarked_ids = set()
 
+
+class ResultsSortType:
+    """
+    A class which contains the different types of sort order for search results as constants.
+    """
+    # Types that work with User and Game (if implemented in the future) search results:
+    ALPHABETICAL = 'alphabetical'  # The items will be displayed by alphabetical order
+    MOST_RECENT_FIRST = 'mostRecent'  # Most recent items will be displayed first
+
+    # Types that will work **only** with Game search results (if implemented in the future):
+    HIGHEST_NOTES_FIRST = 'highestNotes'  # Games with highest notes will be displayed first
+    INCREASING_PLAYER_AMOUNT = 'increasingPlayerAmount'  # Games will be displayed by increasing number of players
+    INCREASING_GAME_DURATION = 'increasingGameDuration'  # Games will be displayed by increasing duration of a game
