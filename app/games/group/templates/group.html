@@ -15,7 +15,7 @@
             {{ super() }}
         {% endblock %}
 
-        {% if is_resp %}
+        {% if is_resp and group.is_private %}
           <p>Mot de passe : {{group.password}}</p>
         {% endif %}
 
