@@ -1,6 +1,6 @@
 services:
   app:
-    image: agenda-ludique
+    image: ug7z/agenda-ludique
     depends_on:
       - db
     ports:
