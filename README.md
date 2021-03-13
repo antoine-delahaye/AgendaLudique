@@ -1,52 +1,74 @@
 # Agenda Ludique
 
-## Présentation du site
+![Python](https://img.shields.io/badge/Python-14354C?style=for-the-badge&logo=python&logoColor=white)
+&nbsp; ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+&nbsp; ![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
+&nbsp; ![MariaDB](https://img.shields.io/badge/MariaDB-A57242?style=for-the-badge&logo=mariadb&logoColor=white)
+&nbsp; ![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
 
-Le site dispose d'une page d'accueil permettant de s'inscrire ou de se connecter. 
-Les utilisateurs qui se connecte à leur agenda ludique accède directement à leur
-bibliothèque de jeux. À partir de là, il est possible de naviguer sur tout le
-site. Par exemple, l'utilisateur peut accéder à différentes rubrique. Une de ces
-rubrique, *communautés*, permet de voir ses groupes ou alors, les gérer, on 
-entend par là, en ajouter ou en créer. L'autre rubrique importante, *Compte*, qui 
-permet gérer son compte, afin d'y modifier ses informations ou même de supprimer 
-son compte ainsi que d'ajouter des jeux.
+## Présentation
+
+Agenda Ludique est une application web ayant pour but d'aider une association à organiser des parties de jeu de société
+entre ses membres. L'application possède de nombreuse fonctionnalité comme le catalogue de jeu, qui permet d'ajouter un
+jeu dans sa collection, l'utilisateur dispose aussi d'une liste de souhait, il peut noter des jeu et indiquer s'il
+connait les règles d'un jeu en question. Les utilisateurs peuvent s'ajouter en amis pour voir quels jeux une personne
+possède et il est possible de créer des sessions permettant aux joueurs d'organiser des parties de jeu.
+
+## Équipe de développement
+
+- [Rémi Delanneau](https://github.com/Amki45)
+- [Jules Grandjean](https://github.com/julesgdn)
+- [Mathis Dupuis]()
+- [Tristan Bellot](https://github.com/Arhkalis)
+- [Xavier Berault](https://github.com/ranblok)
+- [Florian Savouré](https://github.com/P0SlX)
+- [Antoine Delahaye](https://github.com/antoine-delahaye)
+- [Thomas Jacquet-Francillon](https://github.com/Thomas-Jacquet)
 
 ## Prérequis
-Le projet a été fait avec PyCharm, pour l'installer:  
-- Arch Linux
-```shell script
-# pacman -Sy pycharm-community-edition
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/get-docker/)
+
+## Mise en place
+
+Pour mettre en place les conteneurs, il faut créer un fichier `docker-compose.yml` avec le code ci-dessous. Toutefois,
+il est nécessaire que les ports 80 et 3306 de la machine soit libres.
+
 ```
-- Debian
-```shell script
-# snap install pycharm-community --classic
+services:
+  app:
+    image: ug7z/agenda-ludique
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    entrypoint: /docker-al/entrypoint.sh
+    networks:
+      - al_network
+  db:
+    image: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: agendaludique
+      MYSQL_USER: al_admin
+      MYSQL_PASSWORD: al_admin
+    networks:
+      - al_network
+
+networks:
+  al_network:
 ```
-- La version Windows est disponible sur le site officiel
 
-## Installation
-```shell script
-$ git clone https://gitlab.com/Thomas-Jacquet/agenda-ludique.git && cd agenda-ludique/
-```
+Après avoir créé le ficher, lancer la commande `docker-compose up` pour que Docker Compose lance l'application.
 
-Sur PyCharm:
-- File > New Project > Flask
-- Dans le champ "Location", mettez le chemin du dossier agenda-ludique
-![https://imgur.com/b2yNV8E.png](https://imgur.com/b2yNV8El.png)
+## Annexes
 
-## Lancement
-Le projet a maintenant un environnement virtuel, il faut font installer les dépendences du projet. Pour cela, ouvrez le terminal situé en bas de la fenêtre :
-![https://imgur.com/F9vv3sB.png](https://imgur.com/F9vv3sB.png)
+- [Dépôt GitLab](https://gitlab.com/Thomas-Jacquet/agenda-ludique)
+- [Page Docker Hub](https://hub.docker.com/repository/docker/ug7z/agenda-ludique)
 
-Et entrez cette commande:
-```shell script
-$ pip3 install -r requirements.txt
-``` 
-Ensuite dans PyCharm en haut à droite:
-
-![https://imgur.com/IziRzsP.png](https://imgur.com/IziRzsP.png)
-
-Dans le menu déroulant cliquez sur "Edit configuration" et indiquer le chemin du fichier app.py.  
-
-![https://imgur.com/sKVjlar.png](https://imgur.com/sKVjlar.png)
-
-Tout est prêt ! Vous pouvez maintenant lancez le projet avec ![https://imgur.com/plmI8Of.png](https://imgur.com/plmI8Of.png)
+<div style="text-align: center">
+    <img src="https://i.imgur.com/PUTSirh.png" alt="IUT Informatique d'Orléans" height="100">
+</div>
