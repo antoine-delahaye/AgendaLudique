@@ -9,8 +9,8 @@
 ## Présentation
 
 Agenda Ludique est une application web ayant pour but d'aider une association à organiser des parties de jeu de société
-entre ses membres. L'application possède de nombreuse fonctionnalité comme le catalogue de jeu, qui permet d'ajouter un
-jeu dans sa collection, l'utilisateur dispose aussi d'une liste de souhait, il peut noter des jeu et indiquer s'il
+entre ses membres. L'application possède de nombreuses fonctionnalités comme le catalogue de jeu, qui permet d'ajouter 
+un jeu dans sa collection, l'utilisateur dispose aussi d'une liste de souhait, il peut noter des jeux et indiquer s'il
 connait les règles d'un jeu en question. Les utilisateurs peuvent s'ajouter en amis pour voir quels jeux une personne
 possède et il est possible de créer des sessions permettant aux joueurs d'organiser des parties de jeu.
 
@@ -18,7 +18,7 @@ possède et il est possible de créer des sessions permettant aux joueurs d'orga
 
 - [Rémi Delanneau](https://github.com/Amki45)
 - [Jules Grandjean](https://github.com/julesgdn)
-- [Mathis Dupuis]()
+- [Mathis Dupuis](https://gitlab.com/Nagelfox)
 - [Tristan Bellot](https://github.com/Arhkalis)
 - [Xavier Berault](https://github.com/ranblok)
 - [Florian Savouré](https://github.com/P0SlX)
