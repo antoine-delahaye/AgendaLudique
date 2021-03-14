@@ -94,8 +94,8 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Toutes mes sessions</a>
-                            <a class="dropdown-item" href="{{ url_for('session.sessions_incomming') }}">Sessions à venir</a>
-                            <a class="dropdown-item" href="{{ url_for('session.sessions_passed') }}">Sessions terminées</a>
+                            <a class="dropdown-item" href="{{ url_for('session.sessions', search_parameter='UPCOMING')}}">Sessions à venir</a>
+                            <a class="dropdown-item" href="{{ url_for('session.sessions', search_parameter='PASSED') }}">Sessions terminées</a>
                             <a class="dropdown-item" href="{{ url_for('session.organize_session') }}">Créer une session</a>
                         </div>
                     </li>
