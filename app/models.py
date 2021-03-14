@@ -295,6 +295,71 @@ class User(UserMixin, db.Model):
         results.items = None
 
         return results
+    
+    def get_all_sessions(self):
+        return Session.query
+
+    def get_upcoming_sessions(self):
+        return None
+
+    def get_passed_sessions(self):
+        return None
+    
+    def sessions_search(self, sessions_hint, typ, search_parameter, sort_type='title'):
+        """
+        Search games with defined parameters
+        :param user The user who made the research
+        :param games_hint: A hint gave by the user to search various games
+        :param typ: str containing the type of games_hint (search filter)
+        :param search_parameter: str containing the name of the search container
+        :return: A SearchResults object with an items list.
+        """
+        results = SearchResults()  # Will contain the search results
+
+        # Search games via a known parameter
+        if search_parameter == "UPCOMING":
+            results.items = self.get_upcoming_sessions()
+        elif search_parameter == "PASSED":
+            results.items = self.get_passed_sessions()
+        else:
+            results.items = self.get_all_sessions()
+
+        # Search games in results that corresponds to the type and the hint
+        if sessions_hint != "":
+            if typ == "date":
+                # TODO
+                pass
+            else:
+                games_ids = db.session.query(Game.id).filter(Game.title.like("%" + sessions_hint + "%"))
+                results.items = results.items.filter(Session.game_id.in_(games_ids))
+        
+        # Sort games corresponding to the search asked
+        # if sort_type == ResultsSortType.MOST_ANCIENT_FIRST:
+        #     results.items = results.items.order_by(Session.timeslot)
+        # else:
+        #     results.items = results.items.order_by(Session.timeslot)
+
+        return results
+
+    def sessions_search_with_pagination(self, sessions_hint, typ, search_parameter, page=1, per_page=20, sort_type='mostRecent'):
+        """
+        Search sessions with defined parameters and return them as a SearchResults object which contains a Pagination object.
+        :param current_user The user who made the research
+        :param sessions_hint: A hint gave by the user to search various sessions
+        :param typ: str containing the type of sessions_hint (search filter)
+        :param search_parameter: str containing the name of the search container
+        :param current_page: The current page number
+        :param per_page: The number of users shown on a search results page
+        :return: A SearchResults with a Pagination object.
+        """
+        results = self.sessions_search(sessions_hint, typ, search_parameter, sort_type)
+
+        page_elements = results.items.slice((page - 1) * per_page, 
+                                            page * per_page)  # the sessions that will be displayed on the page
+        results.pagination = Pagination(None, page, per_page, results.items.count(), page_elements)
+        results.items = None
+
+        return results
 
 
 # KEEP IT OUTSIDE CLASS ;( ;( ;( 3 hours of work for this ****

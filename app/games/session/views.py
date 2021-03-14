@@ -1,9 +1,13 @@
+from app.games.jeux.models.jeux_tools import get_numero_page
+from sqlalchemy.sql.functions import current_user
+from app.games.session.models.session_tools import get_sessions_payload
 from flask import render_template, flash, request, redirect, url_for
-from flask_login import login_required
-from .models.form import AddSession
+from flask_login import login_required, current_user
+from .models.forms import AddSession, SessionSearchForm
 import datetime
 from . import session as session_bp
 from app.models import Session, TimeSlot
+from .models.session_tools import TITLES, DEFAULT_TITLE, get_sessions_payload
 
 
 @session_bp.route('/sessions', methods=['GET', 'POST'])
@@ -12,25 +16,16 @@ def sessions():
     """
     Render the sessions template on the /sessions route
     """
-    return render_template('sessions.html', stylesheet='sessions')
+    form = SessionSearchForm()
+    page = get_numero_page()
+    payload = get_sessions_payload(current_user, form, page)
 
-@session_bp.route('/sessions_incomming', methods=['GET', 'POST'])
-@login_required
-def sessions_incomming():
-    """
-    Render the sessions template on the /sessions route
-    """
-    return render_template('sessions.html', stylesheet='sessions')
+    # Change title of the page in function of search_parameter
+    title = TITLES.get(payload.get("search_parameter"), DEFAULT_TITLE)
 
-@session_bp.route('/sessions_passed', methods=['GET', 'POST'])
-@login_required
-def sessions_passed():
-    """
-    Render the sessions template on the /sessions route
-    """
-    return render_template('sessions.html', stylesheet='sessions')
+    return render_template('sessions.html', stylesheet='users', title=title, **payload)
 
-@session_bp.route('/session-<int:session_id>', methods=['GET', 'POST'])
+@session_bp.route('/session/<int:session_id>', methods=['GET', 'POST'])
 @login_required
 def session(session_id):
     """
@@ -40,7 +35,7 @@ def session(session_id):
     return render_template('session.html', stylesheet='session', session = session, games=session.get_games(), players=session.get_players())
 
 
-@session_bp.route('/addplayer_tosession-<int:session_id>', methods=['GET', 'POST'])
+@session_bp.route('/addplayer_tosession/<int:session_id>', methods=['GET', 'POST'])
 @login_required
 def add_player(session_id):
     """
@@ -50,7 +45,7 @@ def add_player(session_id):
     return render_template('add_player.html', stylesheet='session', session = session)
 
 
-@session_bp.route('/addgame_tosession-<int:session_id>', methods=['GET', 'POST'])
+@session_bp.route('/addgame_tosession/<int:session_id>', methods=['GET', 'POST'])
 @login_required
 def add_game(session_id):
     """

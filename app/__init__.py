@@ -8,7 +8,6 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 import os
 
-import config
 from app.mail.utils.mailtools import MailTool
 from instance.config import config
 

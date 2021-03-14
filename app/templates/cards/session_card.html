@@ -1,11 +1,13 @@
-<div class="col-xl-3 col-lg-4 col-md-6">
-    <div class="game-card card mb-4 shadow-sm">
-        <div class="card-body">
-            <a href="{{ url_for("session.session", session_id=session.id) }}">
-                <p class="text-truncate font-weight-bold"> Session du {{ session.timeslot.day }} à {{ session.timeslot.beginning }}</p>
-            </a>
-            <div class="d-flex flex-row align-items-center">
-                <a class="my-2 btn btn-secondary" href="{{ url_for("session.session", session_id=session.id) }}">Voir</a>
+<div class="col-md-3">
+    <div class="card card-body shadow-sm">
+        <div class="row profile-card-content">
+            <div class="col-md-8">
+                <a href="{{ url_for("session.session", session_id=session.id) }}">
+                    <p class="font-weight-bold"> Session du {{ session.timeslot.day }} à {{ session.timeslot.beginning }}</p>
+                </a>
+            </div>
+            <div class="col-md-auto profile-informations">
+                <a class="my-2 btn btn-secondary" href="{{ url_for("session.session", session_id=session.id)  }}">Voir</a>
             </div>
         </div>
     </div>
