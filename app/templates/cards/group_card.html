@@ -1,0 +1,23 @@
+<div class="col-lg-3 mb-3">
+    <div class="card card-body shadow-sm">
+        <div class="row group-card-content">
+          <h5 class="mx-2">
+            <a href="{{ url_for('group.group', id=group.id) }}" title="{{ group.name }}">
+              {% if group.name|length > 17 %}
+                {{ group.name[:17] }}…
+              {% else %}
+                {{ group.name }}
+              {% endif %}
+            </a>
+          </h5>
+          <h5 class="mr-1">
+            {% if group.is_private %}
+              <i class="fas fa-lock"></i>
+            {% else %}
+              <i class="fas fa-unlock"></i>
+            {% endif %}
+          </h5>
+          - {{ group.participations.count() }} membres
+        </div>
+    </div>
+</div>

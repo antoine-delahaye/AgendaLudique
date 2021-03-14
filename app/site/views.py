@@ -96,7 +96,7 @@ def add_hidden_user(user_id=None):
                 db.session.add(hidden_user)
                 db.session.commit()
 
-    return redirect(url_for('site.users'))
+    return redirect(request.referrer)
 
 
 @site.route('/hidden-users/remove', methods=['GET'])
@@ -117,7 +117,7 @@ def remove_hidden_user(user_id=None):
                 db.session.delete(hidden_user)
                 db.session.commit()
 
-    return redirect(url_for('site.users', searchParameters="HIDDEN"))
+    return redirect(request.referrer)
 
 
 @site.route('/bookmarked-users/add', methods=['GET'])
@@ -138,7 +138,7 @@ def add_bookmarked_user(user_id=None):
                 db.session.add(bookmarked_user)
                 db.session.commit()
 
-    return redirect(url_for('site.users'))
+    return redirect(request.referrer)
 
 
 @site.route('/bookmarked-users/remove', methods=['GET'])
@@ -159,7 +159,7 @@ def remove_bookmarked_user(user_id=None):
                 db.session.delete(bookmarked_user)
                 db.session.commit()
 
-    return redirect(url_for('site.users'))
+    return redirect(request.referrer)
 
 
 @site.route('/account', methods=['GET', 'POST'])
