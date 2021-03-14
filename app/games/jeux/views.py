@@ -1,7 +1,7 @@
 # Games adding/editing related ###################################################
 from flask import render_template, redirect, url_for, request
 from app.models import Game, Wish, Collect, KnowRules, Note
-from app.site.models.forms import GamesSimpleSearchForm, UpdateInformationForm, GamesSearchForm, AddGameForm
+from app.site.models.forms import GamesSearchForm, UpdateInformationForm, AddGamesSearchForm, AddGameForm
 from flask_login import login_required, current_user
 from . import jeux
 from .models.games_form_tools import populate_games_form, beautify_games_form, add_default_values_game_form
@@ -18,15 +18,15 @@ def catalog():
     Render the catalog template on the /catalog route
     """
     start = t.time()
-    form = GamesSimpleSearchForm()
+    form = GamesSearchForm()
     page = get_numero_page()
-    payload = get_catalog_payload(form, current_user, page)
+    payload = get_catalog_payload(current_user, form, page)
 
     # Change title of the page in function of search_parameter
     title = TITLES.get(payload.get("search_parameter"), DEFAULT_TITLE)
     print("--- %s total ---" % (t.time() - start))
 
-    return render_template('catalog.html', stylesheet='catalog', title=title, form=form, **payload)
+    return render_template('catalog.html', stylesheet='catalog', title=title, **payload)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
@@ -35,7 +35,7 @@ def add_games():
     """
     Render the add-games template on the /add-games route
     """
-    search_form = GamesSearchForm()
+    search_form = AddGamesSearchForm()
 
     populate_games_form(search_form)
     beautify_games_form(search_form)
@@ -55,8 +55,7 @@ def add_games():
                        'max_players': int(add_game_form.max_players.data),
                        'min_playtime': int(add_game_form.min_playtime.data), 'image': add_game_form.image.data})
         return redirect(url_for('jeux.game', game_id=game_id))
-    return render_template('add-games.html', stylesheet='add-games', form=search_form,
-                           add_game_form=add_game_form)
+    return render_template('add-games.html', stylesheet='add-games', form=search_form, add_game_form=add_game_form)
 
 
 @jeux.route('/edit-games', methods=['GET', 'POST'])

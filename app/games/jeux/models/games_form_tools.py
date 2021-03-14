@@ -4,7 +4,7 @@ from app.models import Game
 def populate_games_form(form):
     """
     populate form data from database
-    :param form: a GamesSearchForm
+    :param form: a AddGamesSearchForm
     """
     for data in Game.all():
         form.title.choices.append(data.title)
@@ -22,7 +22,7 @@ def populate_games_form(form):
 def beautify_games_form(form):
     """
     sort every data of the form
-    :param form: a GamesSearchForm
+    :param form: a AddGamesSearchForm
     """
     form.years.choices.sort()
     form.min_players.choices.sort()
@@ -34,7 +34,7 @@ def beautify_games_form(form):
 def add_default_values_game_form(form):
     """
     add the "Aucun.e" value to the beginning of every choices
-    :param form: a GamesSearchForm
+    :param form: a AddGamesSearchForm
     """
     form.title.choices.insert(0, 'Aucun')
     form.years.choices.insert(0, 'Aucune')
