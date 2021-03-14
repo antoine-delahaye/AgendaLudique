@@ -1,6 +1,6 @@
 from flask import request
 
-from app.models import User, Game, Note
+from app.models import Game
 
 TITLES = {"KNOWN": "Jeux que vous connaissez", "NOTED": "Jeux que vous avez déjà notés",
           "WISHED": "Jeux que vous souhaitez", "OWNED": "Jeux que vous possédez"}
@@ -25,22 +25,20 @@ def get_catalog_payload(form, user, page):
     if not form.games_hint.data:
         form.display_search_type.data = 'title'
 
-    # We want to remove already owned and wished games from the page
-    
-    
+    # We want to keep those informations to be able to show them on the next page
     payload["games_hint"] = form.games_hint.data
     payload['type'] = form.display_search_type.data
 
+    # We want to know games notes and comments made by the current user
+    payload["ratings"] = user.get_noted_games(False, True)
+
     # We want to know which games the user already knows, wishes, owns or has noted
-    noted_games = User.get_noted_games(user.id, True)
-    payload["known_games"] = id_query_to_set(User.get_known_games(user.id, True))
-    payload["noted_games"] = id_query_to_set(noted_games)
-    payload["wished_games"] = id_query_to_set(User.get_wished_games(user.id, True))
-    payload["owned_games"] = id_query_to_set(User.get_owned_games(user.id, True))
+    payload["known_games"] = id_query_to_set(user.get_known_games(True))
+    payload["noted_games"] = id_query_to_set(payload["ratings"])
+    payload["wished_games"] = id_query_to_set(user.get_wished_games(True))
+    payload["owned_games"] = id_query_to_set(user.get_owned_games(True))
 
-    payload["ratings"] = User.get_noted_games(user.id, True)
-
-    payload["games"] = Game.search_with_pagination(user.id, form.games_hint.data,
+    payload["games"] = user.games_search_with_pagination(form.games_hint.data,
                                                    form.display_search_type.data, search_parameter, page, 20)
 
     return payload

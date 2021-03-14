@@ -102,29 +102,27 @@ class User(UserMixin, db.Model):
         bookmarked_users = db.session.query(BookmarkUser.user2_id).filter(BookmarkUser.user_id == self.id)
         return User.query.filter(User.id.in_(bookmarked_users))
 
-    @classmethod
-    def get_known_games(cls, user_id, only_id=False):
+    def get_known_games(self, only_id=False):
         if only_id:
-            return db.session.query(KnowRules.game_id).filter(KnowRules.user_id == user_id)
-        return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == user_id, Game.id == KnowRules.game_id)
+            return db.session.query(KnowRules.game_id).filter(KnowRules.user_id == self.id)
+        return db.session.query(Game).join(KnowRules).filter(KnowRules.user_id == self.id, Game.id == KnowRules.game_id)
 
-    @classmethod
-    def get_noted_games(cls, user_id, only_id=False):
+    def get_noted_games(self, only_id=False, want_notes=False):
         if only_id:
-            return db.session.query(Note.game_id).filter(Note.user_id == user_id)
-        return db.session.query(Game).join(Note).filter(Note.user_id == user_id, Game.id == Note.game_id)
+            return db.session.query(Note.game_id).filter(Note.user_id == self.id)
+        if want_notes:
+            return db.session.query(Note).filter(Note.user_id == self.id)
+        return db.session.query(Game).join(Note).filter(Note.user_id == self.id, Game.id == Note.game_id)
 
-    @classmethod
-    def get_owned_games(cls, user_id, only_id=False):
+    def get_owned_games(self, only_id=False):
         if only_id:
-            return db.session.query(Collect.game_id).filter(Collect.user_id == user_id)
-        return db.session.query(Game).join(Collect).filter(Collect.user_id == user_id, Game.id == Collect.game_id)
+            return db.session.query(Collect.game_id).filter(Collect.user_id == self.id)
+        return db.session.query(Game).join(Collect).filter(Collect.user_id == self.id, Game.id == Collect.game_id)
 
-    @classmethod
-    def get_wished_games(cls, user_id, only_id=False):
+    def get_wished_games(self, only_id=False):
         if only_id:
-            return db.session.query(Wish.game_id).filter(Wish.user_id == user_id)
-        return db.session.query(Game).join(Wish).filter(Wish.user_id == user_id, Game.id == Wish.game_id)
+            return db.session.query(Wish.game_id).filter(Wish.user_id == self.id)
+        return db.session.query(Game).join(Wish).filter(Wish.user_id == self.id, Game.id == Wish.game_id)
 
     @classmethod
     def from_username(cls, username):
@@ -149,9 +147,73 @@ class User(UserMixin, db.Model):
         """
         req = User.query.filter(User.token_pwd == token).first()
         return req if req else None
+    
+    def games_search(self, games_hint, typ, search_parameter):
+        """
+        Search games with defined parameters
+        :param user The user who made the research
+        :param games_hint: A hint gave by the user to search various games
+        :param typ: str containing the type of games_hint (search filter)
+        :param search_parameter: str containing the name of the search container
+        :return: A SearchResults object with an items list.
+        """
+        results = SearchResults()  # Will contain the search results
 
-    @classmethod
-    def search(cls, current_user, username_hint, fav_only, hidden, sort_type='alphabetical'):
+        # Search games via a known parameter
+        if search_parameter == "KNOWN":
+            games_db = self.get_known_games()
+        elif search_parameter == "NOTED":
+            games_db = self.get_noted_games()
+        elif search_parameter == "WISHED":
+            games_db = self.get_wished_games()
+        elif search_parameter == "OWNED":
+            games_db = self.get_owned_games()
+        else:
+            games_db = Game.query
+
+        # Search games in games_db that corresponds to the type and the hint
+        if games_hint != "":
+            if typ == "year":
+                games_db = games_db.filter(Game.publication_year == int(games_hint))
+            elif typ == "genre":
+                games_ids = db.session.query(Classification.game_id).filter(Classification.genre_id.in_(
+                    db.session.query(Genre.id).filter(Genre.name.like("%" + games_hint + "%"))
+                ))
+                games_db = games_db.filter(Game.id.in_(games_ids))
+            else:
+                games_db = games_db.filter(Game.title.like("%" + games_hint + "%"))
+
+        results.items = games_db
+
+        return results
+
+    def games_search_with_pagination(self, games_hint, typ, search_parameter, page=1, per_page=20):
+        """
+        Search games with defined parameters and return them as a SearchResults object which contains a Pagination object.
+        :param current_user The user who made the research
+        :param games_hint: A hint gave by the user to search various games
+        :param typ: str containing the type of games_hint (search filter)
+        :param search_parameter: str containing the name of the search container
+        :param current_page: The current page number
+        :param per_page: The number of users shown on a search results page
+        :return: A SearchResults with a Pagination object.
+        """
+        results = self.games_search(games_hint, typ, search_parameter)
+
+        # We want to remove already owned and wished games from the page
+        if search_parameter != "WISHED":
+            results.items = results.items.filter(Game.id.notin_(self.get_wished_games(True)))
+        if search_parameter != "OWNED":
+            results.items = results.items.filter(Game.id.notin_(self.get_owned_games(True)))
+
+        page_elements = results.items.slice((page - 1) * per_page, 
+                                            page * per_page)  # the games that will be displayed on the page
+        results.pagination = Pagination(None, page, per_page, results.items.count(), page_elements)
+        results.items = None
+
+        return results
+
+    def users_search(self, username_hint, fav_only, hidden, sort_type='alphabetical'):
         """
         Search users with defined parameters
         :param current_user The user who made the research
@@ -165,10 +227,10 @@ class User(UserMixin, db.Model):
 
         # Contain bookmarked users
         bookmarked_users_db = db.session.query(BookmarkUser.user2_id).filter(
-            BookmarkUser.user_id == current_user.id)  # ids only -> lighter
+            BookmarkUser.user_id == self.id)  # ids only -> lighter
         # Contain hidden users
         hidden_users_db = db.session.query(HideUser.user2_id).filter(
-            HideUser.user_id == current_user.id)  # ids only -> lighter
+            HideUser.user_id == self.id)  # ids only -> lighter
 
         if fav_only:
             users_db = User.query.filter(User.id.in_(bookmarked_users_db),
@@ -197,8 +259,7 @@ class User(UserMixin, db.Model):
 
         return results
 
-    @classmethod
-    def search_with_pagination(cls, current_user, username_hint, fav_only, hidden, current_page=1, per_page=20,
+    def users_search_with_pagination(self, username_hint, fav_only, hidden, current_page=1, per_page=20,
                                sort_type='alphabetical'):
         """
         Search users with defined parameters and return them as a SearchResults object which contains a Pagination object.
@@ -211,7 +272,7 @@ class User(UserMixin, db.Model):
         :param sort_type: The sort type to use, using the ResultsSortType class constants
         :return: A SearchResults with a Pagination object.
         """
-        results = User.search(current_user, username_hint, fav_only, hidden, sort_type)
+        results = self.users_search(username_hint, fav_only, hidden, sort_type)
         page_elements = results.items.slice((current_page - 1) * per_page,
                                             current_page * per_page)  # the users that will be displayed on the page
         results.pagination = Pagination(None, current_page, per_page, results.items.count(), page_elements)
@@ -544,73 +605,6 @@ class Game(UserMixin, db.Model):
                  min_players=game_data['min_players'], max_players=game_data['max_players'],
                  min_playtime=game_data['min_playtime'], image=game_data['image']))
         db.session.commit()
-
-    @classmethod
-    def search(cls, current_user_id, games_hint, typ, search_parameter, current_page=1, per_page=20):
-        """
-        Search games with defined parameters
-        :param current_user The user who made the research
-        :param games_hint: A hint gave by the user to search various games
-        :param typ: str containing the type of games_hint (search filter)
-        :param search_parameter: str containing the name of the search container
-        :return: A SearchResults object with an items list.
-        """
-        results = SearchResults()  # Will contain the search results
-
-        # Search games via a known parameter
-        if search_parameter == "KNOWN":
-            games_db = User.get_known_games(current_user_id)
-        elif search_parameter == "NOTED":
-            games_db = User.get_noted_games(current_user_id)
-        elif search_parameter == "WISHED":
-            games_db = User.get_wished_games(current_user_id)
-        elif search_parameter == "OWNED":
-            games_db = User.get_owned_games(current_user_id)
-        else:
-            games_db = Game.query
-
-        # Search games in games_db that corresponds to the type and the hint
-        if games_hint != "":
-            if typ == "year":
-                games_db = games_db.filter(Game.publication_year == int(games_hint))
-            elif typ == "genre":
-                games_ids = db.session.query(Classification.game_id).filter(Classification.genre_id.in_(
-                    db.session.query(Genre.id).filter(Genre.name.like("%" + games_hint + "%"))
-                ))
-                games_db = games_db.filter(Game.id.in_(games_ids))
-            else:
-                games_db = games_db.filter(Game.title.like("%" + games_hint + "%"))
-
-        results.items = games_db
-
-        return results
-
-    @classmethod
-    def search_with_pagination(cls, current_user_id, games_hint, typ, search_parameter, current_page=1, per_page=20):
-        """
-        Search games with defined parameters and return them as a SearchResults object which contains a Pagination object.
-        :param current_user The user who made the research
-        :param games_hint: A hint gave by the user to search various games
-        :param typ: str containing the type of games_hint (search filter)
-        :param search_parameter: str containing the name of the search container
-        :param current_page: The current page number
-        :param per_page: The number of users shown on a search results page
-        :return: A SearchResults with a Pagination object.
-        """
-        results = Game.search(current_user_id, games_hint, typ, search_parameter)
-
-        # We have to remove already owned or wished games from the search
-        if search_parameter != "WISHED":
-            results.items = results.items.filter(Game.id.notin_(User.get_wished_games(current_user_id, True)))
-        if search_parameter != "OWNED":
-            results.items = results.items.filter(Game.id.notin_(User.get_owned_games(current_user_id, True)))
-
-        page_elements = results.items.slice((current_page - 1) * per_page, 
-                                            current_page * per_page)  # the games that will be displayed on the page
-        results.pagination = Pagination(None, current_page, per_page, results.items.count(), page_elements)
-        results.items = None
-
-        return results
 
 
 class Genre(db.Model):

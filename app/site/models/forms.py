@@ -30,7 +30,7 @@ class GamesSimpleSearchForm(FlaskForm):
     })
     display_search_type = SelectField('Type', choices=[('title',"Nom"),('genre',"Genre"),('year',"Année")])
     display_search_parameter = RadioField('Catégorie de la recherche : ', choices=
-        [(None, "Afficher tout les jeux"),
+        [(None, "Afficher tous les jeux (sauf les jeux souhaités ou possédés)"),
             ('KNOWN',"Afficher uniquement les jeux que vous connaissez"),
             ('NOTED',"Afficher uniquement les jeux notés"),
             ('WISHED',"Afficher uniquement les jeux souhaités"),
