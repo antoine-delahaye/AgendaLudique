@@ -1,3 +1,48 @@
 {% extends "index.html" %}
 {% block main %}
+
+<form role="form" method="POST" enctype="multipart/form-data" , {% if id == -1 %} action="{{ url_for(dest) }}" {% else %} action="{{ url_for(dest) }}" {% endif %} class="form-signin col-md-6 col-sm-12">
+    {{ form.hidden_tag() }}
+
+    {{ super() }}
+
+    <p>Le format du jour est : AAAA-MM-JJ</p>
+
+    <div class="form-group ">
+        <label for="" class="col-sm-2 control-label">
+            {{ form.day.label }}
+        </label>
+        <div class="col-sm-10">
+            {{ form.day(placeholder = "Day",type="text", class_="form-control", required="True") }}
+        </div>
+    </div>
+
+    <p>Le format du jour est : HH:MM</p>
+
+    <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+            {{ form.timeB.label }}
+        </label>
+        <div class="col-sm-10">
+            {{ form.timeB(placeholder = "Heure début", class_="form-control", required="True") }}
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="" class="col-sm-2 control-label">
+            {{ form.timeE.label }}
+        </label>
+        <div class="col-sm-10">
+            {{ form.timeE(placeholder = "Heure début", class_="form-control", required="True") }}
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-offset col-sm-10">
+            <button class="my-2 btn btn-secondary" onclick="history.go(-1)">Retour</button>
+            {{ form.submit(class_="btn btn-black") }}
+        </div>
+    </div>
+</form>
+
 {% endblock %}

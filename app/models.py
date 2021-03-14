@@ -777,6 +777,10 @@ class TimeSlot(db.Model):
         self.end = time.fromisoformat(end)
         self.day = date.fromisoformat(day)
 
+    def add_to_db (self):
+        db.session.add(self)
+        db.session.commit()
+
     def __repr__(self):
         return f'<TimeSlot: from {self.beginning} to {self.end} the {self.day}>'
 
@@ -890,7 +894,7 @@ class Session(db.Model):
         backref=db.backref("sessions", lazy="dynamic"),
         foreign_keys=[timeslot_id])
 
-    def __init__(self, nb_players_required, timeout, notifactions_sent=False, confirmed=False, archived=False):
+    def __init__(self, nb_players_required, timeout, timeslot_id, notifactions_sent=False, confirmed=False, archived=False):
         """
         Create a Session object.
         :param timeout: a string in ISO 8601 format YYYY-MM-DDTHH-MM-SS
@@ -899,7 +903,32 @@ class Session(db.Model):
         self.notifactions_sent = notifactions_sent
         self.confirmed = confirmed
         self.timeout = datetime.fromisoformat(timeout)
+        self.timeslot_id = timeslot_id
         self.archived = archived
+
+    def get_games (self):
+        """
+        return a array of all the games planned for the session
+        """
+        return db.session.query(Game).join(Use).filter(Use.session_id == self.id, Game.id == Use.game_id)
+
+    def get_players (self):
+        """
+        return a array of all the players in the session
+        """
+        return db.session.query(User).join(Play).filter(Play.session_id == self.id, User.id == Play.user_id)
+
+    @classmethod
+    def from_id(cls, id):
+        """
+        Get a Session from its id. Return None if the session does not exist.
+        """
+        req = Session.query.filter(Group.id == id).first()
+        return req if req else None
+    
+    def add_to_db (self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Play(db.Model):
