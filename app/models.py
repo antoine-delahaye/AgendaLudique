@@ -148,7 +148,7 @@ class User(UserMixin, db.Model):
         req = User.query.filter(User.token_pwd == token).first()
         return req if req else None
     
-    def games_search(self, games_hint, typ, search_parameter):
+    def games_search(self, games_hint, typ, search_parameter, sort_type='alphabetical'):
         """
         Search games with defined parameters
         :param user The user who made the research
@@ -161,33 +161,48 @@ class User(UserMixin, db.Model):
 
         # Search games via a known parameter
         if search_parameter == "KNOWN":
-            games_db = self.get_known_games()
+            results.items = self.get_known_games()
         elif search_parameter == "NOTED":
-            games_db = self.get_noted_games()
+            results.items = self.get_noted_games()
         elif search_parameter == "WISHED":
-            games_db = self.get_wished_games()
+            results.items = self.get_wished_games()
         elif search_parameter == "OWNED":
-            games_db = self.get_owned_games()
+            results.items = self.get_owned_games()
         else:
-            games_db = Game.query
+            results.items = Game.query
 
-        # Search games in games_db that corresponds to the type and the hint
+        # Search games in results that corresponds to the type and the hint
         if games_hint != "":
             if typ == "year":
-                games_db = games_db.filter(Game.publication_year == int(games_hint))
+                results.items = results.items.filter(Game.publication_year == int(games_hint))
             elif typ == "genre":
                 games_ids = db.session.query(Classification.game_id).filter(Classification.genre_id.in_(
                     db.session.query(Genre.id).filter(Genre.name.like("%" + games_hint + "%"))
                 ))
-                games_db = games_db.filter(Game.id.in_(games_ids))
+                results.items = results.items.filter(Game.id.in_(games_ids))
             else:
-                games_db = games_db.filter(Game.title.like("%" + games_hint + "%"))
-
-        results.items = games_db
+                results.items = results.items.filter(Game.title.like("%" + games_hint + "%"))
+        
+        # Sort games corresponding to the search asked
+        if sort_type == ResultsSortType.MOST_RECENT_FIRST:
+            results.items = results.items.order_by(Game.publication_year.desc())
+        elif sort_type == ResultsSortType.MOST_ANCIENT_FIRST:
+            results.items = results.items.order_by(Game.publication_year)
+        elif sort_type == ResultsSortType.HIGHEST_NOTES_FIRST:
+            # Do something
+            pass
+        elif sort_type == ResultsSortType.INCREASING_PLAYER_AMOUNT:
+            # Do something else
+            pass
+        elif sort_type == ResultsSortType.INCREASING_GAME_DURATION:
+            # Do something please
+            pass
+        else:
+            results.items = results.items.order_by(Game.title)
 
         return results
 
-    def games_search_with_pagination(self, games_hint, typ, search_parameter, page=1, per_page=20):
+    def games_search_with_pagination(self, games_hint, typ, search_parameter, page=1, per_page=20, sort_type='alphabetical'):
         """
         Search games with defined parameters and return them as a SearchResults object which contains a Pagination object.
         :param current_user The user who made the research
@@ -198,7 +213,7 @@ class User(UserMixin, db.Model):
         :param per_page: The number of users shown on a search results page
         :return: A SearchResults with a Pagination object.
         """
-        results = self.games_search(games_hint, typ, search_parameter)
+        results = self.games_search(games_hint, typ, search_parameter, sort_type)
 
         # We want to remove already owned and wished games from the page
         if search_parameter != "WISHED":
@@ -252,6 +267,8 @@ class User(UserMixin, db.Model):
         # Sorts the results
         if sort_type == ResultsSortType.MOST_RECENT_FIRST:
             users_db = users_db.order_by(User.id.desc())
+        elif sort_type == ResultsSortType.MOST_ANCIENT_FIRST:
+            users_db = users_db.order_by(User.id)
         else:
             users_db = users_db.order_by(User.username)  # Sorted alphabetically by default
 
@@ -259,8 +276,7 @@ class User(UserMixin, db.Model):
 
         return results
 
-    def users_search_with_pagination(self, username_hint, fav_only, hidden, current_page=1, per_page=20,
-                               sort_type='alphabetical'):
+    def users_search_with_pagination(self, username_hint, fav_only, hidden, current_page=1, per_page=20, sort_type='alphabetical'):
         """
         Search users with defined parameters and return them as a SearchResults object which contains a Pagination object.
         :param current_user The user who made the research
@@ -1013,6 +1029,7 @@ class ResultsSortType:
     # Types that work with User and Game (if implemented in the future) search results:
     ALPHABETICAL = 'alphabetical'  # The items will be displayed by alphabetical order
     MOST_RECENT_FIRST = 'mostRecent'  # Most recent items will be displayed first
+    MOST_ANCIENT_FIRST = 'mostAncient' # Most ancient items will be displayed first
 
     # Types that will work **only** with Game search results (if implemented in the future):
     HIGHEST_NOTES_FIRST = 'highestNotes'  # Games with highest notes will be displayed first
