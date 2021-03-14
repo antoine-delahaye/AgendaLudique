@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 
 from . import group as gp
 from app.models import Group, Participate, User
-from .models.group_tools import get_all_participation, join_private_group_form, join_public_group_form, quit_group_form, add_group_form, kick_group_form
+from .models.group_tools import get_all_participation, join_private_group_form, join_public_group_form, quit_group_form, add_group_form, kick_group_form, lead_group_form
 from .models.forms import JoinPrivateGroupForm, AddGroupForm
 from app import db
 
@@ -112,6 +112,13 @@ def quit_group(group_id):
 @login_required
 def kick_group(group_id, member_id):
     kick_group_form(group_id, member_id)
+    return redirect(request.referrer)
+
+
+@gp.route('/lead_group/<group_id>-<member_id>')
+@login_required
+def lead_group(group_id, member_id):
+    lead_group_form(group_id, member_id)
     return redirect(request.referrer)
 
 

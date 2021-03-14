@@ -110,6 +110,28 @@ def kick_group_form(group_id, member_id):
     db.session.commit()
 
 
+def lead_group_form(group_id, member_id):
+    """
+    Make a member, new manager of a group
+    """
+    group = Group.from_id(group_id)
+    if group is None:
+        abort(404)
+
+    if current_user.id == group.manager_id:
+        participation = Participate.from_both_ids(member_id, group_id)
+        if participation is None:
+            flash("Vous ne pouvez pas nommer responsable un utilisateur n'étant pas dans le groupe","warning")
+        elif member_id == group.manager_id:
+            flash("Vous êtes déjà responsable de ce groupe","warning")
+        else:
+            group.manager_id = member_id
+    else:
+        flash("Vous ne pouvez pas changer le responsable du groupe si vous n'êtes pas le chef.","warning")
+
+    db.session.commit()
+    
+
 def add_group_form(form):
     """
     Create a new Group table
