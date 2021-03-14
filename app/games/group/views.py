@@ -61,7 +61,7 @@ def group(id=None):
         form = None
 
     is_member = (Participate.from_both_ids(current_user.id, id) is not None)
-    users_data = User.search_with_pagination(current_user, "", False, False, per_page=15)
+    users_data = current_user.users_search_with_pagination("", False, False, per_page=15)
     return render_template('group.html',
                            stylesheet_list=['group', 'groups', 'users'],
                            group=group,
