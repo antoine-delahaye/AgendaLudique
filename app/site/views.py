@@ -47,7 +47,7 @@ def users():
     form.display_favorites_players_only.data = fav_only
     form.display_masked_players.data = hidden
 
-    search_results = User.search_with_pagination(current_user, form.username_hint.data, fav_only, hidden, page, 20,
+    search_results = current_user.users_search_with_pagination(form.username_hint.data, fav_only, hidden, page, 20,
                                                  sort_type=sort_order)
 
     return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id,
@@ -66,12 +66,12 @@ def user(id=None):
 
     # Bookmarked users
     bookmarked_users = user.get_bookmarked_users()
-    current_user_data = User.search(current_user, "", False, True)  # Retrieve the data for the current user
+    current_user_data = current_user.users_search("", False, True)  # Retrieve the data for the current user
 
     # Games collection
-    user_games_collection = User.get_owned_games(user.id)
+    user_games_collection = user.get_owned_games()
     # Will work later when the search engine will be updated
-    current_user_wished_games = Game.search(current_user, "", "title", "wished").items
+    current_user_wished_games = current_user.games_search("", "title", "wished").items
 
     return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id,
                            users_data=current_user_data, bookmarked_users=bookmarked_users,

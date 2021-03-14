@@ -31,13 +31,7 @@
         {% if games.pagination.items %}
             <div class="row">
                 {% for game in games.pagination.items %}
-                    {% if search_parameter == "OWNED" or search_parameter == "WISHED" %}
-                        {% include "cards/game_card.html" %}
-                    {% else %}
-                        {% if game.id not in owned_games and game.id not in wished_games %}
-                            {% include "cards/game_card.html" %}
-                        {% endif %}
-                    {% endif %}
+                    {% include "cards/game_card.html" %}
                 {% endfor %}
             </div>
         {% endif %}
