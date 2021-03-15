@@ -1,0 +1,14 @@
+<div class="col-md-3">
+    <div class="card card-body shadow-sm">
+        <div class="row profile-card-content">
+            <div class="col-md-8">
+                <a href="{{ url_for("session.session", session_id=session.id) }}">
+                    <p class="font-weight-bold"> Session du {{ session.timeslot.day }} à {{ session.timeslot.beginning }}</p>
+                </a>
+            </div>
+            <div class="col-md-auto profile-informations">
+                <a class="my-2 btn btn-secondary" href="{{ url_for("session.session", session_id=session.id)  }}">Voir</a>
+            </div>
+        </div>
+    </div>
+</div>

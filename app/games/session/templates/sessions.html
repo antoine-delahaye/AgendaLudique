@@ -1,3 +1,98 @@
 {% extends "index.html" %}
 {% block main %}
+<main class="container-fluid col-9 mb-5">
+    <h2 class="text-center mb-5">{{ title }}</h2>
+
+    <form class="my-5 mx-auto" action="{{ url_for('session.sessions') }}" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="input-group">
+            {{ form.sessions_hint }}
+            {{ form.display_search_type }}
+            <div class="input-group-append" id="search-buttons">
+                <button class="btn show-advanced-search" type="button" data-toggle="collapse"
+                        data-target="#advanced-search" aria-expanded="false" aria-controls="advanced-search"
+                        title="Recherche avancée">
+                    <i class="fa fa-sliders" aria-hidden="true"></i>
+                </button>
+                <button type="submit" class="btn btn-primary" title="Recherche">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+        <div class="collapse" id="advanced-search">
+            <div class="card card-body">
+                <h5 id="advanced-search-title" class="card-title">Recherche avancée</h5>
+                {{ form.display_search_parameter.label }} {{ form.display_search_parameter }}
+                <p>{{ form.sort_order.label }} {{ form.sort_order }}</p>
+            </div>
+        </div>
+    </form>
+    {% if sessions.pagination.items %}
+        <div class="row">
+            {% for session in sessions.pagination.items %}
+                {% include "cards/session_card.html" %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    <nav>
+        <ul class="pagination mt-4 mb-0 mx-auto">
+            {% if sessions.pagination.page == 1 %}
+                <li class="page-item disabled">
+                    <a class="page-link"
+                       href="{{ url_for("session.sessions", page=sessions.pagination.prev_num, searchParameter=form.display_search_parameter.data, type=form.display_search_type.data, sessions=form.sessions_hint.data, sort_order=form.sort_order.data) }}">
+                        &laquo;
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link"
+                       href="{{ url_for("session.sessions", page=sessions.pagination.prev_num, searchParameter=form.display_search_parameter.data, type=form.display_search_type.data, sessions=form.sessions_hint.data, sort_order=form.sort_order.data) }}">
+                        &laquo;
+                    </a>
+                </li>
+            {% endif %}
+            {% for page_num in sessions.pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+                    {% if sessions.pagination.page == page_num %}
+                        <li class="page-item active">
+                            <a class="page-link"
+                               href="{{ url_for("session.sessions", page=page_num, searchParameter=form.display_search_parameter.data, type=form.display_search_type.data, sessions=form.sessions_hint.data, sort_order=form.sort_order.data) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item">
+                            <a class="page-link"
+                               href="{{ url_for("session.sessions", page=page_num, searchParameter=form.display_search_parameter.data, type=form.display_search_type.data, sessions=form.sessions_hint.data, sort_order=form.sort_order.data) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link"
+                           href="{{ url_for("session.sessions", page=sessions.prev_num, searchParameter=form.display_search_parameter.data, type=form.display_search_type.data, sessions=form.sessions_hint.data, sort_order=form.sort_order.data) }}">
+                            ...
+                        </a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            {% if sessions.pagination.page == sessions.pagination.pages %}
+                <li class="page-item disabled">
+                    <a class="page-link"
+                        href="{{ url_for("session.sessions", page=sessions.pagination.next_num, searchParameter=form.display_search_parameter.data, type=form.display_search_type.data, sessions=form.sessions_hint.data, sort_order=form.sort_order.data) }}">
+                        &raquo;
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="{{ url_for("session.sessions", page=sessions.pagination.next_num, searchParameter=form.display_search_parameter.data, type=form.display_search_type.data, sessions=form.sessions_hint.data, sort_order=form.sort_order.data) }}">
+                        &raquo;
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+</main>
 {% endblock %}
