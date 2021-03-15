@@ -1,3 +1,18 @@
 {% extends "index.html" %}
 {% block main %}
+<main class="container-fluid mt-auto mb-auto">
+    <h2 class="text-center mb-5">Session du {{ session.timeslot.day }} à {{ session.timeslot.beginning }}</h2>
+    <div class="d-flex flex-row justify-content-center align-items-center mx-auto mb-5 col-8">
+        <p>Nombre de joueurs minimal : {{ session.nb_players_required }}</p>
+        <p>Nombre de joueurs présents : {{ session.nb_players_required }}</p>
+        <button class="btn mr-3 col-3 text-white"
+                onclick="window.location.href='{{ url_for("session.add_player", session_id=session.id) }}';">
+            Ajouter un joueur
+        </button>
+        <button class="btn ml-3 col-3 text-white"
+                onclick="window.location.href='{{ url_for("session.add_game", session_id=session.id) }}';">
+            Ajouter un jeu
+        </button>
+    </div>
+</main>
 {% endblock %}

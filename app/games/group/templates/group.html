@@ -15,12 +15,12 @@
             {{ super() }}
         {% endblock %}
 
-        {% if is_resp %}
+        {% if is_resp and group.is_private %}
           <p>Mot de passe : {{group.password}}</p>
         {% endif %}
 
         {% if is_member %}
-          <a type="button" class="btn btn-danger pt-2"
+          <a type="button" class="btn btn-danger pt-2 mr-3"
              href="{{ url_for('group.quit_group', group_id=group.id) }}"
              onclick="return confirm('Etes-vous sûr de vouloir quitter le groupe ? ')">
           Quitter

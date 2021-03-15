@@ -71,7 +71,7 @@
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{{ url_for('site.users') }}">Tous les joueurs</a>
                             <a class="dropdown-item"
-                               href="{{ url_for('site.users') }}?searchParameters=ONLY_BOOKMARKED">Favoris</a>
+                               href="{{ url_for('site.users') }}?favOnly=True">Favoris</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown mr-2">
@@ -94,9 +94,9 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Toutes mes sessions</a>
-                            <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Sessions à venir</a>
-                            <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Sessions terminées</a>
-                            <a class="dropdown-item" href="{{ url_for('session.sessions') }}">Sessions en cours</a>
+                            <a class="dropdown-item" href="{{ url_for('session.sessions', search_parameter='UPCOMING')}}">Sessions à venir</a>
+                            <a class="dropdown-item" href="{{ url_for('session.sessions', search_parameter='PASSED') }}">Sessions terminées</a>
+                            <a class="dropdown-item" href="{{ url_for('session.organize_session') }}">Créer une session</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">

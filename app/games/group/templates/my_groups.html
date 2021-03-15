@@ -5,18 +5,21 @@
   {% block message %}
       {{ super() }}
   {% endblock %}
-  <form class="form mb-5" action="" method="POST">
+  <form class="form mb-4" action="" method="POST">
       <div class="form-row align-items-center justify-content-center">
           {{ form.code(class="form-control col-2 mr-2") }}
           {{ form.submit(class="btn btn-block text-uppercase col-2 ml-2") }}
       </div>
   </form>
+  <div class="row align-items-center justify-content-center">
+    <a class="btn btn-block centered text-uppercase col-3 pt-2" href="{{ url_for('group.add_group') }}">Céer un groupe</a>
+  </div>
   {% if managed_groups or groups_data %}
     {% if managed_groups %}
         <h4 class="my-3">Groupes gérés</h4>
           <div class="row">
           {% for group in  managed_groups %}
-              {% include "group_card.html" %}
+              {% include "cards/group_card.html" %}
           {% endfor %}
           </div>
     {% endif %}
@@ -24,7 +27,7 @@
       <h4 class="my-3">Groupes</h4>
           <div class="row">
           {% for group in groups_data %}
-              {% include "group_card.html" %}
+              {% include "cards/group_card.html" %}
           {% endfor %}
           </div>
     {% endif %}

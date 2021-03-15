@@ -33,3 +33,16 @@
     padding-left: 3px;
     padding-right: 3px;
 }
+
+.inline-select {
+    display: inline;
+    width: min-content;
+}
+
+.user-dropdown i {
+    color: #000000;
+}
+
+.user-dropdown i:hover {
+    color: #0277BC;
+}

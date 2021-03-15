@@ -22,7 +22,7 @@ class UpdateInformationForm(FlaskForm):
     submit = SubmitField('Mettre à jour')
 
 
-class GamesSimpleSearchForm(FlaskForm):
+class GamesSearchForm(FlaskForm):
     games_hint = StringField("Nom du jeu", id='search-input', render_kw={
         'class': 'form-control',
         'placeholder': 'Rechercher des jeux en fonction du ...',
@@ -30,15 +30,31 @@ class GamesSimpleSearchForm(FlaskForm):
     })
     display_search_type = SelectField('Type', choices=[('title',"Nom"),('genre',"Genre"),('year',"Année")])
     display_search_parameter = RadioField('Catégorie de la recherche : ', choices=
-        [(None, "Afficher tout les jeux"),
+        [(None, "Afficher tous les jeux (sauf les jeux souhaités ou possédés)"),
             ('KNOWN',"Afficher uniquement les jeux que vous connaissez"),
             ('NOTED',"Afficher uniquement les jeux notés"),
             ('WISHED',"Afficher uniquement les jeux souhaités"),
             ('OWNED',"Afficher uniquement les jeux possédés")
         ])
+    sort_order = SelectField('Ordre de tri : ', choices=[
+        ('alphabetical', 'Alphabétique'),
+        ('mostRecent', 'Plus récents'),
+        ('mostAncient', 'Plus vieux'),
+        ('highestNotes', 'Plus populaires'),
+        ('increasingPlayerAmount', 'Plus de joueurs'),
+        ('increasingGameDuration', 'Plus longue durée de partie')
+    ], render_kw={'class': 'custom-select inline-select'})
+    results_per_page = SelectField('Nombre de jeux par page : ', choices=[
+        (20, '20 jeux par page'),
+        (40, '40 jeux par page'),
+        (60, '60 jeux par page'),
+        (80, '80 jeux par page'),
+        (100, '100 jeux par page')
+    ], render_kw={'class': 'custom-select inline-select'})
 
 
-class GamesSearchForm(FlaskForm):
+
+class AddGamesSearchForm(FlaskForm):
     """
     Form for search games
     """
@@ -73,10 +89,15 @@ class UsersSearchForm(FlaskForm):
     """
     Form to search users
     """
-    username_hint = StringField("Nom de l'utilisateur", id='search-input', render_kw={
+    username_hint = StringField('Nom de l\'utilisateur', id='search-input', render_kw={
         'class': 'form-control',
         'placeholder': 'Rechercher un utilisateur grâce à son nom',
         'aria-describedby': 'search-buttons'
     })
     display_favorites_players_only = BooleanField('Afficher uniquement les joueurs favoris')
     display_masked_players = BooleanField('Afficher les joueurs masqués')
+    sort_order = SelectField('Ordre de tri : ', choices=[
+        ('alphabetical', 'Alphabétique'),
+        ('mostRecent', 'Plus récents'),
+        ('mostAncient', 'Plus vieux')
+    ], render_kw={'class': 'custom-select inline-select'})
