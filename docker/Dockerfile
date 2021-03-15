@@ -1,9 +1,9 @@
 FROM alpine
 
-LABEL maintainer "Antoine Delahaye"
-LABEL description "Nginx + uWSGI + Flask based on Alpine Linux and managed by Antoine Delahaye"
+LABEL maintainer = "Antoine Delahaye"
+LABEL description = "Nginx + uWSGI + Flask based on Alpine Linux and managed by Antoine Delahaye"
 
-COPY requirements.txt /tmp/requirements.txt
+COPY ../requirements.txt /tmp/requirements.txt
 
 RUN apk add --no-cache \
     python3 \
@@ -25,7 +25,7 @@ COPY uwsgi.ini /etc/uwsgi/
 COPY supervisord.conf /etc/supervisord.conf
 
 WORKDIR /docker-al
-ADD . /docker-al
+ADD .. /docker-al
 
 RUN chmod u+x entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
