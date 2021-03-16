@@ -1,15 +1,18 @@
 {% extends "index.html" %}
 {% block main %}
 <main class="container-fluid col-9 mb-5">
-    <h2 class="text-center mb-5">Groupes publics</h2>
+    <h2 class="text-center mb-5">{{ title }}</h2>
     {% block message %}
         {{ super() }}
     {% endblock %}
-    <form class="my-5 mx-auto">
-        <div class="form-group">
-            <label class="d-none" for="search-input">Rechercher un groupe grâce à son nom</label>
-            <input class="form-control" id="search-input" type="text"
-                   placeholder="Rechercher un groupe grâce à son nom">
+    <form class="my-5 mx-auto" action="" method="GET">
+        <div class="input-group">
+            {{ searchform.group_hint }}
+            <div class="input-group-append" id="search-buttons">
+                <button type="submit" class="btn btn-primary" title="Recherche">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </button>
+            </div>
         </div>
     </form>
     <form class="form mb-4" action="" method="POST">
@@ -19,7 +22,7 @@
         </div>
     </form>
     <div class="row align-items-center justify-content-center">
-      <a class="btn btn-block centered text-uppercase col-3 pt-2 mb-5" href="{{ url_for('group.add_group') }}">Céer un groupe</a>
+      <a class="btn btn-block centered text-uppercase col-3 pt-2 mb-5" href="{{ url_for('group.add_group') }}">Créer un groupe</a>
     </div>
     <div class="row">
     {% for group in groups_data %}

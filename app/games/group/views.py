@@ -4,8 +4,9 @@ from flask_login import login_required, current_user
 
 from . import group as gp
 from app.models import Group, Participate, User
-from .models.group_tools import get_all_participation, join_private_group_form, join_public_group_form, quit_group_form, add_group_form, kick_group_form, lead_group_form
+from .models.group_tools import get_all_participation, join_private_group_form, join_public_group_form, quit_group_form, add_group_form, kick_group_form, lead_group_form, get_group_payload
 from .models.forms import JoinPrivateGroupForm, AddGroupForm
+from app.site.models.forms import GroupsSearchForm
 from app import db
 
 
@@ -21,12 +22,14 @@ def groups():
     """
     Render the groups template on the /groups route
     """
+    searchform = GroupsSearchForm()
     form = JoinPrivateGroupForm()
     if request.method == "POST":
         if join_private_group_form(form):
             return handle_join_private(form)
-    groups_data = Group.query.all()
-    return render_template('groups.html', stylesheet='groups', groups_data=groups_data, form=form)
+    payload = get_group_payload(searchform)
+
+    return render_template('groups.html', stylesheet='groups', form=form, **payload)
 
 
 @gp.route('/groups_public', methods=['GET', 'POST'])
@@ -35,13 +38,13 @@ def groups_public():
     """
     Render the groups template on the /groups_public route
     """
+    searchform = GroupsSearchForm()
     form = JoinPrivateGroupForm()
     if request.method == "POST":
         if join_private_group_form(form):
             return handle_join_private(form)
-
-    groups_data = Group.query.filter(Group.is_private == False).all()
-    return render_template('groups.html', stylesheet='groups', groups_data=groups_data, form=form)
+    payload = get_group_payload(searchform, Group.query.filter(Group.is_private == False))
+    return render_template('groups.html', stylesheet='groups', form=form, **payload)
 
 
 @gp.route('/group')
