@@ -6,7 +6,7 @@ def populate_games_form(form):
     populate form data from database
     :param form: a AddGamesSearchForm
     """
-    for data in Game:
+    for data in Game.all():
         form.title.choices.append(data.title)
         if data.publication_year not in form.years.choices:
             form.years.choices.append(data.publication_year)

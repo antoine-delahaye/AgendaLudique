@@ -8,8 +8,6 @@ from .models.games_form_tools import populate_games_form, beautify_games_form, a
 from .models.jeux_tools import get_numero_page, TITLES, DEFAULT_TITLE, get_catalog_payload
 from app import db
 
-import time as t
-
 
 @jeux.route('/catalog', methods=['GET', 'POST'])
 @login_required
