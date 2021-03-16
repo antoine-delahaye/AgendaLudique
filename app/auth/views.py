@@ -1,13 +1,13 @@
 # app/auth/views.py
 
-from flask import redirect, render_template, url_for, flash, abort, request, jsonify
+from flask import redirect, render_template, url_for, flash, request
 from flask_login import login_required, login_user, logout_user
 
+from app import db
 from app.auth import auth
-from app.auth.models.auth_tools import send_register_mail, check_register_error, generate_reset_mail, \
+from app.auth.models.auth_tools import send_register_mail, generate_reset_mail, \
     user_change_password
 from app.auth.models.forms import LoginForm, RegistrationForm, ResetPasswordForm, ForgotPasswordForm
-from app import db
 from app.models import User  # , Statistic
 
 
@@ -20,15 +20,17 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user is not None and user.verify_password(
-                form.password.data):
-            login_user(user)
-            next = request.args.get("next")
-            if next is not None:
-                return redirect(next)
-            return redirect(url_for("jeux.catalog"))
+        if user is not None:
+            if user.verify_password(form.password.data):
+                login_user(user)
+                next = request.args.get("next")
+                if next is not None:
+                    return redirect(next)
+                return redirect(url_for("jeux.catalog"))
+            else:
+                flash("Mot de passe incorrect.", "warning")
         else:
-            flash("Adresse électronique ou mot de passe invalide.", "warning")
+            flash("Adresse électronique inéxistante.", "warning")
     return render_template('login.html', form=form, stylesheet='login')
 
 
@@ -54,8 +56,6 @@ def register():
         flash("Inscription réussite, vous pouvez maintenant vous connecter !", "success")
         send_register_mail(user)
         return redirect(url_for('auth.login'))
-    else:
-        check_register_error(form)
     return render_template('register.html', form=form, stylesheet='register')
 
 
@@ -82,7 +82,6 @@ def forgot_password():
         generate_reset_mail(user)
         flash("Un mail vous a été envoyé pour réinitialiser votre mot de passe", "success")
         return redirect(url_for("auth.login"))
-
     return render_template("password_forgot.html", form=form, stylesheet="register")
 
 

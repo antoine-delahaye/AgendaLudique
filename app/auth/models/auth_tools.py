@@ -1,21 +1,8 @@
 import uuid
 
-from flask import flash, request, url_for
+from flask import request, url_for
 
 from app import db
-from app.models import User
-
-
-def check_register_error(form):
-    """
-    flashes all users errors during registration
-    :param form: which contains user inputs
-    """
-    if not User.from_email(form.email.data):
-        flash("Adresse mail déjà utilisée", "danger")
-
-    if User.from_username(form.username.data) is None:
-        flash("Nom d'utilisateur déjà utilisé", "danger")
 
 
 def send_register_mail(user):
