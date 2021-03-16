@@ -101,3 +101,13 @@ class UsersSearchForm(FlaskForm):
         ('mostRecent', 'Plus récents'),
         ('mostAncient', 'Plus vieux')
     ], render_kw={'class': 'custom-select inline-select'})
+
+class GroupsSearchForm(FlaskForm):
+    """
+    Form to search groups
+    """
+    group_hint = StringField('Nom du groupe', id='search-input', render_kw={
+        'class': 'form-control',
+        'placeholder': 'Rechercher un groupe grâce à son nom',
+        'aria-describedby': 'search-buttons'
+    })
