@@ -28,6 +28,9 @@ def get_catalog_payload(user, form, page):
     # We want to keep those informations to be able to show them on the next page
     payload["form"]=form
 
+    # Change title of the page in function of search_parameter
+    payload["title"]=TITLES.get(form.display_search_parameter.data, DEFAULT_TITLE)
+
     # We want to know games notes and comments made by the current user
     payload["ratings"] = user.get_noted_games(False, True)
 
