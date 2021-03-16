@@ -656,7 +656,7 @@ class Game(UserMixin, db.Model):
         """
         :return: return every games from db
         """
-        db.session.query(Game)
+        return Game.query
 
     @classmethod
     def from_title(cls, title):
