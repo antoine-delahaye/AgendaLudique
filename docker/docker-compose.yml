@@ -1,0 +1,24 @@
+services:
+  app:
+    image: ug7z/agenda-ludique
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    entrypoint: /docker-al/entrypoint.sh
+    networks:
+      - al_network
+  db:
+    image: mariadb
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: agendaludique
+      MYSQL_USER: al_admin
+      MYSQL_PASSWORD: al_admin
+    networks:
+      - al_network
+
+networks:
+  al_network:
