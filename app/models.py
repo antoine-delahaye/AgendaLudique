@@ -330,8 +330,10 @@ class User(UserMixin, db.Model):
                 # TODO
                 pass
             else:
-                games_ids = db.session.query(Game.id).filter(Game.title.like("%" + sessions_hint + "%"))
-                results.items = results.items.filter(Session.game_id.in_(games_ids))
+                games_ids = db.session.query(Use.session_id).filter(Use.game_id.in_(
+                    db.session.query(Game.id).filter(Game.title.like("%" + sessions_hint + "%"))
+                ))
+                results.items = results.items.filter(Session.id.in_(games_ids))
         
         # Sort games corresponding to the search asked
         # if sort_type == ResultsSortType.MOST_ANCIENT_FIRST:
