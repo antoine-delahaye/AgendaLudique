@@ -17,16 +17,11 @@ def catalog():
     """
     Render the catalog template on the /catalog route
     """
-    start = t.time()
     form = GamesSearchForm()
     page = get_numero_page()
     payload = get_catalog_payload(current_user, form, page)
 
-    # Change title of the page in function of search_parameter
-    title = TITLES.get(payload.get("search_parameter"), DEFAULT_TITLE)
-    print("--- %s total ---" % (t.time() - start))
-
-    return render_template('catalog.html', stylesheet='catalog', title=title, **payload)
+    return render_template('catalog.html', stylesheet='catalog', **payload)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
