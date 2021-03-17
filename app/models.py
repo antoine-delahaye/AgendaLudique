@@ -621,7 +621,9 @@ class Note(db.Model):
             if grade.note is not None:
                 avg_grade += grade.note
                 count += 1
-        return avg_grade / count
+        if avg_grade is not 0 and count is not 0:
+            return avg_grade / count
+        return 0
 
     @classmethod
     def get_messages(cls, game_id, amount=None):
