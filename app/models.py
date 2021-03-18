@@ -330,8 +330,10 @@ class User(UserMixin, db.Model):
                 # TODO
                 pass
             else:
-                games_ids = db.session.query(Game.id).filter(Game.title.like("%" + sessions_hint + "%"))
-                results.items = results.items.filter(Session.game_id.in_(games_ids))
+                games_ids = db.session.query(Use.session_id).filter(Use.game_id.in_(
+                    db.session.query(Game.id).filter(Game.title.like("%" + sessions_hint + "%"))
+                ))
+                results.items = results.items.filter(Session.id.in_(games_ids))
         
         # Sort games corresponding to the search asked
         # if sort_type == ResultsSortType.MOST_ANCIENT_FIRST:
@@ -612,7 +614,7 @@ class Note(db.Model):
         """
         Get an average grade from a game id
         """
-        req = Note.query.filter(Note.game_id == game_id).all()
+        req = Note.query.filter(Note.game_id == game_id)
         avg_grade = 0
         count = 0
         for grade in req:
@@ -626,10 +628,10 @@ class Note(db.Model):
     @classmethod
     def get_messages(cls, game_id, amount=None):
         if amount is None:
-            req = Note.query.filter(Note.game_id == game_id).all()
+            req = Note.query.filter(Note.game_id == game_id)
             return req if req else None
         else:
-            req = Note.query.filter(Note.game_id == game_id).limit(amount).all()
+            req = Note.query.filter(Note.game_id == game_id).limit(amount)
             return req if req else None
 
 
@@ -656,7 +658,7 @@ class Game(UserMixin, db.Model):
         """
         :return: return every games from db
         """
-        db.session.query(Game).all()
+        return Game.query
 
     @classmethod
     def from_title(cls, title):
