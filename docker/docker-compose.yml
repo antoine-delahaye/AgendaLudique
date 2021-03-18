@@ -5,7 +5,7 @@ services:
       - db
     ports:
       - 80:80
-    entrypoint: /docker-al/entrypoint.sh
+    entrypoint: /docker-al/docker/entrypoint.sh
     networks:
       - al_network
   db:
