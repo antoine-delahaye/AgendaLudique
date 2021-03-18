@@ -8,8 +8,6 @@ from .models.games_form_tools import populate_games_form, beautify_games_form, a
 from .models.jeux_tools import get_numero_page, TITLES, DEFAULT_TITLE, get_catalog_payload
 from app import db
 
-import time as t
-
 
 @jeux.route('/catalog', methods=['GET', 'POST'])
 @login_required
@@ -17,16 +15,11 @@ def catalog():
     """
     Render the catalog template on the /catalog route
     """
-    start = t.time()
     form = GamesSearchForm()
     page = get_numero_page()
     payload = get_catalog_payload(current_user, form, page)
 
-    # Change title of the page in function of search_parameter
-    title = TITLES.get(payload.get("search_parameter"), DEFAULT_TITLE)
-    print("--- %s total ---" % (t.time() - start))
-
-    return render_template('catalog.html', stylesheet='catalog', title=title, **payload)
+    return render_template('catalog.html', stylesheet='catalog', **payload)
 
 
 @jeux.route('/add-games', methods=['GET', 'POST'])
@@ -36,17 +29,13 @@ def add_games():
     Render the add-games template on the /add-games route
     """
     search_form = AddGamesSearchForm()
-
     populate_games_form(search_form)
     beautify_games_form(search_form)
-    add_default_values_game_form()
-
+    add_default_values_game_form(search_form)
     add_game_form = AddGameForm()
     if search_form.validate_on_submit():
-        researched_game = Game.from_title(search_form.title.data)
-        # print(researched_game)
-        return render_template('add-games.html', form=search_form, stylesheet='add-games',
-                               researched_game=researched_game, add_game_form=add_game_form)
+        Game.from_title(search_form.title.data)
+        return render_template('add-games.html', form=search_form, stylesheet='add-games', add_game_form=add_game_form)
     if add_game_form.validate_on_submit():
         game_id = Game.max_id() + 1
         Game.add_game(game_id,
@@ -55,7 +44,7 @@ def add_games():
                        'max_players': int(add_game_form.max_players.data),
                        'min_playtime': int(add_game_form.min_playtime.data), 'image': add_game_form.image.data})
         return redirect(url_for('jeux.game', game_id=game_id))
-    return render_template('add-games.html', stylesheet='add-games', form=search_form, add_game_form=add_game_form)
+    return render_template('add-games.html', stylesheet='add-games', add_game_form=add_game_form)
 
 
 @jeux.route('/edit-games', methods=['GET', 'POST'])
@@ -81,7 +70,7 @@ def game(game_id):
                            owned_games=current_user.get_owned_games(True),
                            wished_games=current_user.get_wished_games(True),
                            noted_games=current_user.get_noted_games(True),
-                           rating=Note.from_both_ids(current_user.id,game_id),
+                           rating=Note.from_both_ids(current_user.id, game_id),
                            average_grade=Note.average_grade(game_id),
                            messages=Note.get_messages(game_id, 5))
 

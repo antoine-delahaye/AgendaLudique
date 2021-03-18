@@ -82,7 +82,7 @@
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                             <a class="dropdown-item" href="{{ url_for('group.groups') }}">Tous les groupes</a>
-                            <a class="dropdown-item" href="{{ url_for('group.groups_public') }}">Groupes publiques</a>
+                            <a class="dropdown-item" href="{{ url_for('group.groups_public') }}">Groupes publics</a>
                             <a class="dropdown-item" href="{{ url_for('group.my_groups') }}">Mes groupes</a>
                         </div>
                     </li>
@@ -127,16 +127,16 @@
         {% with messages = get_flashed_messages(with_categories=True) %}
             {% for message in messages %}
                 {% if message is string %}
-                    <p class="text-center alert-success alert-dismissible rounded-lg py-1 w-50">{{ message }} </p>
+                    <p class="text-center alert-success rounded-lg py-1 col-4">{{ message }} </p>
                 {% else %}
-                    <p class="text-centoken_pwdter alert-{{ message[0] }} alert-dismissible rounded-lg py-1 w-50">{{ message[1] }}</p>
+                    <p class="text-center alert-{{ message[0] }} rounded-lg py-1 col-4">{{ message[1] }}</p>
                 {% endif %}
             {% endfor %}
         {% endwith %}
         {% if form is defined %}
             {% for field in form.errors %}
                 {% for error in form.errors[field] %}
-                    <p class="text-center alert-danger alert-dismissable rounded-lg py-1 w-50">{{ error }}</p>
+                    <p class="text-center alert-danger alert-dismissable rounded-lg py-1 col-4">{{ error }}</p>
                 {% endfor %}
             {% endfor %}
         {% endif %}

@@ -2,7 +2,7 @@
 {% block main %}
     <!-- TODO remove this when multiple stylesheets will be supported in views -->
     <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/custom-buttons.css") }}">
-    <main class="container-fluid col-9 mb-5">
+    <main class="container-fluid col-9 mb-5 my-auto">
         <h2 class="text-center mb-5">Joueurs</h2>
 
         <form class="my-5 mx-auto" action="{{ url_for('site.users') }}" method="POST">

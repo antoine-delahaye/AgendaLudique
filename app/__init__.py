@@ -49,7 +49,6 @@ def config_app(config_name):
     global app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[os.environ.get("FLASK_ENV")])
-    print(app.config["SQLALCHEMY_DATABASE_URI"])
     return app
 
 
