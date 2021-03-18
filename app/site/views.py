@@ -70,8 +70,9 @@ def user(id=None):
 
     # Games collection
     user_games_collection = user.get_owned_games()
-    # Will work later when the search engine will be updated
-    current_user_wished_games = current_user.games_search("", "title", "wished").items
+
+    # Get all wished game ids
+    current_user_wished_games = [game.id for game in current_user.get_wished_games()]
 
     return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id,
                            users_data=current_user_data, bookmarked_users=bookmarked_users,
