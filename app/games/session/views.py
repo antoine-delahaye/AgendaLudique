@@ -33,7 +33,12 @@ def session(session_id):
     Render the session template on the /session route
     """
     session = Session.from_id(session_id)
-    return render_template('session.html', stylesheet='session', session = session, games=session.get_games(), players=session.get_players())
+    return render_template('session.html',
+                            stylesheet='session',
+                            session = session,
+                            games=session.get_games(),
+                            players=session.get_players(),
+                            users_data = current_user.users_search_with_pagination("", False, False, per_page=15))
 
 
 @session_bp.route('/addplayer_tosession/<int:session_id>', methods=['GET', 'POST'])

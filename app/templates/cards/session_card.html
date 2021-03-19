@@ -1,13 +1,19 @@
-<div class="col-md-3">
+<div class="col-lg-6">
     <div class="card card-body shadow-sm">
-        <div class="row profile-card-content">
+        <div class="row session-card-content">
             <div class="col-md-8">
                 <a href="{{ url_for("session.session", session_id=session.id) }}">
-                    <p class="font-weight-bold"> Session du {{ session.timeslot.day }} à {{ session.timeslot.beginning }}</p>
+                    <p class="font-weight-bold"> Session du {{ session.timeslot.day.strftime("%A %d %B %Y") }}</p>
                 </a>
+                <p>De {{ session.timeslot.beginning }} à {{ session.timeslot.end }}</p>
             </div>
-            <div class="col-md-auto profile-informations">
-                <a class="my-2 btn btn-secondary" href="{{ url_for("session.session", session_id=session.id)  }}">Voir</a>
+            <div class="mt-2 col-md-2">
+                {% if session.archived %}
+                  <button class="btn btn-outline-warning disabled">Archivée <i class="fa fa-archive" aria-hidden="true"></i></button>
+                {% elif session.confirmed %}
+                  <button class="btn btn-outline-success disabled">Confirmée <i class="fa fa-check" aria-hidden="true"></i></button>
+                {% endif %}
+                <button class="mx-2 btn btn-secondary" href="{{ url_for("session.session", session_id=session.id)  }}">Voir</button>
             </div>
         </div>
     </div>
