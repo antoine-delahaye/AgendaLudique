@@ -1,0 +1,44 @@
+
+<div class="modal fade" id="game_note{{game.id}}" tabindex="-1" role="dialog" aria-labelledby="game_noteLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content container">
+            <div class="modal-header row">
+                <h4 class="modal-title" id="game_noteLabel">{{ game.title }}</h4>
+                <button type="button" class="close " data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body row-12">
+                {% if game.id in noted_games %}
+                <form action="{{ url_for("jeux.update_game_note", game_id=game.id)}}" method="post">
+                    <div class="form-group form-row">
+                        <label for="note" class="control-label col-md-2">Note :</label>
+                        <input type="number" class="form-control-sm col-sm-2" min="0" max="10" id="note" name="note" value="{{ ratings.filter_by(game_id=game.id).first().note }}" required>
+                        <h4 class="col-lg-2">/10</h4>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">Message :</label>
+                        <textarea type="text" class="form-control" id="message-text" name="message-text">{{ ratings.filter_by(game_id=game.id).first().message }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sauvegarder</button>
+                    <button type="button" class="btn ml-3 col-3"
+                            onclick="window.location.href='{{ url_for("jeux.remove_game_note", game_id=game.id) }}';">
+                        Effacer la note
+                    </button>
+                </form>
+                {% else %}
+                <form action="{{ url_for("jeux.add_game_note", game_id=game.id)}}" method="post">
+                    <div class="form-group form-row">
+                        <label for="note" class="control-label col-md-2">Note :</label>
+                        <input type="number" class="form-control-sm col-sm-2" min="0" max="10" id="note" name="note" required>
+                        <h4 class="col-lg-2">/10</h4>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">Message :</label>
+                        <textarea type="text" class="form-control" id="message-text" name="message-text"></textarea>
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Sauvegarder">
+                </form>                
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

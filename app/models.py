@@ -113,6 +113,13 @@ class User(UserMixin, db.Model):
         if want_notes:
             return db.session.query(Note).filter(Note.user_id == self.id)
         return db.session.query(Game).join(Note).filter(Note.user_id == self.id, Game.id == Note.game_id)
+    
+    def get_freq_games(self, only_id=False, want_freqs=False):
+        if only_id:
+            return db.session.query(Prefer.game_id).filter(Prefer.user_id == self.id)
+        if want_freqs:
+            return db.session.query(Prefer).filter(Prefer.user_id == self.id)
+        return db.session.query(Game).join(Prefer).filter(Prefer.user_id == self.id, Game.id == Prefer.game_id)
 
     def get_owned_games(self, only_id=False):
         if only_id:
@@ -216,7 +223,6 @@ class User(UserMixin, db.Model):
         results = self.games_search(games_hint, typ, search_parameter, sort_type)
 
         # We want to remove already owned and wished games from the page
-        print(search_parameter)
         if search_parameter is None or search_parameter=="None":
             results.items = results.items.filter(Game.id.notin_(self.get_wished_games(True)))
             results.items = results.items.filter(Game.id.notin_(self.get_owned_games(True)))
@@ -508,7 +514,7 @@ class Prefer(db.Model):
         """
         Get a preference from its game and user ids. Return None if the preference does not exist.
         """
-        req = Prefer.query.filter(Prefer.user_id == user_id, Prefer.game_id == game_id).first()
+        req = Prefer.query.filter(Prefer.user_id == user_id, Prefer.game_id == game_id)
         return req if req else None
 
 
