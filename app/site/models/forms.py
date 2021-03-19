@@ -17,8 +17,8 @@ class UpdateInformationForm(FlaskForm):
     confirm_password = PasswordField('Confirmer le mot de passe', validators=[DataRequired()],
                                      render_kw={'placeholder': 'Confirmer le mot de passe'})
     use_gravatar = BooleanField('Utiliser Gravatar')
-    profile_picture = StringField('Photo de profile', validators=[DataRequired()],
-                                  render_kw={'placeholder': 'URL de la photo de profile'})
+    profile_picture = StringField('Photo de profil', validators=[DataRequired()],
+                                  render_kw={'placeholder': 'URL de la photo de profil'})
     submit = SubmitField('Mettre à jour')
 
 
