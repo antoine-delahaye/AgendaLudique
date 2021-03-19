@@ -23,7 +23,11 @@ def sessions():
     # Change title of the page in function of search_parameter
     title = TITLES.get(payload.get("search_parameter"), DEFAULT_TITLE)
 
-    return render_template('sessions.html', stylesheet='users', title=title, **payload)
+    return render_template('sessions.html',
+                            stylesheet='users',
+                            title=title,
+                            now=datetime.datetime.now(),
+                            **payload)
 
 
 @session_bp.route('/session/<int:session_id>', methods=['GET', 'POST'])

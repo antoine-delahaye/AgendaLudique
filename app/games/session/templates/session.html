@@ -7,8 +7,6 @@
     <h3>De {{ session.timeslot.beginning.strftime("%H:%M") }} à {{ session.timeslot.end.strftime("%H:%M") }}</h3>
   </div>
     <div class="d-flex flex-row justify-content-center align-items-center mx-auto mb-5 col-8">
-        <p>Nombre de joueurs minimal : {{ session.nb_players_required }}</p>
-        <p>Nombre de joueurs présents : {{ session.players.count() }}</p>
         <button class="btn mr-3 col-3 text-white"
                 onclick="window.location.href='{{ url_for("session.add_player", session_id=session.id) }}';">
             Ajouter un joueur
