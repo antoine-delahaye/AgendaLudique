@@ -1,6 +1,6 @@
 # Games adding/editing related ###################################################
 from flask import render_template, redirect, url_for, request
-from app.models import Game, Wish, Collect, KnowRules, Note
+from app.models import Game, Wish, Collect, KnowRules, Note, Prefer
 from app.site.models.forms import GamesSearchForm, UpdateInformationForm, AddGamesSearchForm, AddGameForm
 from flask_login import login_required, current_user
 from . import jeux
@@ -155,5 +155,34 @@ def remove_game_note(game_id):
 def update_game_note(game_id):
     remove_game_note(game_id)
     add_game_note(game_id)
+    db.session.commit()
+    return redirect(request.referrer)
+
+@jeux.route('/add-freq', methods=['GET', 'POST'])
+@jeux.route('/add-freq/<game_id>', methods=['GET', 'POST'])
+@login_required
+def add_game_freq(game_id):
+    freq = request.form.get("freq", False)
+    message = request.form.get("message-text", False)
+    db.session.add(Prefer(user_id=current_user.id, game_id=game_id, frequency=freq))
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@jeux.route('/remove-freq', methods=['GET', 'POST'])
+@jeux.route('/remove-freq/<game_id>', methods=['GET', 'POST'])
+@login_required
+def remove_game_freq(game_id):
+    db.session.delete(Prefer.query.filter_by(user_id=current_user.id, game_id=game_id).first())
+    db.session.commit()
+    return redirect(request.referrer)
+
+
+@jeux.route('/update-freq', methods=['GET', 'POST'])
+@jeux.route('/update-freq/<game_id>', methods=['GET', 'POST'])
+@login_required
+def update_game_freq(game_id):
+    remove_game_freq(game_id)
+    add_game_freq(game_id)
     db.session.commit()
     return redirect(request.referrer)
