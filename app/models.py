@@ -113,6 +113,13 @@ class User(UserMixin, db.Model):
         if want_notes:
             return db.session.query(Note).filter(Note.user_id == self.id)
         return db.session.query(Game).join(Note).filter(Note.user_id == self.id, Game.id == Note.game_id)
+    
+    def get_freq_games(self, only_id=False, want_freqs=False):
+        if only_id:
+            return db.session.query(Prefer.game_id).filter(Prefer.user_id == self.id)
+        if want_freqs:
+            return db.session.query(Prefer).filter(Prefer.user_id == self.id)
+        return db.session.query(Game).join(Prefer).filter(Prefer.user_id == self.id, Game.id == Prefer.game_id)
 
     def get_owned_games(self, only_id=False):
         if only_id:
