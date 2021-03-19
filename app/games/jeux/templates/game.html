@@ -62,68 +62,6 @@
                 </ul>
             </div>
         </div>
-        {% if game.id not in noted_games %}
-            <div class="modal fade" id="myModal{{ game.id }}" tabindex="-1" role="dialog"
-                 aria-labelledby="myModalLabel">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content container">
-                        <div class="modal-header row">
-                            <h4 class="modal-title" id="myModalLabel">{{ game.title }}</h4>
-                            <button type="button" class="close " data-dismiss="modal" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body row-12">
-                            <form action="{{ url_for("jeux.add_game_note", game_id=game.id) }}" method="post">
-                                <div class="form-group form-row">
-                                    <label for="note" class="control-label col-md-2">Note :</label>
-                                    <input type="number" class="form-control-sm col-sm-2" min="0" max="10" id="note"
-                                           name="note" required>
-                                    <h4 class="col-lg-2">/10</h4>
-                                </div>
-                                <div class="form-group">
-                                    <label for="message-text" class="control-label">Message :</label>
-                                    <textarea type="text" class="form-control" id="message-text"
-                                              name="message-text"></textarea>
-                                </div>
-                                <input type="submit" class="btn btn-primary" value="Sauvegarder">
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="modal fade" id="myModal{{ game.id }}" tabindex="-1" role="dialog"
-                 aria-labelledby="myModalLabel">
-                <div class="modal-dialog modal-lg" role="document">
-                    <div class="modal-content container">
-                        <div class="modal-header row">
-                            <h4 class="modal-title" id="myModalLabel">{{ game.title }}</h4>
-                            <button type="button" class="close " data-dismiss="modal" aria-label="Close"><span
-                                    aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body row-12">
-                            <form action="{{ url_for("jeux.update_game_note", game_id=game.id) }}" method="post">
-                                <div class="form-group form-row">
-                                    <label for="note" class="control-label col-md-2">Note :</label>
-                                    <input type="number" class="form-control-sm col-sm-2" min="0" max="10" id="note"
-                                           name="note" value="{{ rating.note }}" required>
-                                    <h4 class="col-lg-2">/10</h4>
-                                </div>
-                                <div class="form-group">
-                                    <label for="message-text" class="control-label">Message :</label>
-                                    <textarea type="text" class="form-control" id="message-text"
-                                              name="message-text"> {{ rating.message }}</textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Sauvegarder</button>
-                                <button class="btn ml-3 col-3 text-white"
-                                        onclick="window.location.href='{{ url_for("jeux.remove_game_note", game_id=game.id) }}';">
-                                    Effacer la note
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
+        {% include "pop-ups/game_note.html" %}
     </main>
 {% endblock %}

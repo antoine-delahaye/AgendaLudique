@@ -70,7 +70,7 @@ def game(game_id):
                            owned_games=id_query_to_set(current_user.get_owned_games(True)),
                            wished_games=id_query_to_set(current_user.get_wished_games(True)),
                            noted_games=id_query_to_set(current_user.get_noted_games(True)),
-                           rating=Note.from_both_ids(current_user.id, game_id),
+                           ratings=Note.from_both_ids(current_user.id, game_id),
                            average_grade=Note.average_grade(game_id),
                            messages=Note.get_messages(game_id, 5))
 
