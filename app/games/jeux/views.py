@@ -5,7 +5,7 @@ from app.site.models.forms import GamesSearchForm, UpdateInformationForm, AddGam
 from flask_login import login_required, current_user
 from . import jeux
 from .models.games_form_tools import populate_games_form, beautify_games_form, add_default_values_game_form
-from .models.jeux_tools import get_numero_page, TITLES, DEFAULT_TITLE, get_catalog_payload
+from .models.jeux_tools import get_numero_page, TITLES, DEFAULT_TITLE, get_catalog_payload, id_query_to_set
 from app import db
 
 
@@ -67,9 +67,9 @@ def game(game_id):
     Render the game template on the /game route
     """
     return render_template('game.html', game=Game.from_id(game_id),
-                           owned_games=current_user.get_owned_games(True),
-                           wished_games=current_user.get_wished_games(True),
-                           noted_games=current_user.get_noted_games(True),
+                           owned_games=id_query_to_set(current_user.get_owned_games(True)),
+                           wished_games=id_query_to_set(current_user.get_wished_games(True)),
+                           noted_games=id_query_to_set(current_user.get_noted_games(True)),
                            rating=Note.from_both_ids(current_user.id, game_id),
                            average_grade=Note.average_grade(game_id),
                            messages=Note.get_messages(game_id, 5))
