@@ -7,7 +7,7 @@
         {% block message %}
             {{ super() }}
         {% endblock %}
-        <form class="form" action="{{ url_for('site.account') }}" method="POST">
+        <form class="form container-fluid col-9" action="{{ url_for('site.account') }}" method="POST">
             {{ form.hidden_tag() }}
             <div class="form-row">
                 <div class="form-group col-lg-6">
