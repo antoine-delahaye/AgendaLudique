@@ -47,7 +47,7 @@ def users():
     form.display_favorites_players_only.data = fav_only
     form.display_masked_players.data = hidden
 
-    search_results = User.search_with_pagination(current_user, form.username_hint.data, fav_only, hidden, page, 20,
+    search_results = current_user.users_search_with_pagination(form.username_hint.data, fav_only, hidden, page, 20,
                                                  sort_type=sort_order)
 
     return render_template('users.html', stylesheet='users', form=form, current_user_id=current_user.id,
@@ -66,12 +66,13 @@ def user(id=None):
 
     # Bookmarked users
     bookmarked_users = user.get_bookmarked_users()
-    current_user_data = User.search(current_user, "", False, True)  # Retrieve the data for the current user
+    current_user_data = current_user.users_search("", False, True)  # Retrieve the data for the current user
 
     # Games collection
-    user_games_collection = User.get_owned_games(user.id)
-    # Will work later when the search engine will be updated
-    current_user_wished_games = Game.search(current_user, "", "title", "wished").items
+    user_games_collection = user.get_owned_games()
+
+    # Get all wished game ids
+    current_user_wished_games = [game.id for game in current_user.get_wished_games()]
 
     return render_template('user.html', stylesheet='user', user=user, current_user_id=current_user.id,
                            users_data=current_user_data, bookmarked_users=bookmarked_users,
@@ -96,7 +97,7 @@ def add_hidden_user(user_id=None):
                 db.session.add(hidden_user)
                 db.session.commit()
 
-    return redirect(url_for('site.users'))
+    return redirect(request.referrer)
 
 
 @site.route('/hidden-users/remove', methods=['GET'])
@@ -117,7 +118,7 @@ def remove_hidden_user(user_id=None):
                 db.session.delete(hidden_user)
                 db.session.commit()
 
-    return redirect(url_for('site.users', searchParameters="HIDDEN"))
+    return redirect(request.referrer)
 
 
 @site.route('/bookmarked-users/add', methods=['GET'])
@@ -138,7 +139,7 @@ def add_bookmarked_user(user_id=None):
                 db.session.add(bookmarked_user)
                 db.session.commit()
 
-    return redirect(url_for('site.users'))
+    return redirect(request.referrer)
 
 
 @site.route('/bookmarked-users/remove', methods=['GET'])
@@ -159,7 +160,7 @@ def remove_bookmarked_user(user_id=None):
                 db.session.delete(bookmarked_user)
                 db.session.commit()
 
-    return redirect(url_for('site.users'))
+    return redirect(request.referrer)
 
 
 @site.route('/account', methods=['GET', 'POST'])

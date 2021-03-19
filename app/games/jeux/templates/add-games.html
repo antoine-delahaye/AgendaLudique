@@ -1,44 +1,7 @@
 {% extends "index.html" %}
 {% block main %}
-    <main class="container-fluid d-flex flex-column justify-content-center align-items-center mb-auto">
+    <main class="container-fluid d-flex flex-column justify-content-center align-items-center my-auto">
         <h2 class="text-center mb-5">Ajouter vos jeux</h2>
-        <section class="container-lg text-left mb-5">
-            <h3 class="mb-3">Depuis ceux présents sur le site</h3>
-            <form class="form" action="" method="POST">
-                {{ games_search_form.hidden_tag() }}
-                <div class="form-row">
-                    <div class="form-group col-lg-9">
-                        {{ games_search_form.title.label }}
-                        {{ games_search_form.title(class="form-control") }}
-                    </div>
-                    <div class="form-group col-lg-3">
-                        {{ games_search_form.years.label }}
-                        {{ games_search_form.years(class="form-control") }}
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-lg-3">
-                        {{ games_search_form.min_players.label }}
-                        {{ games_search_form.min_players(class="form-control") }}
-                    </div>
-                    <div class="form-group col-lg-3">
-                        {{ games_search_form.max_players.label }}
-                        {{ games_search_form.max_players(class="form-control") }}
-                    </div>
-                    <div class="form-group col-lg-3">
-                        {{ games_search_form.min_playtime.label }}
-                        {{ games_search_form.min_playtime(class="form-control") }}
-                    </div>
-                    <div class="form-group col-lg-3">
-                        {{ games_search_form.max_playtime.label }}
-                        {{ games_search_form.max_playtime(class="form-control") }}
-                    </div>
-                </div>
-                <div class="text-center">
-                    {{ games_search_form.submit(class="btn text-white text-uppercase") }}
-                </div>
-            </form>
-        </section>
         <section class="container-lg text-left">
             <h3 class="mb-3">Manuellement</h3>
             <form class="form" action="" method="POST">

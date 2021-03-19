@@ -1,6 +1,6 @@
 {% extends "index.html" %}
 {% block main %}
-<main class="container-fluid col-9 mb-5">
+<main class="container-fluid col-9 mb-5 my-auto">
   <h2 class="text-center mb-5">Mes groupes</h2>
   {% block message %}
       {{ super() }}
@@ -19,7 +19,7 @@
         <h4 class="my-3">Groupes gérés</h4>
           <div class="row">
           {% for group in  managed_groups %}
-              {% include "group_card.html" %}
+              {% include "cards/group_card.html" %}
           {% endfor %}
           </div>
     {% endif %}
@@ -27,7 +27,7 @@
       <h4 class="my-3">Groupes</h4>
           <div class="row">
           {% for group in groups_data %}
-              {% include "group_card.html" %}
+              {% include "cards/group_card.html" %}
           {% endfor %}
           </div>
     {% endif %}

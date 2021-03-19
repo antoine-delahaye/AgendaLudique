@@ -38,3 +38,11 @@
     display: inline;
     width: min-content;
 }
+
+.user-dropdown i {
+    color: #000000;
+}
+
+.user-dropdown i:hover {
+    color: #0277BC;
+}

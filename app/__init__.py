@@ -8,7 +8,6 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 import os
 
-import config
 from app.mail.utils.mailtools import MailTool
 from instance.config import config
 
@@ -50,7 +49,6 @@ def config_app(config_name):
     global app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config[os.environ.get("FLASK_ENV")])
-    print(app.config["SQLALCHEMY_DATABASE_URI"])
     return app
 
 

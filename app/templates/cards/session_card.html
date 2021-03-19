@@ -1,0 +1,22 @@
+<div class="col-lg-6">
+    <div class="card card-body shadow-sm">
+        <div class="row session-card-content">
+            <div class="col-md-8">
+                <a href="{{ url_for("session.session", session_id=session.id) }}">
+                    <p class="font-weight-bold"> Session du {{ session.timeslot.day.strftime("%A %d %B %Y") }}</p>
+                </a>
+                <p>De {{ session.timeslot.beginning }} à {{ session.timeslot.end }}</p>
+            </div>
+            <div class="mt-2 col-md-4">
+                {% if session.archived %}
+                  <button class="btn btn-outline-warning disabled">Archivée <i class="fa fa-archive" aria-hidden="true"></i></button>
+                {% elif session.confirmed %}
+                  <button class="btn btn-outline-success disabled">Confirmée <i class="fa fa-check" aria-hidden="true"></i></button>
+                {% else %}
+                  <button class="btn btn-outline-danger disabled">Expirée <i class="fa fa-clock-o" aria-hidden="true"></i></button>
+                {% endif %}
+                <button class="mx-2 btn" href="{{ url_for("session.session", session_id=session.id)  }}">Voir</button>
+            </div>
+        </div>
+    </div>
+</div>

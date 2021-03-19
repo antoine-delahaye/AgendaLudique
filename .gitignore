@@ -8,3 +8,4 @@ ressources/games-data.yaml
 ressources/games-data.json
 log.log
 data.json
+migrations/

@@ -1,3 +1,30 @@
 {% extends "index.html" %}
 {% block main %}
+<link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/custom-buttons.css") }}">
+<main class="container-fluid col-9 mx-auto my-auto">
+  <div class="text-center mb-5">
+    <h2>Session du {{ session.timeslot.day.strftime("%A %d %B %Y") }}</h2>
+    <h3>De {{ session.timeslot.beginning.strftime("%H:%M") }} à {{ session.timeslot.end.strftime("%H:%M") }}</h3>
+  </div>
+    <div class="d-flex flex-row justify-content-center align-items-center mx-auto mb-5 col-8">
+        <button class="btn mr-3 col-3 text-white"
+                onclick="window.location.href='{{ url_for("session.add_player", session_id=session.id) }}';">
+            Ajouter un joueur
+        </button>
+        <button class="btn ml-3 col-3 text-white"
+                onclick="window.location.href='{{ url_for("session.add_game", session_id=session.id) }}';">
+            Ajouter un jeu
+        </button>
+    </div>
+    <h4 class="my-3">Jeux</h4>
+        {% for game in games %}
+            {% include "cards/game_card.html" %}
+        {% endfor %}
+    <h4 class="my-3">Joueurs ({{ session.nb_players_required }}/{{ session.players.count() }})</h4>
+    <div class="users-list row">
+        {% for item in players %}
+            {% include "cards/user_card.html" %}
+        {% endfor %}
+    </div>
+</main>
 {% endblock %}
