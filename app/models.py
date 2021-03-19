@@ -514,7 +514,7 @@ class Prefer(db.Model):
         """
         Get a preference from its game and user ids. Return None if the preference does not exist.
         """
-        req = Prefer.query.filter(Prefer.user_id == user_id, Prefer.game_id == game_id).first()
+        req = Prefer.query.filter(Prefer.user_id == user_id, Prefer.game_id == game_id)
         return req if req else None
 
 
