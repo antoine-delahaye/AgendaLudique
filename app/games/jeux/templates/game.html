@@ -26,12 +26,21 @@
                 </button>
             {% endif %}
             {% if game.id not in noted_games %}
-                <button class="btn ml-3 col-3 text-white" data-toggle="modal" data-target="#myModal{{ game.id }}">Noter
+                <button class="btn ml-3 col-3 text-white" data-toggle="modal" data-target="#game_note{{ game.id }}">Noter
                     le jeu
                 </button>
             {% else %}
-                <button class="btn ml-3 col-3 text-white" data-toggle="modal" data-target="#myModal{{ game.id }}">
+                <button class="btn ml-3 col-3 text-white" data-toggle="modal" data-target="#game_note{{ game.id }}">
                     Modifier la note du jeu
+                </button>
+            {% endif %}
+            {% if game.id not in freq_games %}
+                <button class="btn ml-3 col-3 text-white" data-toggle="modal" data-target="#game_freq{{ game.id }}">
+                    Ajouter une fréquence de jeu
+                </button>
+            {% else %}
+                <button class="btn ml-3 col-3 text-white" data-toggle="modal" data-target="#game_freq{{ game.id }}">
+                    Modifier la fréquence du jeu
                 </button>
             {% endif %}
         </div>
@@ -63,5 +72,6 @@
             </div>
         </div>
         {% include "pop-ups/game_note.html" %}
+        {% include "pop-ups/game_freq.html" %}
     </main>
 {% endblock %}
