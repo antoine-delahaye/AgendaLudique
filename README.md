@@ -64,6 +64,13 @@ networks:
 
 Après avoir créé le ficher, lancer la commande `docker-compose up` pour que Docker Compose lance l'application.
 
+## Construire le projet
+
+Pour construire le projet avec Docker, cloner le dépôt en annexes puis lancer la commande 
+`docker build -t agenda-ludique -f docker/Dockerfile .` à la racine du projet pour construire ce dernier.
+Arpès avoir fait celà, dans `docker-compose.yml`, remplacer la ligne `image: ug7z/agenda-ludique` par
+`image: agenda-ludique` pour lancer le projet avec l'image local.
+
 ## Annexes
 
 - [Dépôt GitLab](https://gitlab.com/Thomas-Jacquet/agenda-ludique)
