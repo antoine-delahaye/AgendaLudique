@@ -33,10 +33,13 @@ def get_catalog_payload(user, form, page):
 
     # We want to know games notes and comments made by the current user
     payload["ratings"] = user.get_noted_games(False, True)
+    # We want to know games frequences set by the current user
+    payload["freqs"] = user.get_freq_games(False, True)
 
     # We want to know which games the user already knows, wishes, owns or has noted
     payload["known_games"] = id_query_to_set(user.get_known_games(True))
     payload["noted_games"] = id_query_to_set(payload["ratings"])
+    payload["freq_games"] = id_query_to_set(payload["freqs"])
     payload["wished_games"] = id_query_to_set(user.get_wished_games(True))
     payload["owned_games"] = id_query_to_set(user.get_owned_games(True))
 
