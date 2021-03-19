@@ -147,7 +147,7 @@ class User(UserMixin, db.Model):
         """
         req = User.query.filter(User.token_pwd == token).first()
         return req if req else None
-    
+
     def games_search(self, games_hint, typ, search_parameter, sort_type='alphabetical'):
         """
         Search games with defined parameters
@@ -182,7 +182,7 @@ class User(UserMixin, db.Model):
                 results.items = results.items.filter(Game.id.in_(games_ids))
             else:
                 results.items = results.items.filter(Game.title.like("%" + games_hint + "%"))
-        
+
         # Sort games corresponding to the search asked
         if sort_type == ResultsSortType.MOST_RECENT_FIRST:
             results.items = results.items.order_by(Game.publication_year.desc())
@@ -221,7 +221,7 @@ class User(UserMixin, db.Model):
         if search_parameter != "OWNED":
             results.items = results.items.filter(Game.id.notin_(self.get_owned_games(True)))
 
-        page_elements = results.items.slice((page - 1) * per_page, 
+        page_elements = results.items.slice((page - 1) * per_page,
                                             page * per_page)  # the games that will be displayed on the page
         results.pagination = Pagination(None, page, per_page, results.items.count(), page_elements)
         results.items = None
@@ -295,7 +295,7 @@ class User(UserMixin, db.Model):
         results.items = None
 
         return results
-    
+
     def get_all_sessions(self):
         return Session.query
 
@@ -304,7 +304,7 @@ class User(UserMixin, db.Model):
 
     def get_passed_sessions(self):
         return None
-    
+
     def sessions_search(self, sessions_hint, typ, search_parameter, sort_type='title'):
         """
         Search games with defined parameters
@@ -334,7 +334,7 @@ class User(UserMixin, db.Model):
                     db.session.query(Game.id).filter(Game.title.like("%" + sessions_hint + "%"))
                 ))
                 results.items = results.items.filter(Session.id.in_(games_ids))
-        
+
         # Sort games corresponding to the search asked
         # if sort_type == ResultsSortType.MOST_ANCIENT_FIRST:
         #     results.items = results.items.order_by(Session.timeslot)
@@ -356,7 +356,7 @@ class User(UserMixin, db.Model):
         """
         results = self.sessions_search(sessions_hint, typ, search_parameter, sort_type)
 
-        page_elements = results.items.slice((page - 1) * per_page, 
+        page_elements = results.items.slice((page - 1) * per_page,
                                             page * per_page)  # the sessions that will be displayed on the page
         results.pagination = Pagination(None, page, per_page, results.items.count(), page_elements)
         results.items = None
@@ -621,7 +621,7 @@ class Note(db.Model):
             if grade.note is not None:
                 avg_grade += grade.note
                 count += 1
-        if avg_grade is not 0 and count is not 0:
+        if avg_grade != 0 and count != 0:
             return avg_grade / count
         return 0
 
@@ -963,7 +963,7 @@ class Session(db.Model):
         backref=db.backref("sessions", lazy="dynamic"),
         foreign_keys=[timeslot_id])
 
-    def __init__(self, nb_players_required, timeout, timeslot_id, notifactions_sent=False, confirmed=False, archived=False):
+    def __init__(self, nb_players_required, timeout, timeslot_id=None, notifactions_sent=False, confirmed=False, archived=False):
         """
         Create a Session object.
         :param timeout: a string in ISO 8601 format YYYY-MM-DDTHH-MM-SS
@@ -994,7 +994,7 @@ class Session(db.Model):
         """
         req = Session.query.filter(Group.id == id).first()
         return req if req else None
-    
+
     def add_to_db (self):
         db.session.add(self)
         db.session.commit()
