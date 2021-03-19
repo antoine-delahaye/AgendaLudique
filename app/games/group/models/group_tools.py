@@ -29,7 +29,7 @@ def get_group_payload(searchform, query=None):
         payload["groups_data"] = query.filter(Group.name.like("%"+searchform.group_hint.data+"%")).order_by(Group.name)
     else:
         payload["groups_data"] = query.order_by(Group.name)
-        
+
 
     return payload
 
@@ -42,6 +42,7 @@ def get_search_group(group_hint):
     if group_hint is None:
         group_hint = ""
     return request.args.get('group_hint', group_hint, type=str)
+
 
 def get_all_participation(user):
     """
@@ -168,7 +169,7 @@ def lead_group_form(group_id, member_id):
         flash("Vous ne pouvez pas changer le responsable du groupe si vous n'êtes pas le chef.","warning")
 
     db.session.commit()
-    
+
 
 def add_group_form(form):
     """
@@ -182,10 +183,13 @@ def add_group_form(form):
         return False
 
     is_private = (form.is_private.data == 'private')
-
     password = form.password.data
+
     if not password and is_private:
         flash("Vous devez mettre un mot de passe pour un groupe privé","danger")
+        return False
+    elif len(password) > 10:
+        flash("Veuillez rentrer un mot de passe de moins de 10 caractères","warning")
         return False
 
     db.session.add(Group(
