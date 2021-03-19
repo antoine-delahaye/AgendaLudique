@@ -216,9 +216,9 @@ class User(UserMixin, db.Model):
         results = self.games_search(games_hint, typ, search_parameter, sort_type)
 
         # We want to remove already owned and wished games from the page
-        if search_parameter != "WISHED":
+        print(search_parameter)
+        if search_parameter is None or search_parameter=="None":
             results.items = results.items.filter(Game.id.notin_(self.get_wished_games(True)))
-        if search_parameter != "OWNED":
             results.items = results.items.filter(Game.id.notin_(self.get_owned_games(True)))
 
         page_elements = results.items.slice((page - 1) * per_page,
