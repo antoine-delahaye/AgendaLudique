@@ -10,7 +10,7 @@
                 <form action="{{ url_for("jeux.update_game_freq", game_id=game.id)}}" method="post">
                     <div class="form-group form-row">
                         <label for="freq" class="control-label col-md-2">Fréquence à laquelle vous y jouer :</label>
-                        <input type="number" class="form-control-sm col-sm-2" min="0" max="10" id="freq" name="freq" value="{{ freqs.filter_by(game_id=game.id).first().frequency }}" required>
+                        <input type="number" class="form-control-sm col-sm-2" min="0" max="3" id="freq" name="freq" value="{{ freqs.filter_by(game_id=game.id).first().frequency }}" required>
                         <h4 class="col-lg-2">/3</h4>
                         <p>Veuillez choisir une fréquence de 0 à 3 en prenant en compte les possibilités suivantes</p>
                         <ul>
